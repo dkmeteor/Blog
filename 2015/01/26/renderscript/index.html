@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>一个RenderScript效果分析 | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="填个坑…很早以前就知道这个效果,当时只知道是用RenderScript做的..
+正好有空研究一下 , 翻了一下RenderScript的资料…..这个效果最早的出处应该就是这个PPT了
+PPT
+&amp;nbsp;
+
+&amp;nbsp;
+把图片放大又看了一下….我犯了个错误…误以为这是个球面…..就像 黑客帝国 里 球形监控室 的效果….
+其实不是的…….所以用 HorizonList/Grid/Recycl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一个RenderScript效果分析">
+<meta property="og:url" content="http://blog.dk-exp.com/2015/01/26/renderscript/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="填个坑…很早以前就知道这个效果,当时只知道是用RenderScript做的..
+正好有空研究一下 , 翻了一下RenderScript的资料…..这个效果最早的出处应该就是这个PPT了
+PPT
+&amp;nbsp;
+
+&amp;nbsp;
+把图片放大又看了一下….我犯了个错误…误以为这是个球面…..就像 黑客帝国 里 球形监控室 的效果….
+其实不是的…….所以用 HorizonList/Grid/Recycl">
+<meta property="og:image" content="http://blog.dk-exp.com/images/rs-youyube.png">
+<meta property="og:updated_time" content="2015-10-01T05:51:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一个RenderScript效果分析">
+<meta name="twitter:description" content="填个坑…很早以前就知道这个效果,当时只知道是用RenderScript做的..
+正好有空研究一下 , 翻了一下RenderScript的资料…..这个效果最早的出处应该就是这个PPT了
+PPT
+&amp;nbsp;
+
+&amp;nbsp;
+把图片放大又看了一下….我犯了个错误…误以为这是个球面…..就像 黑客帝国 里 球形监控室 的效果….
+其实不是的…….所以用 HorizonList/Grid/Recycl">
+<meta name="twitter:image" content="http://blog.dk-exp.com/images/rs-youyube.png">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-renderscript" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/26/renderscript/" class="article-date">
+  	<time datetime="2015-01-25T20:45:44.000Z" itemprop="datePublished">2015-01-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      一个RenderScript效果分析
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/rs-youyube.png" alt="rs"></p>
+<p>填个坑…很早以前就知道这个效果,当时只知道是用RenderScript做的..</p>
+<p>正好有空研究一下 , 翻了一下RenderScript的资料…..这个效果最早的出处应该就是这个PPT了</p>
+<p><a href="http://pan.baidu.com/s/1kT0zTiR" target="_blank" rel="external">PPT</a></p>
+<p>&nbsp;</p>
+<hr>
+<p>&nbsp;</p>
+<p>把图片放大又看了一下….我犯了个错误…误以为这是个球面…..就像 黑客帝国 里 球形监控室 的效果….</p>
+<p>其实不是的…….所以用 HorizonList/Grid/RecyclerView 配合Transform Matrix就可以了……..</p>
+<p>看这个设计也只能横向滚动,而不是可360°滚动的….我想多了…毕竟是11年的东西….</p>
+<hr>
+<p>&nbsp;</p>
+<h1 id="假设是球面效果的话"><a href="#假设是球面效果的话" class="headerlink" title="假设是球面效果的话"></a>假设是球面效果的话</h1><p>&nbsp;</p>
+<p>感觉还是比较奇怪…..</p>
+<p>要讨论能不能的话….当然是可以做的….</p>
+<p>即使不用RenderScript直接用 MeshVerts 也可以实现该效果…</p>
+<p>找到坐标对应关系就可以做 球面映射 .</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>问题在于无论是 RenderScript 还是 MeshVerts 处理的目标都是 Bitmap (或者 像素数组)</p>
+<p>静态帧处理没有问题….实时性无法保证…不知道意义何在….</p>
+<p>&nbsp;</p>
+<p>如果要保证实时性的话…似乎整个界面都需要实时渲染….整个界面都用SurfaceView / OpenGl 绘制的话代价也太大了.</p>
+<hr>
+<p>&nbsp;</p>
+<p>Google一直以来都没有大力推广过RenderScript, 看来其复杂性和实用性还有待考虑……既然用Matrix就可以搞定就没必要写RS脚本了..</p>
+<p>&nbsp;</p>
+<hr>
+<p>贴一下11年实现这个效果的RS脚本</p>
+<p>&nbsp;</p>
+<p><pre class="lang:default decode:true ">/**</pre></p>
+<ul>
+<li>This code is based on the work of daoki2</li>
+<li><a href="http://code.google.com/p/renderscript-examples/" target="_blank" rel="external">http://code.google.com/p/renderscript-examples/</a></li>
+<li>carousel.rs</li>
+<li>Copyright (c) 2011 daoki2<br>*/</li>
+</ul>
+<p>#pragma version(1)</p>
+<p>#pragma rs java_package_name(de.inovex.mobi.rsdemos)</p>
+<p>#include “rs_graphics.rsh”</p>
+<p>#define NUM_ITEMS 15</p>
+<p>#define RADIUS 1900</p>
+<p>rs_program_vertex gProgVertex;<br>rs_program_fragment gProgFragmentTexture;<br>rs_program_store gProgStoreBlendNone;<br>rs_program_raster gCullNone;<br>rs_sampler gLinearClamp;</p>
+<p>rs_allocation gTex_00, gTex_01, gTex_02, gTex_03, gTex_04;<br>rs_allocation gTex_05, gTex_06, gTex_07, gTex_08, gTex_09, gTex_10, gTex_11, gTex_12, gTex_13, gTex_14;</p>
+<p>typedef struct <strong>attribute</strong>((packed, aligned(4))) Bitmaps {<br>    rs_allocation data;<br>} Bitmaps_t;<br>Bitmaps_t *bitmap;</p>
+<p>float gPx = 0;<br>float gPy = 0;<br>float gVx = 0;<br>float gVy = 0;</p>
+<p>//float gDt = 0;</p>
+<p>static float vertices[60];<br>static float len;<br>static int rot = 360/NUM_ITEMS/2; // Default angle<br>static int initialized = 0;</p>
+<p>void init() {<br>}</p>
+<p>static void displayCarousel() {<br>    // Default vertex shader<br>    rsgBindProgramVertex(gProgVertex);</p>
+<pre><code>// Setup the projection matrix
+rs_matrix4x4 proj;    
+float aspect = (float)rsgGetWidth() / (float)rsgGetHeight();
+rsMatrixLoadPerspective(&amp;amp;proj, 30.0f, aspect, 0.1f, 2500.0f);
+rsgProgramVertexLoadProjectionMatrix(&amp;amp;proj);
+
+// Fragment shader with texture
+rsgBindProgramStore(gProgStoreBlendNone);
+rsgBindProgramFragment(gProgFragmentTexture);
+rsgBindProgramRaster(gCullNone);
+rsgBindSampler(gProgFragmentTexture, 0, gLinearClamp);
+
+// Reduce the rotation speed
+if (gVx != 0) {
+    rot = rot + gVx;
+    gVx = gVx * 0.995f;
+    if ( gVx &amp;lt; 0.00001f) {
+        gVx = 0;
+    }
+}
+
+// Load vertex matrix as model matrix
+rs_matrix4x4 matrix;
+rsMatrixLoadTranslate(&amp;amp;matrix, 0.0f, 0.0f, -400.0f); // camera position
+rsMatrixRotate(&amp;amp;matrix, rot, 0.0f, 1.0f, 0.0f); // camera rotation
+rsgProgramVertexLoadModelMatrix(&amp;amp;matrix);
+
+// Draw the rectangles
+Bitmaps_t *b = bitmap;
+for (int i = 0; i &amp;lt; 15; i++) {
+    rsgBindTexture(gProgFragmentTexture, 0, b-&amp;gt;data);
+    rsgDrawQuadTexCoords(
+        vertices[i*3],
+        -(len/2),
+        vertices[i*3+2],
+        0,1,
+        vertices[i*3],
+        len/2,
+        vertices[i*3+2],
+        0,0,
+        vertices[i == 14 ? 0 : (i+1)*3],
+        len/2,
+        vertices[i == 14 ? 0 + 2 : (i+1)*3 + 2],
+        1,0,
+        vertices[i == 14 ? 0 : (i+1)*3],
+        -(len/2),
+        vertices[i == 14 ? 0 + 2 : (i+1)*3 + 2],
+        1,1
+    );
+    b++;
+}
+</code></pre><p>}</p>
+<p>static void initBitmaps() {<br>    // Set the bitmap address to the structure<br>    Bitmaps_t *b = bitmap;<br>    b-&gt;data = gTex_00; b++;<br>    b-&gt;data = gTex_01; b++;<br>    b-&gt;data = gTex_02; b++;<br>    b-&gt;data = gTex_03; b++;<br>    b-&gt;data = gTex_04; b++;<br>    b-&gt;data = gTex_05; b++;<br>    b-&gt;data = gTex_06; b++;<br>    b-&gt;data = gTex_07; b++;<br>    b-&gt;data = gTex_08; b++;<br>    b-&gt;data = gTex_09; b++;<br>    b-&gt;data = gTex_10; b++;<br>    b-&gt;data = gTex_11; b++;<br>    b-&gt;data = gTex_12; b++;<br>    b-&gt;data = gTex_13; b++;<br>    b-&gt;data = gTex_14; b++;</p>
+<pre><code>// Calculate the length of the polygon
+len = RADIUS * 2 * sin(M_PI/NUM_ITEMS);
+
+// Calculate the vertices of rectangles
+float angle;
+for (int i = 0; i &amp;lt; NUM_ITEMS; i++) {
+    angle = i * 360 / NUM_ITEMS;
+    vertices[i*3] = sin(angle * M_PI / 180) * RADIUS;
+    vertices[i*3 + 1] = 0;
+    vertices[i*3 + 2] = -cos(angle * M_PI / 180) * RADIUS;
+}
+</code></pre><p>}</p>
+<p>int root() {<br>    if (initialized == 0) {<br>        initBitmaps();<br>        initialized = 1;<br>    }</p>
+<pre><code>//gDt = rsGetDt();
+rsgClearColor(0.0f, 0.0f, 0.3333f, 0.0f);
+rsgClearDepth(1.0f);
+
+displayCarousel();
+
+return 10;
+</code></pre><p>}<br><br>&nbsp;</p>
+<p>现在参考FancyCoverFlow或者3DGallery之类有太多简单的实现方法了…</p>
+<p>&nbsp;</p>
+<p>更关键的是 MeshVerts这部分对应有Java接口可以直接调用了</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/01/28/use-ioc-in-android/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          是否有必要在Android项目中使用IOC框架
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/01/14/transformationtool/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">TransformationTool </div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="renderscript" data-title="一个RenderScript效果分析" data-url="http://blog.dk-exp.com/2015/01/26/renderscript/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

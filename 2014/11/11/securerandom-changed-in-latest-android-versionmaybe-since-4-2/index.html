@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>SecureRandom changed in latest Android version(maybe since 4.2) | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出
+11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
+源代码如下:
+import java.io.Unsupported">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SecureRandom changed in latest Android version(maybe since 4.2)">
+<meta property="og:url" content="http://blog.dk-exp.com/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出
+11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
+源代码如下:
+import java.io.Unsupported">
+<meta property="og:updated_time" content="2015-10-01T05:51:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SecureRandom changed in latest Android version(maybe since 4.2)">
+<meta name="twitter:description" content="使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出
+11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
+源代码如下:
+import java.io.Unsupported">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-securerandom-changed-in-latest-android-versionmaybe-since-4-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/" class="article-date">
+  	<time datetime="2014-11-10T18:13:15.000Z" itemprop="datePublished">2014-11-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SecureRandom changed in latest Android version(maybe since 4.2)
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出</p>
+<pre><code>11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
+</code></pre><p>源代码如下:</p>
+<pre><code>import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+* 
+* @author Peter.Ding
+* 
+*/public class AESTools {
+    private static AESTools instance = new AESTools();
+    private String password = &quot;peter.ding@augmentum.com&quot;;
+    private KeyGenerator kgen;
+
+    private AESTools() {
+    }
+
+    public static AESTools getInstance() {
+        return instance;
+    }
+
+    public String encrypt(String content) {
+        try {
+            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
+            Provider p = Security.getProvider(&quot;BC&quot;);
+            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+
+            //The right code 
+            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
+            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
+
+            s.setSeed(password.getBytes());
+            kgen.init(128, s);
+            SecretKey secretKey = kgen.generateKey();
+            byte[] enCodeFormat = secretKey.getEncoded();
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
+            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
+            byte[] byteContent = content.getBytes(&quot;utf-8&quot;);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] result = cipher.doFinal(byteContent);
+            return bytesToHexString(result);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String decrypt(String str) {
+        byte[] content = hexStringToByte(str);
+        try {
+            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
+            Provider p = Security.getProvider(&quot;BC&quot;);
+            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+
+            //The right code 
+            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
+            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
+
+            s.setSeed(password.getBytes());
+            kgen.init(128, s);
+            SecretKey secretKey = kgen.generateKey();
+            byte[] enCodeFormat = secretKey.getEncoded();
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
+            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] result = cipher.doFinal(content);
+            System.out.println(bytesToHexString(result));
+            return new String(result, &quot;utf-8&quot;);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder(&quot;&quot;);
+        if (src == null || src.length &amp;lt;= 0) {
+            return null;
+        }
+        for (int i = 0; i &amp;lt; src.length; i++) {
+            int v = src[i] &amp;amp; 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() &amp;lt; 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString().toUpperCase(Locale.ENGLISH);
+    }
+
+    public static byte[] hexStringToByte(String hex) {
+        int len = (hex.length() / 2);
+        byte[] result = new byte[len];
+        char[] achar = hex.toCharArray();
+        for (int i = 0; i &amp;lt; len; i++) {
+            int pos = i * 2;
+            result[i] = (byte) (toByte(achar[pos]) &amp;lt;&amp;lt; 4 | toByte(achar[pos + 1]));
+        }
+        return result;
+    }
+
+    private static byte toByte(char c) {
+        byte b = (byte) &quot;0123456789ABCDEF&quot;.indexOf(c);
+        return b;
+    }
+
+}
+</code></pre><p>以上代码是我12年的时候为 加密数据库写的,我马上意识到肯定是Android又修改了Security Provider,当时2.1 2.3适配把我坑了一次,4.0适配又把我坑了一次,没想到还要坑我第三次…..无语…</p>
+<pre><code>Provider p = Security.getProvider(&quot;BC&quot;);
+SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+</code></pre><p>报错的就是上面这行代码,果断复制粘贴百度</p>
+<p>结果搜出来结果就是这个 <a href="http://dkmeteor.iteye.com/blog/1394887" target="_blank" rel="external">http://dkmeteor.iteye.com/blog/1394887</a></p>
+<p>仔细一看还是我2012年写的blog…. 算了….不看也知道肯定是 Provider和SecureRandom又改动了…</p>
+<p>直接拉Provider列表</p>
+<pre><code>Android&apos;s OpenSSL-backed security provider
+1ASN.1, DER, PkiPath, PKCS7
+BouncyCastle Security Provider v1.49
+HARMONY (SHA1 digest; SecureRandom; SHA1withDSA signature)
+Harmony JSSE Provider
+Android KeyStore security provider
+</code></pre><p><a href="http://www.bouncycastle.org/" target="_blank" rel="external">http://www.bouncycastle.org/</a> 翻了一下文档 <code>BouncyCastle</code> 是支持AES的,不知为何直接调用会抛NoSuchAlgorithmException 没看到关于Android内Provider支持的Algorithm具体列表.</p>
+<p>试了下使用 Android OpenSSL (2.3以下版本不支持) , 一样会抛出该错误,最后想了想改成原始版本的默认值 SHA1PRNG和Crypto. Done. (2.3+版本默认Default Provider修改成了 Android OpenSSL)</p>
+<hr>
+<p>后来又找到一篇 Security Enhancements in Jelly Bean 的文档</p>
+<p><a href="http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html</a></p>
+<p>原文在墙外,关键部分我复制保存以下</p>
+<blockquote>
+<p>New implementation of SecureRandom</p>
+<p>Android 4.2 includes a new default implementation of SecureRandom based on OpenSSL. In the older Bouncy Castle-based implementation, given a known seed, SecureRandom could technically (albeit incorrectly) be treated as a source of deterministic data. With the new OpenSSL-based implementation, this is no longer possible.</p>
+<p>In general, the switch to the new SecureRandom implementation should be transparent to apps. However, if your app is relying on SecureRandom to generate deterministic data, such as keys for encrypting data, you may need to modify this area of your app. For example, if you have been using SecureRandom to retrieve keys for encrypting/decrypting content, you will need to find another means of doing that.</p>
+<p>A recommended approach is to generate a truly random AES key upon first launch and store that key in internal storage. For more information, see the post “Using Cryptography to Store Credentials Safely”.<br>还有另一篇关于 最佳实践的</p>
+</blockquote>
+<p><a href="http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html</a></p>
+<p>&nbsp;</p>
+<blockquote>
+<p>The right way</p>
+<p>A more reasonable approach is simply to generate a truly random AES key when an application is first launched:</p>
+<p>public static SecretKey generateKey() throws NoSuchAlgorithmException {<br>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
+<p>SecureRandom secureRandom = new SecureRandom();<br>// Do <em>not</em> seed secureRandom! Automatically seeded from system entropy.<br>KeyGenerator keyGenerator = KeyGenerator.getInstance(“AES”);<br>keyGenerator.init(outputKeyLength, secureRandom);<br>SecretKey key = keyGenerator.generateKey();<br>return key;<br>}<br>Note that the security of this approach relies on safeguarding the generated key, which is is predicated on the security of the internal storage. Leaving the target file unencrypted (but set to MODE_PRIVATE) would provide similar security.</p>
+<p>Even more security<br>If your app needs additional encryption, a recommended approach is to require a passphase or PIN to access your application. This passphrase could be fed into PBKDF2 to generate the encryption key. (PBKDF2 is a commonly used algorithm for deriving key material from a passphrase, using a technique known as “key stretching”.) Android provides an implementation of this algorithm inside SecretKeyFactory as PBKDF2WithHmacSHA1:</p>
+<p>public static SecretKey generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {<br>// Number of PBKDF2 hardening rounds to use. Larger values increase<br>// computation time. You should select a value that causes computation<br>// to take &gt;100ms.<br>final int iterations = 1000;</p>
+<p>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
+<p>SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(“PBKDF2WithHmacSHA1”);<br>KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);<br>SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);<br>return secretKey;<br>}<br>The salt should be a random string, again generated using SecureRandom and persisted on internal storage alongside any encrypted data. This is important to mitigate the risk of attackers using a rainbow table to precompute password hashes.<br>因为使用了固定的seed作为随机种子生成器(RNG)的参数,导致生成的随机数其实是固定的,所以官方不推荐这种用法,当然我类库里的seed其实就是 加密密码,如果不需要指定密码的话, 倒是可以用官方的推荐的这种方式.</p>
+</blockquote>
+<p></p>
+<p>&nbsp;</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2014/11/21/how-to-soleve-eclipse-refresh-external-folder/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          How to soleve eclipse refresh external folder
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2014/11/10/manifest-xml-bug-with-android-intent-action-main/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">manifest xml bug with android.intent.action.MAIN</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="securerandom-changed-in-latest-android-versionmaybe-since-4-2" data-title="SecureRandom changed in latest Android version(maybe since 4.2)" data-url="http://blog.dk-exp.com/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

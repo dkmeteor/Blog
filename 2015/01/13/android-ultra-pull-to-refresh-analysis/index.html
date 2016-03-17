@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>android-Ultra-Pull-To-Refresh动画效果简要分析 | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#android-Ultra-Pull-To-Refresh动画效果简要分析
+android-Ultra-Pull-To-Refresh
+
+核心类StoreHousePath    package in.srain.cube.views.ptr.header;
+import android.util.SparseArray;
+
+import java.util.ArrayList;
+
+/**
+*">
+<meta property="og:type" content="article">
+<meta property="og:title" content="android-Ultra-Pull-To-Refresh动画效果简要分析">
+<meta property="og:url" content="http://blog.dk-exp.com/2015/01/13/android-ultra-pull-to-refresh-analysis/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="#android-Ultra-Pull-To-Refresh动画效果简要分析
+android-Ultra-Pull-To-Refresh
+
+核心类StoreHousePath    package in.srain.cube.views.ptr.header;
+import android.util.SparseArray;
+
+import java.util.ArrayList;
+
+/**
+*">
+<meta property="og:image" content="https://camo.githubusercontent.com/d3fbe757c87fddc94e998ebdd08ac55956aed1cf/687474703a2f2f737261696e2d6769746875622e71696e6975646e2e636f6d2f756c7472612d7074722f73746f72652d686f7573652d737472696e672e676966">
+<meta property="og:updated_time" content="2015-10-01T05:51:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="android-Ultra-Pull-To-Refresh动画效果简要分析">
+<meta name="twitter:description" content="#android-Ultra-Pull-To-Refresh动画效果简要分析
+android-Ultra-Pull-To-Refresh
+
+核心类StoreHousePath    package in.srain.cube.views.ptr.header;
+import android.util.SparseArray;
+
+import java.util.ArrayList;
+
+/**
+*">
+<meta name="twitter:image" content="https://camo.githubusercontent.com/d3fbe757c87fddc94e998ebdd08ac55956aed1cf/687474703a2f2f737261696e2d6769746875622e71696e6975646e2e636f6d2f756c7472612d7074722f73746f72652d686f7573652d737472696e672e676966">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-android-ultra-pull-to-refresh-analysis" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/13/android-ultra-pull-to-refresh-analysis/" class="article-date">
+  	<time datetime="2015-01-13T01:58:35.000Z" itemprop="datePublished">2015-01-13</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      android-Ultra-Pull-To-Refresh动画效果简要分析
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#android-Ultra-Pull-To-Refresh动画效果简要分析</p>
+<p><a href="https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh" target="_blank" rel="external">android-Ultra-Pull-To-Refresh</a></p>
+<p><img src="https://camo.githubusercontent.com/d3fbe757c87fddc94e998ebdd08ac55956aed1cf/687474703a2f2f737261696e2d6769746875622e71696e6975646e2e636f6d2f756c7472612d7074722f73746f72652d686f7573652d737472696e672e676966" alt="image"></p>
+<p>核心类StoreHousePath<br>    package in.srain.cube.views.ptr.header;</p>
+<pre><code>import android.util.SparseArray;
+
+import java.util.ArrayList;
+
+/**
+* Created by srain on 11/7/14.
+*/
+public class StoreHousePath {
+
+private static final SparseArray&amp;lt;float[]&amp;gt; sPointList;
+
+static {
+sPointList = new SparseArray&amp;lt;float[]&amp;gt;();
+float[][] LETTERS = new float[][]{
+new float[]{
+// A
+24, 0, 1, 22,
+1, 22, 1, 72,
+24, 0, 47, 22,
+47, 22, 47, 72,
+1, 48, 47, 48
+},
+
+new float[]{
+// B
+0, 0, 0, 72,
+0, 0, 37, 0,
+37, 0, 47, 11,
+47, 11, 47, 26,
+47, 26, 38, 36,
+38, 36, 0, 36,
+38, 36, 47, 46,
+47, 46, 47, 61,
+47, 61, 38, 71,
+37, 72, 0, 72,
+},
+
+new float[]{
+// C
+47, 0, 0, 0,
+0, 0, 0, 72,
+0, 72, 47, 72,
+},
+
+new float[]{
+// D
+0, 0, 0, 72,
+0, 0, 24, 0,
+24, 0, 47, 22,
+47, 22, 47, 48,
+47, 48, 23, 72,
+23, 72, 0, 72,
+},
+
+new float[]{
+// E
+0, 0, 0, 72,
+0, 0, 47, 0,
+0, 36, 37, 36,
+0, 72, 47, 72,
+},
+
+new float[]{
+// F
+0, 0, 0, 72,
+0, 0, 47, 0,
+0, 36, 37, 36,
+},
+
+new float[]{
+// G
+47, 23, 47, 0,
+47, 0, 0, 0,
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 48,
+47, 48, 24, 48,
+},
+
+new float[]{
+// H
+0, 0, 0, 72,
+0, 36, 47, 36,
+47, 0, 47, 72,
+},
+
+new float[]{
+// I
+0, 0, 47, 0,
+24, 0, 24, 72,
+0, 72, 47, 72,
+},
+
+new float[]{
+// J
+47, 0, 47, 72,
+47, 72, 24, 72,
+24, 72, 0, 48,
+},
+
+new float[]{
+// K
+0, 0, 0, 72,
+47, 0, 3, 33,
+3, 38, 47, 72,
+},
+
+new float[]{
+// L
+0, 0, 0, 72,
+0, 72, 47, 72,
+},
+
+new float[]{
+// M
+0, 0, 0, 72,
+0, 0, 24, 23,
+24, 23, 47, 0,
+47, 0, 47, 72,
+},
+
+new float[]{
+// N
+0, 0, 0, 72,
+0, 0, 47, 72,
+47, 72, 47, 0,
+},
+
+new float[]{
+// O
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 0,
+47, 0, 0, 0,
+},
+
+new float[]{
+// P
+0, 0, 0, 72,
+0, 0, 47, 0,
+47, 0, 47, 36,
+47, 36, 0, 36,
+},
+
+new float[]{
+// Q
+0, 0, 0, 72,
+0, 72, 23, 72,
+23, 72, 47, 48,
+47, 48, 47, 0,
+47, 0, 0, 0,
+24, 28, 47, 71,
+},
+
+new float[]{
+// R
+0, 0, 0, 72,
+0, 0, 47, 0,
+47, 0, 47, 36,
+47, 36, 0, 36,
+0, 37, 47, 72,
+},
+
+new float[]{
+// S
+47, 0, 0, 0,
+0, 0, 0, 36,
+0, 36, 47, 36,
+47, 36, 47, 72,
+47, 72, 0, 72,
+},
+
+new float[]{
+// T
+0, 0, 47, 0,
+24, 0, 24, 72,
+},
+
+new float[]{
+// U
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 0,
+},
+
+new float[]{
+// V
+0, 0, 24, 72,
+24, 72, 47, 0,
+},
+
+new float[]{
+// W
+0, 0, 0, 72,
+0, 72, 24, 49,
+24, 49, 47, 72,
+47, 72, 47, 0
+},
+
+new float[]{
+// X
+0, 0, 47, 72,
+47, 0, 0, 72
+},
+
+new float[]{
+// Y
+0, 0, 24, 23,
+47, 0, 24, 23,
+24, 23, 24, 72
+},
+
+new float[]{
+// Z
+0, 0, 47, 0,
+47, 0, 0, 72,
+0, 72, 47, 72
+},
+};
+final float[][] NUMBERS = new float[][]{
+new float[]{
+// 0
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 0,
+47, 0, 0, 0,
+},
+new float[]{
+// 1
+24, 0, 24, 72,
+},
+
+new float[]{
+// 2
+0, 0, 47, 0,
+47, 0, 47, 36,
+47, 36, 0, 36,
+0, 36, 0, 72,
+0, 72, 47, 72
+},
+
+new float[]{
+// 3
+0, 0, 47, 0,
+47, 0, 47, 36,
+47, 36, 0, 36,
+47, 36, 47, 72,
+47, 72, 0, 72,
+},
+
+new float[]{
+// 4
+0, 0, 0, 36,
+0, 36, 47, 36,
+47, 0, 47, 72,
+},
+
+new float[]{
+// 5
+0, 0, 0, 36,
+0, 36, 47, 36,
+47, 36, 47, 72,
+47, 72, 0, 72,
+0, 0, 47, 0
+},
+
+new float[]{
+// 6
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 36,
+47, 36, 0, 36
+},
+
+new float[]{
+// 7
+0, 0, 47, 0,
+47, 0, 47, 72
+},
+
+new float[]{
+// 8
+0, 0, 0, 72,
+0, 72, 47, 72,
+47, 72, 47, 0,
+47, 0, 0, 0,
+0, 36, 47, 36
+},
+
+new float[]{
+// 9
+47, 0, 0, 0,
+0, 0, 0, 36,
+0, 36, 47, 36,
+47, 0, 47, 72,
+}
+};
+// A - Z
+for (int i = 0; i &amp;lt; LETTERS.length; i++) {
+sPointList.append(i + 65, LETTERS[i]);
+}
+// a - z
+for (int i = 0; i &amp;lt; LETTERS.length; i++) {
+sPointList.append(i + 65 + 32, LETTERS[i]);
+}
+// 0 - 9
+for (int i = 0; i &amp;lt; NUMBERS.length; i++) {
+sPointList.append(i + 48, NUMBERS[i]);
+}
+// blank
+addChar(&apos; &apos;, new float[]{});
+// -
+addChar(&apos;-&apos;, new float[]{
+0, 36, 47, 36
+});
+// .
+addChar(&apos;.&apos;, new float[]{
+24, 60, 24, 72
+});
+}
+
+public static void addChar(char c, float[] points) {
+sPointList.append(c, points);
+}
+
+public static ArrayList&amp;lt;float[]&amp;gt; getPath(String str) {
+return getPath(str, 1, 14);
+}
+
+/**
+* @param str
+* @param scale
+* @param gapBetweenLetter
+* @return ArrayList of float[] {x1, y1, x2, y2}
+*/
+public static ArrayList&amp;lt;float[]&amp;gt; getPath(String str, float scale, int gapBetweenLetter) {
+ArrayList&amp;lt;float[]&amp;gt; list = new ArrayList&amp;lt;float[]&amp;gt;();
+float offsetForWidth = 0;
+for (int i = 0; i &amp;lt; str.length(); i++) {
+int pos = str.charAt(i);
+int key = sPointList.indexOfKey(pos);
+if (key == -1) {
+continue;
+}
+float[] points = sPointList.get(pos);
+int pointCount = points.length / 4;
+
+for (int j = 0; j &amp;lt; pointCount; j++) {
+float[] line = new float[4];
+for (int k = 0; k &amp;lt; 4; k++) {
+float l = points[j * 4 + k];
+// x
+if (k % 2 == 0) {
+line[k] = (l + offsetForWidth) * scale;
+}
+// y
+else {
+line[k] = l * scale;
+}
+}
+list.add(line);
+}
+offsetForWidth += 57 + gapBetweenLetter;
+}
+return list;
+}
+}
+</code></pre><p>对数字和坐标敏感的话,看到上面这几个数组应该就能理解这部分的作用.<br>这里将 数字 和 字母 分解成 对应笔画的 Path , 每2个数字 作为一个坐标点<br>每一行的2个坐标点作为一个笔画</p>
+<p>所以,该库不支持 这里定义之外的 其它字符 比如汉字 某些特殊符号之类的…<br>虽然提供了一个方法让你以xml的形式的自定义path进来…但是需要自定义path还是算了…</p>
+<p>作为库分析来说…其实看到这里就已经猜到后面的实现方式了……</p>
+<p>顺藤摸瓜在 StoreHouseHeader里找到了对 StoreHousePath 的调用<br>这里先把path封装成了 StoreHouseBarItem 对象方便处理</p>
+<pre><code>@Override
+public void onDraw(Canvas canvas) {
+    super.onDraw(canvas);
+    float progress = mProgress;
+    int c1 = canvas.save();
+    int len = mItemList.size();
+
+    for (int i = 0; i &amp;lt; len; i++) {
+
+        canvas.save();
+        StoreHouseBarItem storeHouseBarItem = mItemList.get(i);
+        float offsetX = mOffsetX + storeHouseBarItem.midPoint.x;
+        float offsetY = mOffsetY + storeHouseBarItem.midPoint.y;
+
+        if (mIsInLoading) {
+            storeHouseBarItem.getTransformation(getDrawingTime(), mTransformation);
+            canvas.translate(offsetX, offsetY);
+        } else {
+
+            if (progress == 0) {
+                storeHouseBarItem.resetPosition(horizontalRandomness);
+                continue;
+            }
+
+            float startPadding = (1 - internalAnimationFactor) * i / len;
+            float endPadding = 1 - internalAnimationFactor - startPadding;
+
+            // done
+            if (progress == 1 || progress &amp;gt;= 1 - endPadding) {
+                canvas.translate(offsetX, offsetY);
+                storeHouseBarItem.setAlpha(mBarDarkAlpha);
+            } else {
+                float realProgress;
+                if (progress &amp;lt;= startPadding) {
+                    realProgress = 0;
+                } else {
+                    realProgress = Math.min(1, (progress - startPadding) / internalAnimationFactor);
+                }
+                offsetX += storeHouseBarItem.translationX * (1 - realProgress);
+                offsetY += -mDropHeight * (1 - realProgress);
+                Matrix matrix = new Matrix();
+                matrix.postRotate(360 * realProgress);
+                matrix.postScale(realProgress, realProgress);
+                matrix.postTranslate(offsetX, offsetY);
+                storeHouseBarItem.setAlpha(mBarDarkAlpha * realProgress);
+                canvas.concat(matrix);
+            }
+        }
+        storeHouseBarItem.draw(canvas);
+        canvas.restore();
+    }
+    if (mIsInLoading) {
+        invalidate();
+    }
+    canvas.restoreToCount(c1);
+}
+
+
+//StoreHouseBarItem中对应的draw方法
+public void draw(Canvas canvas) {
+    canvas.drawLine(mCStartPoint.x, mCStartPoint.y, mCEndPoint.x, mCEndPoint.y, mPaint);
+}
+</code></pre><p>根据startPadding 和 progress的值对每个笔画进行平移 旋转 缩放 以及 alpha值的调整.</p>
+<p>注意这里startPadding实际上是通过笔画在数组中的位置计算出来的…</p>
+<p>所以简单来看 每一个笔画的 realProgress 是不同的<br>realProgress 受 笔画在数组中的位置 i 和 progress 影响</p>
+<hr>
+<p>剩下个高光效果直接用Shader渲染的..不分析了…..</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/01/14/android-localization-helper/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          android-localization-helper
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/01/12/folder-drawerlayout-3/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Folder-DrawerLayout 开发日志2</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="android-ultra-pull-to-refresh-analysis" data-title="android-Ultra-Pull-To-Refresh动画效果简要分析" data-url="http://blog.dk-exp.com/2015/01/13/android-ultra-pull-to-refresh-analysis/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

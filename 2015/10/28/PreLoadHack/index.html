@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>PreLoadHack | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Android换肤技术 PreLoad Hack参考 Android换肤技术总结
+内部资源加载方案 大同小异,而且使用和实现缺陷非常多,实际使用价值不大.
+
+对于复杂的皮肤,需要太多的设置.
+
+对于简单的皮肤(类似白天/黑夜/关灯模式),有更简单的实现方式
+
+
+主要来看动态加载方案
+##resource替换开源项目可参照Android-Skin-Loader
+可以参考顶上的Blog链接
+实现机制其">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PreLoadHack">
+<meta property="og:url" content="http://blog.dk-exp.com/2015/10/28/PreLoadHack/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="Android换肤技术 PreLoad Hack参考 Android换肤技术总结
+内部资源加载方案 大同小异,而且使用和实现缺陷非常多,实际使用价值不大.
+
+对于复杂的皮肤,需要太多的设置.
+
+对于简单的皮肤(类似白天/黑夜/关灯模式),有更简单的实现方式
+
+
+主要来看动态加载方案
+##resource替换开源项目可参照Android-Skin-Loader
+可以参考顶上的Blog链接
+实现机制其">
+<meta property="og:updated_time" content="2016-03-15T12:47:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PreLoadHack">
+<meta name="twitter:description" content="Android换肤技术 PreLoad Hack参考 Android换肤技术总结
+内部资源加载方案 大同小异,而且使用和实现缺陷非常多,实际使用价值不大.
+
+对于复杂的皮肤,需要太多的设置.
+
+对于简单的皮肤(类似白天/黑夜/关灯模式),有更简单的实现方式
+
+
+主要来看动态加载方案
+##resource替换开源项目可参照Android-Skin-Loader
+可以参考顶上的Blog链接
+实现机制其">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-PreLoadHack" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/28/PreLoadHack/" class="article-date">
+  	<time datetime="2015-10-27T23:06:13.000Z" itemprop="datePublished">2015-10-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      PreLoadHack
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Android换肤技术-PreLoad-Hack"><a href="#Android换肤技术-PreLoad-Hack" class="headerlink" title="Android换肤技术 PreLoad Hack"></a>Android换肤技术 PreLoad Hack</h1><p>参考 <a href="http://blog.zhaiyifan.cn/2015/09/10/Android%E6%8D%A2%E8%82%A4%E6%8A%80%E6%9C%AF%E6%80%BB%E7%BB%93/" target="_blank" rel="external">Android换肤技术总结</a></p>
+<p>内部资源加载方案 大同小异,而且使用和实现缺陷非常多,实际使用价值不大.</p>
+<ul>
+<li><p>对于复杂的皮肤,需要太多的设置.</p>
+</li>
+<li><p>对于简单的皮肤(类似白天/黑夜/关灯模式),有更简单的实现方式</p>
+</li>
+</ul>
+<p>主要来看动态加载方案</p>
+<p>##resource替换<br>开源项目可参照Android-Skin-Loader</p>
+<p>可以参考顶上的Blog链接</p>
+<p>实现机制其实其实和遍历RootView的方案区别不大,这个是标记Skin enable后,遍历标记的view</p>
+<p>遍历所有SkinItem,遍历SkinAttr,然后调用skinAtrr.apply(view)方法设置属性</p>
+<p>这项目优点有2个:</p>
+<ul>
+<li><p>相比于遍历RootView的粗暴实现,这个实现划分层次更清晰</p>
+</li>
+<li><p>将资源打包成apk,然后通过AssetManager加载</p>
+</li>
+</ul>
+<pre><code>PackageManager mPm = context.getPackageManager();
+PackageInfo mInfo = mPm.getPackageArchiveInfo(skinPkgPath, PackageManager.GET_ACTIVITIES);
+skinPackageName = mInfo.packageName;
+
+AssetManager assetManager = AssetManager.class.newInstance();
+Method addAssetPath = assetManager.getClass().getMethod(&quot;addAssetPath&quot;, String.class);
+addAssetPath.invoke(assetManager, skinPkgPath);
+
+Resources superRes = context.getResources();
+Resources skinResource = new Resources(assetManager,superRes.getDisplayMetrics(),superRes.getConfiguration());
+</code></pre><p>实现机制ZYF写了2句,但是我感觉不是很对.</p>
+<hr>
+<p>自己整理一下详细实现机制如下:</p>
+<p>Android-Skin-Loader并没有覆盖application的getResource方法.</p>
+<ul>
+<li><p>使用时必须BaseActivity </p>
+</li>
+<li><p>onCreate的时候调用 <code>getLayoutInflater().setFactory(mSkinInflaterFactory);</code></p>
+</li>
+</ul>
+<pre><code>protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    mSkinInflaterFactory = new SkinInflaterFactory();
+    getLayoutInflater().setFactory(mSkinInflaterFactory);
+}
+</code></pre><ul>
+<li><p>于是View被Inflater创建的时候会经过mSkinInflaterFactory的onCreateView方法</p>
+</li>
+<li><p>在mSkinInflaterFactory的onCreateView方法中,获取所有相关的属性,保存到SkinItem数组中</p>
+</li>
+<li><p>换肤的时候会调用BaseActivity的onThemeUpdate方法</p>
+</li>
+<li><p>onThemeUpdate方法中遍历所有SkinItem并调用apply方法修改参数</p>
+</li>
+</ul>
+<pre><code>public void apply(View view) {        
+    if(RES_TYPE_NAME_COLOR.equals(attrValueTypeName)){
+        view.setBackgroundColor(SkinManager.getInstance().getColor(attrValueRefId));
+    }else if(RES_TYPE_NAME_DRAWABLE.equals(attrValueTypeName)){
+        Drawable bg = SkinManager.getInstance().getDrawable(attrValueRefId);
+        view.setBackground(bg);
+    }
+}
+</code></pre><ul>
+<li>此时调用的getColor和getDrawable会通过AssetManager加载指定apk中的资源</li>
+</ul>
+<p>整个流程中没有哪里经过Application,只是通过AssetManager加载了另一个apk中的Resource.</p>
+<p>比遍历RootView好一点的就是它是通过LayoutInflater的Factory去检查每个View是否需要SkinUpdate功能,然后将需要的View保存下来,ThemeUpdate的时候只刷新这些View.<br>性能上应当比遍历RootView高效一些吧.</p>
+<h2 id="Hack-Resources-internally"><a href="#Hack-Resources-internally" class="headerlink" title="Hack Resources internally"></a>Hack Resources internally</h2><blockquote>
+<p>引用自ZYF的Blog</p>
+<p>黑科技方法，直接对Resources进行hack，Resources.java:</p>
+</blockquote>
+<pre><code>// Information about preloaded resources.  Note that they are not
+// protected by a lock, because while preloading in zygote we are all
+// single-threaded, and after that these are immutable.
+private static final LongSparseArray&lt;Drawable.ConstantState&gt;[] sPreloadedDrawables;
+private static final LongSparseArray&lt;Drawable.ConstantState&gt; sPreloadedColorDrawables
+        = new LongSparseArray&lt;Drawable.ConstantState&gt;();
+private static final LongSparseArray&lt;ColorStateList&gt; sPreloadedColorStateLists
+        = new LongSparseArray&lt;ColorStateList&gt;();
+</code></pre><blockquote>
+<p>直接对Resources里面的这三个LongSparseArray进行替换，由于apk运行时的资源都是从这三个数组里面加载的，所以只要采用interceptor模式：<br>自己实现一个LongSparseArray，并通过反射set回去，就能实现换肤，具体getDrawable等方法里是怎么取preload数组的，可以自己看Resources的源码。<br>等等，就这么简单？，NONO，少年你太天真了，怎么去加载xml，9patch的padding怎么更新，怎么打包/加载自定义的皮肤包，drawable的状态怎么刷新，等等。这些都是你需要考虑的，在存在插件的app中，还需要考虑是否会互相覆盖resource id的问题，进而需要修改apt，把resource id按位放在2个range。<br>手Q和独立版QQ空间使用的是这种方案，效果挺好。</p>
+</blockquote>
+<hr>
+<p>这方案也没个具体说明,就一句 <code>自己实现一个LongSparseArray</code> ,真的是蛋碎.<br>不过有个提示也是好的.</p>
+<p>首先反射一下该字段看看读出来什么东西</p>
+<pre><code>Resources resource = getApplicationContext().getResources();
+
+try {
+Field field =Resources.class.getDeclaredField(&quot;sPreloadedDrawables&quot;);
+field.setAccessible(true);
+
+LongSparseArray&lt;Drawable.ConstantState&gt;[]    sPreloadedDrawables = (LongSparseArray&lt;Drawable.ConstantState&gt;[] )field.get(resource);
+
+for (LongSparseArray&lt;Drawable.ConstantState&gt; s:sPreloadedDrawables)
+    for (int i = 0; i &lt; s.size(); i++) {
+        System.out.println(s.valueAt(i));
+    }
+} catch (IllegalAccessException e) {
+    e.printStackTrace();
+} catch (NoSuchFieldException e) {
+    e.printStackTrace();
+}
+</code></pre><hr>
+<pre><code>...
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.LayerDrawable$LayerState@8197fd4
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.LayerDrawable$LayerState@9c6357d
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.LayerDrawable$LayerState@95f0c72
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.StateListDrawable$StateListState@d78c540
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.StateListDrawable$StateListState@805ac79
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.BitmapDrawable$BitmapState@38d7dbe
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.StateListDrawable$StateListState@e829e1f
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.StateListDrawable$StateListState@4c4f56c
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.VectorDrawable$VectorDrawableState@82b9735
+10-28 20:15:54.105 24502-24502/com.dk_exp.preloadhack I/System.out: android.graphics.drawable.VectorDrawable$VectorDrawableState@a9fb7ca
+...
+</code></pre><p>可以看到sPreloadedDrawables里持有大量的State对象,比如<code>BitmapDrawable$BitmapState</code></p>
+<p>作为BitmapDrawable的内部类,还是比较简单的,贴一下完整代码</p>
+<pre><code>final static class BitmapState extends ConstantState {
+    final Paint mPaint;
+
+    // Values loaded during inflation.
+    int[] mThemeAttrs = null;
+    Bitmap mBitmap = null;
+    ColorStateList mTint = null;
+    Mode mTintMode = DEFAULT_TINT_MODE;
+    int mGravity = Gravity.FILL;
+    float mBaseAlpha = 1.0f;
+    Shader.TileMode mTileModeX = null;
+    Shader.TileMode mTileModeY = null;
+    int mTargetDensity = DisplayMetrics.DENSITY_DEFAULT;
+    boolean mAutoMirrored = false;
+
+    int mChangingConfigurations;
+    boolean mRebuildShader;
+
+    BitmapState(Bitmap bitmap) {
+        mBitmap = bitmap;
+        mPaint = new Paint(DEFAULT_PAINT_FLAGS);
+    }
+
+    BitmapState(BitmapState bitmapState) {
+        mBitmap = bitmapState.mBitmap;
+        mTint = bitmapState.mTint;
+        mTintMode = bitmapState.mTintMode;
+        mThemeAttrs = bitmapState.mThemeAttrs;
+        mChangingConfigurations = bitmapState.mChangingConfigurations;
+        mGravity = bitmapState.mGravity;
+        mTileModeX = bitmapState.mTileModeX;
+        mTileModeY = bitmapState.mTileModeY;
+        mTargetDensity = bitmapState.mTargetDensity;
+        mBaseAlpha = bitmapState.mBaseAlpha;
+        mPaint = new Paint(bitmapState.mPaint);
+        mRebuildShader = bitmapState.mRebuildShader;
+        mAutoMirrored = bitmapState.mAutoMirrored;
+    }
+
+    @Override
+    public boolean canApplyTheme() {
+        return mThemeAttrs != null || mTint != null &amp;&amp; mTint.canApplyTheme();
+    }
+
+    @Override
+    public int addAtlasableBitmaps(Collection&lt;Bitmap&gt; atlasList) {
+        if (isAtlasable(mBitmap) &amp;&amp; atlasList.add(mBitmap)) {
+            return mBitmap.getWidth() * mBitmap.getHeight();
+        }
+        return 0;
+    }
+
+    @Override
+    public Drawable newDrawable() {
+        return new BitmapDrawable(this, null);
+    }
+
+    @Override
+    public Drawable newDrawable(Resources res) {
+        return new BitmapDrawable(this, res);
+    }
+
+    @Override
+    public int getChangingConfigurations() {
+        return mChangingConfigurations
+                | (mTint != null ? mTint.getChangingConfigurations() : 0);
+    }
+}
+</code></pre><p>由于已经反射获得了<code>sPreloadedDrawables</code> ,那么想办法修改sPreloadedDrawables里的对象应当就可以修改 图片 资源了.</p>
+<p>然而出现了多个问题</p>
+<ul>
+<li><p>由于<code>BitmapState</code>在类外无法访问,抽象类Drawable.ConstantState又没有提供修改的接口.</p>
+</li>
+<li><p>稀疏数组的key并不是ResourceId  </p>
+</li>
+</ul>
+<pre><code>key = (((long) value.assetCookie) &lt;&lt; 32) | value.data;
+</code></pre><p>追踪一下调用栈,这个value对象来自一个native方法,暂时不方便获得assetCookie和data的计算方法</p>
+<pre><code>private native final int loadResourceValue(int ident, short density, TypedValue outValue,
+        boolean resolve);
+</code></pre><p>不过Resource本身提供getVaklue方法来给TypeValue填充数据</p>
+<pre><code>public void getValue(@AnyRes int id, TypedValue outValue, boolean resolveRefs)
+</code></pre><p>那么我可以尝试直接通过TypeValue来读出preload中的数据</p>
+<pre><code>TypedValue value = new TypedValue();
+resource.getValue(R.drawable.charming,value,true );
+
+long  key = -1;
+if (value.type &gt;= TypedValue.TYPE_FIRST_COLOR_INT
+        &amp;&amp; value.type &lt;= TypedValue.TYPE_LAST_COLOR_INT) {
+    key = value.data;
+} else {
+    key = (((long) value.assetCookie) &lt;&lt; 32) | value.data;
+}
+Drawable.ConstantState cs =sPreloadedDrawable.get(key);
+</code></pre><p>然而这里遇到了一个问题,获取TypeValue和计算key都很正常</p>
+<p>但是通过key获取ConstantState返回了null.</p>
+<p>断点调试检查了LongSparseArray中的key数据,确实没有对应的值</p>
+<p>调试的时候注意到这样一个问题</p>
+<p>key = 8589934596</p>
+<p>而LongSparseArray中的数据key为</p>
+<p>4294967922<br>4294967923<br>…</p>
+<p>程序员应当对这数字比较敏感</p>
+<p>8589934596 = 0x200000004</p>
+<p>4294967922 = 0x100000272</p>
+<p>从上方key的计算逻辑中推导,可以看出是assertCookie不同</p>
+<p>看起来我反射出的sPreloadedDrawables中并不一定包含我想要查找的资源</p>
+<hr>
+<p>翻看Resource.loadDrawable的源码,发现drawabel也可能是从mDrawableCache中获取的</p>
+<p>相关代码:</p>
+<pre><code>if (!mPreloading) {
+    final Drawable cachedDrawable = caches.getInstance(key, theme);
+    if (cachedDrawable != null) {
+        return cachedDrawable;
+    }
+}
+</code></pre><p>这个DrawableCache类本身只有包访问权限,反射代码还要写一堆,好在Debug模式下可以直接在resource里看到这个对象</p>
+<p>Demo应用中drawable文件夹下只有2个资源,一张是我塞进去的测试图片,一张的ic_launch</p>
+<p>检查了一下其持有的keys后,果然找到了8589934596.</p>
+<p>于是下一步可以反射mDrawableCache并修改其中数据.</p>
+<p>注意一个问题.这个 <code>android.content.res.DrawableCache</code> 类,只有包访问权限</p>
+<p>不能使用Class.forName(“android.content.res.DrawableCache”)加载</p>
+<hr>
+<p>这里我犯了个错误,我调试时使用的genymotion模拟器是5.0.1的 </p>
+<p>在API21版本中 drawableCache的实现是不同的</p>
+<p>API21</p>
+<pre><code>private final ArrayMap&lt;String, LongSparseArray&lt;WeakReference&lt;ConstantState&gt;&gt;&gt; mDrawableCache =
+         new ArrayMap&lt;String, LongSparseArray&lt;WeakReference&lt;ConstantState&gt;&gt;&gt;();
+</code></pre><p>API23</p>
+<pre><code>private final DrawableCache mDrawableCache = new DrawableCache(this);
+</code></pre><p>因为这个原因,在反射对象上浪费了一些时间,以后应当注意这个问题.<br>研究源码相关的东西时,一定要使用相同版本的设备/模拟器,不然完全是浪费时间.</p>
+<hr>
+<p>换成6.0设备测试了一下,成功拿到了我想要的Drawable对象</p>
+<p>代码如下</p>
+<pre><code>Resources resource = getApplicationContext().getResources();
+ Object mdrawableCache = null;
+ Field field = null;
+ try {
+     field = Resources.class.getDeclaredField(&quot;mDrawableCache&quot;);
+ } catch (NoSuchFieldException e) {
+     e.printStackTrace();
+ }
+ field.setAccessible(true);
+ try {
+     mdrawableCache = field.get(resource);
+ } catch (IllegalAccessException e) {
+     e.printStackTrace();
+ }
+
+ TypedValue value = new TypedValue();
+ resource.getValue(R.drawable.charming,value,true );
+
+ long  key = -1;
+ if (value.type &gt;= TypedValue.TYPE_FIRST_COLOR_INT
+         &amp;&amp; value.type &lt;= TypedValue.TYPE_LAST_COLOR_INT) {
+     key = value.data;
+ } else {
+     key = (((long) value.assetCookie) &lt;&lt; 32) | value.data;
+ }
+
+ Method method = null;
+ try {
+     Class  c = mdrawableCache.getClass();
+     method = c.getDeclaredMethod(&quot;getInstance&quot;,long.class,Resources.Theme.class);
+ } catch (NoSuchMethodException e) {
+     e.printStackTrace();
+ }
+ Drawable drawable = null;
+ try {
+     drawable = (Drawable) method.invoke(mdrawableCache, key, null);
+ } catch (IllegalAccessException e) {
+     e.printStackTrace();
+ } catch (InvocationTargetException e) {
+     e.printStackTrace();
+ }
+</code></pre><hr>
+<p>下面考虑替换该Drawable并刷新View,参考ThemedResourceCache源码,猜测可以调用put方法把修改后的Drawable对象塞进去.</p>
+<p>由于ThemeResourceCache持有的实际上还是Drawable.ConstantState对象,Drawable对象由其newDrawable()方法获取,所以应当构建BitmapState对象</p>
+<p>这里依然非常蛋疼,BitmapState是BitmapDrawable的静态内部类,default,只有包访问权限.</p>
+<p>无论是构造对象,调用方法,修改参数,都需要通过反射,感觉真的是非常非常麻烦.</p>
+<hr>
+<p>从研究过程中看,行为依赖Resource本身DrawableCache和Preload的实现,而且5.0和6.0其实现逻辑又不同.</p>
+<p>通过反射hack cache来做资源替换看起来并不是一个稳妥的方案.</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/11/11/weak-handler/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          Weak Handler 与 内存泄露
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/25/Bubble-Notification-Update/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Bubble-Notification Update</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="PreLoadHack" data-title="PreLoadHack" data-url="http://blog.dk-exp.com/2015/10/28/PreLoadHack/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

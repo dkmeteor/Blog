@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Weak Handler 与 内存泄露 | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#Weak Handler 与 内存泄露
+Handler使用不当比较容易造成内存泄露.
+比如这个例子:http://www.jianshu.com/p/c49f778e7acf
+通常的原因就是 Handler的生命周期和Activity的生命周期不一致.
+
+一个通用的场景是 使用 匿名内部类 实例 作为某个 行为/动作的 回调,如果该行为/动作 是异步的,则其返回时间往往无法确定,有造成内存泄露风">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Weak Handler 与 内存泄露">
+<meta property="og:url" content="http://blog.dk-exp.com/2015/11/11/weak-handler/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="#Weak Handler 与 内存泄露
+Handler使用不当比较容易造成内存泄露.
+比如这个例子:http://www.jianshu.com/p/c49f778e7acf
+通常的原因就是 Handler的生命周期和Activity的生命周期不一致.
+
+一个通用的场景是 使用 匿名内部类 实例 作为某个 行为/动作的 回调,如果该行为/动作 是异步的,则其返回时间往往无法确定,有造成内存泄露风">
+<meta property="og:updated_time" content="2016-03-15T12:46:18.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Weak Handler 与 内存泄露">
+<meta name="twitter:description" content="#Weak Handler 与 内存泄露
+Handler使用不当比较容易造成内存泄露.
+比如这个例子:http://www.jianshu.com/p/c49f778e7acf
+通常的原因就是 Handler的生命周期和Activity的生命周期不一致.
+
+一个通用的场景是 使用 匿名内部类 实例 作为某个 行为/动作的 回调,如果该行为/动作 是异步的,则其返回时间往往无法确定,有造成内存泄露风">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-weak-handler" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/11/11/weak-handler/" class="article-date">
+  	<time datetime="2015-11-11T04:08:47.000Z" itemprop="datePublished">2015-11-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Weak Handler 与 内存泄露
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Weak Handler 与 内存泄露</p>
+<p>Handler使用不当比较容易造成内存泄露.</p>
+<p>比如这个例子:<a href="http://www.jianshu.com/p/c49f778e7acf" target="_blank" rel="external">http://www.jianshu.com/p/c49f778e7acf</a></p>
+<p>通常的原因就是 Handler的生命周期和Activity的生命周期不一致.</p>
+<hr>
+<p>一个通用的场景是 使用 匿名内部类 实例 作为某个 行为/动作的 回调,如果该行为/动作 是异步的,则其返回时间往往无法确定,有造成内存泄露风险.</p>
+<p>使用静态内部类,或者妥善处理生命周期,都不会造成内存泄露,反过来,当没有内存泄露风险时,一般直接匿名内部类即可.</p>
+<p>这其实是一个特别矛盾的说法.</p>
+<p>因为这要求程序员能 能了解到 回调行为是在何时发生的. </p>
+<p>而相反,我们设计接口回调的时候总是尽力屏蔽内部实现细节.</p>
+<p>而面对不确定的行为,当然也可以使用静态内部类,或者removeCallback去取消回调(特指Handler),然而这样代码变得繁琐,或者添加不必要的代码.</p>
+<p>对于Handler,一个简单的第三方解决方案是使用 android-weak-handler ,该库尝试使用WeakReference解决这个问题,然而却引入新的问题.</p>
+<p><a href="https://github.com/badoo/android-weak-handler" target="_blank" rel="external">https://github.com/badoo/android-weak-handler</a></p>
+<p>核心代码如下:</p>
+<pre><code>public class WeakHandler {
+    private final Handler.Callback mCallback; // hard reference to Callback. We need to keep callback in memory
+    private final ExecHandler mExec;
+    private Lock mLock = new ReentrantLock();
+    @SuppressWarnings(&quot;ConstantConditions&quot;)
+    @VisibleForTesting
+    final ChainedRef mRunnables = new ChainedRef(mLock, null);
+
+    public WeakHandler() {
+        mCallback = null;
+        mExec = new ExecHandler();
+    }
+
+    public WeakHandler(@Nullable Handler.Callback callback) {
+        mCallback = callback; // Hard referencing body
+        mExec = new ExecHandler(new WeakReference&lt;&gt;(callback)); // Weak referencing inside ExecHandler
+    }
+
+    public WeakHandler(@NonNull Looper looper) {
+        mCallback = null;
+        mExec = new ExecHandler(looper);
+    }
+
+    public WeakHandler(@NonNull Looper looper, @NonNull Handler.Callback callback) {
+        mCallback = callback;
+        mExec = new ExecHandler(looper, new WeakReference&lt;&gt;(callback));
+    }
+
+    public final boolean post(@NonNull Runnable r) {
+        return mExec.post(wrapRunnable(r));
+    }
+
+    public final boolean postAtTime(@NonNull Runnable r, long uptimeMillis) {
+        return mExec.postAtTime(wrapRunnable(r), uptimeMillis);
+    }
+
+    public final boolean postAtTime(Runnable r, Object token, long uptimeMillis) {
+        return mExec.postAtTime(wrapRunnable(r), token, uptimeMillis);
+    }
+
+    public final boolean postDelayed(Runnable r, long delayMillis) {
+        return mExec.postDelayed(wrapRunnable(r), delayMillis);
+    }
+
+    public final boolean postAtFrontOfQueue(Runnable r) {
+        return mExec.postAtFrontOfQueue(wrapRunnable(r));
+    }
+
+    public final void removeCallbacks(Runnable r) {
+        final WeakRunnable runnable = mRunnables.remove(r);
+        if (runnable != null) {
+            mExec.removeCallbacks(runnable);
+        }
+    }
+
+    public final void removeCallbacks(Runnable r, Object token) {
+        final WeakRunnable runnable = mRunnables.remove(r);
+        if (runnable != null) {
+            mExec.removeCallbacks(runnable, token);
+        }
+    }
+
+    public final boolean sendMessage(Message msg) {
+        return mExec.sendMessage(msg);
+    }
+
+    public final boolean sendEmptyMessage(int what) {
+        return mExec.sendEmptyMessage(what);
+    }
+
+    public final boolean sendEmptyMessageDelayed(int what, long delayMillis) {
+        return mExec.sendEmptyMessageDelayed(what, delayMillis);
+    }
+
+    public final boolean sendEmptyMessageAtTime(int what, long uptimeMillis) {
+        return mExec.sendEmptyMessageAtTime(what, uptimeMillis);
+    }
+
+    public final boolean sendMessageDelayed(Message msg, long delayMillis) {
+        return mExec.sendMessageDelayed(msg, delayMillis);
+    }
+
+    public boolean sendMessageAtTime(Message msg, long uptimeMillis) {
+        return mExec.sendMessageAtTime(msg, uptimeMillis);
+    }
+
+    public final boolean sendMessageAtFrontOfQueue(Message msg) {
+        return mExec.sendMessageAtFrontOfQueue(msg);
+    }
+
+    public final void removeMessages(int what) {
+        mExec.removeMessages(what);
+    }
+
+    public final void removeMessages(int what, Object object) {
+        mExec.removeMessages(what, object);
+    }
+
+    public final void removeCallbacksAndMessages(Object token) {
+        mExec.removeCallbacksAndMessages(token);
+    }
+
+    public final boolean hasMessages(int what) {
+        return mExec.hasMessages(what);
+    }
+
+    public final boolean hasMessages(int what, Object object) {
+        return mExec.hasMessages(what, object);
+    }
+
+    public final Looper getLooper() {
+        return mExec.getLooper();
+    }
+
+    private WeakRunnable wrapRunnable(@NonNull Runnable r) {
+        //noinspection ConstantConditions
+        if (r == null) {
+            throw new NullPointerException(&quot;Runnable can&apos;t be null&quot;);
+        }
+        final ChainedRef hardRef = new ChainedRef(mLock, r);
+        mRunnables.insertAfter(hardRef);
+        return hardRef.wrapper;
+    }
+
+    private static class ExecHandler extends Handler {
+        private final WeakReference&lt;Handler.Callback&gt; mCallback;
+
+        ExecHandler() {
+            mCallback = null;
+        }
+
+        ExecHandler(WeakReference&lt;Handler.Callback&gt; callback) {
+            mCallback = callback;
+        }
+
+        ExecHandler(Looper looper) {
+            super(looper);
+            mCallback = null;
+        }
+
+        ExecHandler(Looper looper, WeakReference&lt;Handler.Callback&gt; callback) {
+            super(looper);
+            mCallback = callback;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (mCallback == null) {
+                return;
+            }
+            final Handler.Callback callback = mCallback.get();
+            if (callback == null) { // Already disposed
+                return;
+            }
+            callback.handleMessage(msg);
+        }
+    }
+
+    static class WeakRunnable implements Runnable {
+        private final WeakReference&lt;Runnable&gt; mDelegate;
+        private final WeakReference&lt;ChainedRef&gt; mReference;
+
+        WeakRunnable(WeakReference&lt;Runnable&gt; delegate, WeakReference&lt;ChainedRef&gt; reference) {
+            mDelegate = delegate;
+            mReference = reference;
+        }
+
+        @Override
+        public void run() {
+            final Runnable delegate = mDelegate.get();
+            final ChainedRef reference = mReference.get();
+            if (reference != null) {
+                reference.remove();
+            }
+            if (delegate != null) {
+                delegate.run();
+            }
+        }
+    }
+
+    static class ChainedRef {
+        @Nullable
+        ChainedRef next;
+        @Nullable
+        ChainedRef prev;
+        @NonNull
+        final Runnable runnable;
+        @NonNull
+        final WeakRunnable wrapper;
+
+        @NonNull
+        Lock lock;
+
+        public ChainedRef(@NonNull Lock lock, @NonNull Runnable r) {
+            this.runnable = r;
+            this.lock = lock;
+            this.wrapper = new WeakRunnable(new WeakReference&lt;&gt;(r), new WeakReference&lt;&gt;(this));
+        }
+
+        public WeakRunnable remove() {
+            lock.lock();
+            try {
+                if (prev != null) {
+                    prev.next = next;
+                }
+                if (next != null) {
+                    next.prev = prev;
+                }
+                prev = null;
+                next = null;
+            } finally {
+                lock.unlock();
+            }
+            return wrapper;
+        }
+
+        public void insertAfter(@NonNull ChainedRef candidate) {
+            lock.lock();
+            try {
+                if (this.next != null) {
+                    this.next.prev = candidate;
+                }
+
+                candidate.next = this.next;
+                this.next = candidate;
+                candidate.prev = this;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        @Nullable
+        public WeakRunnable remove(Runnable obj) {
+            lock.lock();
+            try {
+                ChainedRef curr = this.next; // Skipping head
+                while (curr != null) {
+                    if (curr.runnable == obj) { // We do comparison exactly how Handler does inside
+                        return curr.remove();
+                    }
+                    curr = curr.next;
+                }
+            } finally {
+                lock.unlock();
+            }
+            return null;
+        }
+    }
+}
+</code></pre><p>这个类的实现有个问题,为了避免持有Runnable的引用,使用WeakRunnable作为Wrapper,为了能够在Activity销毁时释放Runnable,这里使用的WeakReference去持有Runnable引用.<br>从目的上看,它确实解决了由于Runnable隐式持有Activity强引用而导致Acticity实例无法销毁的问题</p>
+<p>##但是</p>
+<p>作为匿名内部类被传入的Runnable对象如果只存在一个WeakReference,那意味着,任何一次GC操作都将导致其被回收.<br>看看这个例子</p>
+<pre><code>import com.badoo.mobile.util.WeakHandler;
+
+public class ExampleActivity extends Activity {
+
+    private WeakHandler mHandler; // We still need at least one hard reference to WeakHandler
+
+    protected void onCreate(Bundle savedInstanceState) {
+        mHandler = new WeakHandler();
+        ...
+    }
+
+    private void onClick(View view) {
+        mHandler.postDelayed(new Runnable() {
+            view.setVisibility(View.INVISIBLE);
+        }, 5000);
+    }
+}
+</code></pre><p>如果在这5s内系统触发了一次GC操作会怎么样? Runnable会被回收?</p>
+<p>将Demo简单修改一下</p>
+<pre><code>protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    WeakHandler  mHandler = new WeakHandler();
+    mHandler.postDelayed(new Runnable() {
+
+
+        @Override
+        public void run() {
+            System.out.println(&quot;####################### Do Something&quot;);
+            );
+        }
+    }, 10000);
+
+    mHandler.postDelayed(new Runnable() {
+
+
+        @Override
+        public void run() {
+            System.out.println(&quot;#######################GC&quot;);
+
+            System.gc();
+        }
+    }, 5000);
+
+}
+</code></pre><p>看看运行结果,GC操作发生了,而Do Something并没有执行,因为 GC动作发生时, WeakReference持有的Runnable已经被释放了.</p>
+<p>通常来讲,GC操作发生的时间不可预料的,你无法预期等待回调的这几秒种内用户做了什么操作,而一旦触发了GC,则回调会被立刻取消</p>
+<p>注意,Activity并未被关闭,Runnable回调也会被释放!</p>
+<p>如果在大型项目中遇到这样的问题,排查一定是灾难性的.因为GC的不确定性,出现了回调丢失情况一定是随机的,难以预测的,难以重现的.</p>
+<p>而处理这个问题的办法是,将mHandler从临时变量 换成 成Activity的一个实例变量.</p>
+<p>然而通常程序员不一定意识这2种写法的区别,而且使用系统提供的Handler时,这2种写法是没有区别的.</p>
+<p>最后我检查了下文档,作者还是写了一句话作为提示</p>
+<blockquote>
+<p>We still need at least one hard reference to WeakHandler</p>
+</blockquote>
+<p>至于使用者是否能意识到问题所在我持怀疑态度.</p>
+<p>第三方库就是容易出现这种问题,使用起来能很方便的解决很多问题,然而又很容易挖几个隐蔽的坑给你.</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/21/MVC-MVP-MVVM/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption"><</strong>
+      <div class="article-nav-title">
+        
+          MVC &amp; MVP &amp; MVVM
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/10/28/PreLoadHack/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">PreLoadHack</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="weak-handler" data-title="Weak Handler 与 内存泄露" data-url="http://blog.dk-exp.com/2015/11/11/weak-handler/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
