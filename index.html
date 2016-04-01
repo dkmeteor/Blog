@@ -164,6 +164,255 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-CoordinatorLayout" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/03/30/CoordinatorLayout/" class="article-date">
+  	<time datetime="2016-03-30T01:56:02.000Z" itemprop="datePublished">2016-03-30</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/30/CoordinatorLayout/">CoordinatorLayout中的坑</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>踩完了坑记录一下，CoordinatorLayout使用介绍请看chrisbanes的<a href="https://github.com/chrisbanes/cheesesquare" target="_blank" rel="external">cheesesquare</a></p>
+<p>如果你只打算学习一下CoordinatorLayout然后写2个Demo试试，那么本文并没有什么卵用，但是如果你打算在生产环境使用CoordinatorLayout，那么强烈推荐阅读一下本文，可以减少很多弯路，这个东西看起来很好，但是实际上坑也很多。</p>
+<p>###前言<br>很多应用主页常见的构造模式</p>
+<p>一个包含ActionBar和Banner的header+ViewPager的组合模式<br>比如这样：</p>
+<p>补图</p>
+<p>然后需要滚动的时候能够将 ActionBar和Banner滚出界面，但是又需要ViewPager的TabLayout能固定在屏幕顶部</p>
+<p>Github上有很多sticky-viewpager xx-header-viewpager之类的项目提供类似的功能，但是大部分都会存在各种事件冲突问题，比如滑动不流畅，卡顿，弹跳之类的。</p>
+<p>好在Android新的SupportLibrary提供了CoordinatorLayout能直接实现类似功能，具体如何使用参考 SupportLibrary中CoordinatorLayout的使用文档即可，例子也可以直接看<a href="https://github.com/chrisbanes/cheesesquare" target="_blank" rel="external">cheesesquare</a></p>
+<p>我就谈下使用过程中里面的坑：</p>
+<h4 id="不支持ListView-不支持ScrollView，低版本不兼容ViewCompat-setNestedScrollingEnabled"><a href="#不支持ListView-不支持ScrollView，低版本不兼容ViewCompat-setNestedScrollingEnabled" class="headerlink" title="不支持ListView,不支持ScrollView，低版本不兼容ViewCompat.setNestedScrollingEnabled"></a>不支持ListView,不支持ScrollView，低版本不兼容ViewCompat.setNestedScrollingEnabled</h4><p>PS.更新</p>
+<p>support 23.1+新增了</p>
+<pre><code>ViewCompat.setNestedScrollingEnabled(listView/gridview,true); 
+</code></pre><p>可以给ListView提供NestedScrolling支持,但是只在LOLIPOP+版本上生效，下面的方案也一样。</p>
+<p>低版本只能使用RecyclerView</p>
+<hr>
+<p>一些文档/博客文章上说 可以使用一个 可滚动的组件<br>还有些错误的文章说 支持ListView</p>
+<p>实际上该组件必须实现了 NestedScrollingChild接口</p>
+<p>你可以使用RecyclerView,RecyclerView自身就实现了该接口，如果你要使用其他组件，那么可能需要继承原来的View并实现NestedScrollingChild接口</p>
+<p>一个实现了NestedScrollingChild的Listview demo如下：</p>
+<pre><code>public class NestedScrollingListView extends ListView implements NestedScrollingChild {
+
+    private final NestedScrollingChildHelper mScrollingChildHelper;
+
+    public NestedScrollingListView(Context context) {
+        super(context);
+        mScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
+    }
+
+    public NestedScrollingListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
+    }
+
+    @Override
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mScrollingChildHelper.setNestedScrollingEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return mScrollingChildHelper.isNestedScrollingEnabled();
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return mScrollingChildHelper.startNestedScroll(axes);
+    }
+
+    @Override
+    public void stopNestedScroll() {
+        mScrollingChildHelper.stopNestedScroll();
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent() {
+        return mScrollingChildHelper.hasNestedScrollingParent();
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
+                                        int dyUnconsumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
+                dxUnconsumed, dyUnconsumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+        return mScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+        return mScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
+    }
+}
+</code></pre><p>其他View也可以使用类似的方式实现。</p>
+<p>只对 5.0+ 生效，低版本无效。</p>
+<h4 id="RecyclerView滑动的时候不流畅"><a href="#RecyclerView滑动的时候不流畅" class="headerlink" title="RecyclerView滑动的时候不流畅"></a>RecyclerView滑动的时候不流畅</h4><p>目前已知 r23.1 &amp; r 23.2  都存在此问题，Google code的提交代码里倒是有相关修复记录，但是目前还没有发布。</p>
+<p>直接原因是Fling Direction错误，导致Fling事件被吃掉了，ACTION_UP/ACTION_CANCEL事件一旦发生，scroll动作直接停止</p>
+<p>一个解决方案是重写一个FlingBehavior</p>
+<pre><code>public final class FlingBehavior extends AppBarLayout.Behavior {
+    private static final int TOP_CHILD_FLING_THRESHOLD = 3;
+    private boolean isPositive;
+
+    public FlingBehavior() {
+    }
+
+    public FlingBehavior(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    public boolean onNestedFling(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, float velocityX, float velocityY, boolean consumed) {
+        if (velocityY &gt; 0 &amp;&amp; !isPositive || velocityY &lt; 0 &amp;&amp; isPositive) {
+            velocityY = velocityY * -1;
+        }
+        if (target instanceof RecyclerView &amp;&amp; velocityY &lt; 0) {
+            final RecyclerView recyclerView = (RecyclerView) target;
+            final View firstChild = recyclerView.getChildAt(0);
+            final int childAdapterPosition = recyclerView.getChildAdapterPosition(firstChild);
+            consumed = childAdapterPosition &gt; TOP_CHILD_FLING_THRESHOLD;
+        }
+        return super.onNestedFling(coordinatorLayout, child, target, velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, int dx, int dy, int[] consumed) {
+        super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
+        isPositive = dy &gt; 0;
+    }
+}
+</code></pre><h4 id="不支持adjustResize"><a href="#不支持adjustResize" class="headerlink" title="不支持adjustResize"></a>不支持adjustResize</h4><p>可以参考这个问题<br><a href="http://stackoverflow.com/questions/35599125/adjustresize-does-not-work-with-coordinatorlayout" target="_blank" rel="external">http://stackoverflow.com/questions/35599125/adjustresize-does-not-work-with-coordinatorlayout</a></p>
+<p>解决方案是可以通过ViewTreeObserver.OnGlobalLayoutListener监听界面改变，然后人工处理padding bottom</p>
+<pre><code>public class KeyboardUtil {
+    private View decorView;
+    private View contentView;
+
+    public KeyboardUtil(Activity act, View contentView) {
+        this.decorView = act.getWindow().getDecorView();
+        this.contentView = contentView;
+
+        //only required on newer android versions. it was working on API level 19
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+    public void enable() {
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+    public void disable() {
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+
+    //a small helper to allow showing the editText focus
+    ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            Rect r = new Rect();
+            //r will be populated with the coordinates of your view that area still visible.
+            decorView.getWindowVisibleDisplayFrame(r);
+
+            //get screen height and calculate the difference with the useable area from the r
+            int height = decorView.getContext().getResources().getDisplayMetrics().heightPixels;
+            int diff = height - r.bottom;
+
+            //if it could be a keyboard add the padding to the view
+            if (diff != 0) {
+                // if the use-able screen height differs from the total screen height we assume that it shows a keyboard now
+                //check if the padding is 0 (if yes set the padding for the keyboard)
+                if (contentView.getPaddingBottom() != diff) {
+                    //set the padding of the contentView for the keyboard
+                    contentView.setPadding(0, 0, 0, diff);
+                }
+            } else {
+                //check if the padding is != 0 (if yes reset the padding)
+                if (contentView.getPaddingBottom() != 0) {
+                    //reset the padding of the contentView
+                    contentView.setPadding(0, 0, 0, 0);
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Helper to hide the keyboard
+     *
+     * @param act
+     */
+    public static void hideKeyboard(Activity act) {
+        if (act != null &amp;&amp; act.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) act.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(act.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+}
+</code></pre><hr>
+<pre><code>KeyboardUtil keyboardUtil = new KeyboardUtil(this, findViewById(android.R.id.content));
+
+//enable it
+keyboardUtil.enable();
+</code></pre><hr>
+<p>ps.<br>fitSystemWindow 和 adjustResize 和 FLAG_TRANSLUCENT_STATUS 一起使用 一样也会有冲突，造成界面缩放不正常。  当时也是用的这个解决方案。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-MVC-MVP-MVVM" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1671,147 +1920,6 @@ GLES20.glCompileShader(fragmentShaderHandle);
 <p>这我就不理解了,什么情况下Android Studio会读取SDK Mananger的代理配置,什么时候不会?</p>
 <p>出现问题的版本 Android Studio版本1.3.1 </p>
 <p>之前从来没有遇到过,因为我SDK Manager里一直是挂着镜像的地址.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-关于Looper的瞎扯蛋" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/08/26/关于Looper的瞎扯蛋/" class="article-date">
-  	<time datetime="2015-08-25T22:42:48.000Z" itemprop="datePublished">2015-08-26</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/08/26/关于Looper的瞎扯蛋/">关于Looper的瞎扯蛋</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#关于Looper的瞎扯蛋</p>
-<p>知乎有这么一个问题</p>
-<p><a href="http://www.zhihu.com/question/34652589" target="_blank" rel="external">Android中为什么主线程不会因为Looper.loop()里的死循环卡死？</a></p>
-<hr>
-<p>这问题本身其实很简单,对Android有一定了解的都会学习Handler Looper MessageQueue相关的知识,面试的时候我也喜欢问别人这个问题.</p>
-<pre><code>for (;;) {
-    Message msg = queue.next(); // might block
-    if (msg == null) {
-        // No message indicates that the message queue is quitting.
-        return;
-    }
-
-    // This must be in a local variable, in case a UI event sets the logger
-    Printer logging = me.mLogging;
-    if (logging != null) {
-        logging.println(&quot;&gt;&gt;&gt;&gt;&gt; Dispatching to &quot; + msg.target + &quot; &quot; +
-                msg.callback + &quot;: &quot; + msg.what);
-    }
-
-    msg.target.dispatchMessage(msg);
-
-    if (logging != null) {
-        logging.println(&quot;&lt;&lt;&lt;&lt;&lt; Finished to &quot; + msg.target + &quot; &quot; + msg.callback);
-    }
-
-    // Make sure that during the course of dispatching the
-    // identity of the thread wasn&apos;t corrupted.
-    final long newIdent = Binder.clearCallingIdentity();
-    if (ident != newIdent) {
-        Log.wtf(TAG, &quot;Thread identity changed from 0x&quot;
-                + Long.toHexString(ident) + &quot; to 0x&quot;
-                + Long.toHexString(newIdent) + &quot; while dispatching to &quot;
-                + msg.target.getClass().getName() + &quot; &quot;
-                + msg.callback + &quot; what=&quot; + msg.what);
-    }
-
-    msg.recycleUnchecked();
-}
-</code></pre><p>要我简单点回答的话,我觉得答案就是 阻塞队列 <code>BlockingQueue</code></p>
-<p>这里比较有意思的这个问题里的有个些答案让我很意外</p>
-<pre><code>著作权归作者所有。
-商业转载请联系作者获得授权，非商业转载请注明出处。
-作者：TracyB
-链接：http://www.zhihu.com/question/34652589/answer/59722754
-来源：知乎
-
-
-epoll+pipe，有消息就依次执行，没消息就block住，让出CPU，等有消息了，epoll会往pipe中写一个字符，把主线程从block状态唤起，主线程就继续依次执行消息，怎么会死循环呢…
-</code></pre><p>这个逻辑我猜大概是这样</p>
-<p>为什么不会死循环 –&gt; 这里使用了阻塞队列 –&gt; 阻塞队列底层调度如何实现 –&gt; epoll</p>
-<p>我猜这人大概是做Framework层 或 ROM开发的, 一般Android程序员恐怕不会从这个角度去想问题.</p>
-<hr>
-<p>ps.顺便一提</p>
-<p>Looper中通过 <code>ThreadLocal</code> 来为每个线程分配隔离的 Looper对象</p>
-<pre><code>static final ThreadLocal&lt;Looper&gt; sThreadLocal = new ThreadLocal&lt;Looper&gt;();
-</code></pre><p>关于ThreadLocal,以前都是当做Java特性的来理解这个东西的,无聊看了下源代码</p>
-<p>实现机制其实非常简洁,我觉得我以前看过的书上 对 ThreadLocal的介绍&amp;分析真是浪费时间, 核心代码也没几行, 看源码5分钟就能理解的东西,书上啰啰嗦嗦的讲上N页</p>
-<pre><code>public T get() {
-    // Optimized for the fast path.
-    Thread currentThread = Thread.currentThread();
-    Values values = values(currentThread);
-    if (values != null) {
-        Object[] table = values.table;
-        int index = hash &amp; values.mask;
-        if (this.reference == table[index]) {
-            return (T) table[index + 1];
-        }
-    } else {
-        values = initializeValues(currentThread);
-    }
-
-    return (T) values.getAfterMiss(this);
-}
-
-public void set(T value) {
-    Thread currentThread = Thread.currentThread();
-    Values values = values(currentThread);
-    if (values == null) {
-        values = initializeValues(currentThread);
-    }
-    values.put(this, value);
-}
-
-Values values(Thread current) {
-    return current.localValues;
-}
-</code></pre><p>几个关键方法源代码一看,每个Thread会持有一个localValues对象,set的时候,对象被直接塞给了localValues<br>localValues是一个类似HashMap的数据结构,ThreadLocal对象自身做key</p>
-<p>简单明了,看代码根本不会产生任何理解上的误差,以前像记概念一样看这个东西真是犯傻.</p>
-<hr>
-<p>ps2.顺便我就想到了volatile</p>
-<p>这个玩意也是一直是当做概念去记的. 比如JAVA核心技术上用了一大段晦涩的文字来描述这是个什么玩意,印象中还在其它书上看到更复杂的解释.</p>
-<p>实际上 一旦更深入的划分 <code>内存</code> 这个概念 , 这个东西就很好理解了,而且不会再记错用错.</p>
-<p>CPU寄存器中的cache是内存, JVM的 线程工作内存 也是内存.</p>
 
       
     </div>

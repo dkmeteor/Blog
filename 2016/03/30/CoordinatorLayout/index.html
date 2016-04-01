@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CoordinatorLayout中的坑 | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="踩完了坑记录一下，CoordinatorLayout使用介绍请看chrisbanes的cheesesquare
+如果你只打算学习一下CoordinatorLayout然后写2个Demo试试，那么本文并没有什么卵用，但是如果你打算在生产环境使用CoordinatorLayout，那么强烈推荐阅读一下本文，可以减少很多弯路，这个东西看起来很好，但是实际上坑也很多。
+###前言很多应用主页常见的构造模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CoordinatorLayout中的坑">
+<meta property="og:url" content="http://blog.dk-exp.com/2016/03/30/CoordinatorLayout/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="踩完了坑记录一下，CoordinatorLayout使用介绍请看chrisbanes的cheesesquare
+如果你只打算学习一下CoordinatorLayout然后写2个Demo试试，那么本文并没有什么卵用，但是如果你打算在生产环境使用CoordinatorLayout，那么强烈推荐阅读一下本文，可以减少很多弯路，这个东西看起来很好，但是实际上坑也很多。
+###前言很多应用主页常见的构造模式">
+<meta property="og:updated_time" content="2016-03-31T19:10:12.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CoordinatorLayout中的坑">
+<meta name="twitter:description" content="踩完了坑记录一下，CoordinatorLayout使用介绍请看chrisbanes的cheesesquare
+如果你只打算学习一下CoordinatorLayout然后写2个Demo试试，那么本文并没有什么卵用，但是如果你打算在生产环境使用CoordinatorLayout，那么强烈推荐阅读一下本文，可以减少很多弯路，这个东西看起来很好，但是实际上坑也很多。
+###前言很多应用主页常见的构造模式">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-CoordinatorLayout" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/03/30/CoordinatorLayout/" class="article-date">
+  	<time datetime="2016-03-30T01:56:02.000Z" itemprop="datePublished">2016-03-30</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CoordinatorLayout中的坑
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>踩完了坑记录一下，CoordinatorLayout使用介绍请看chrisbanes的<a href="https://github.com/chrisbanes/cheesesquare" target="_blank" rel="external">cheesesquare</a></p>
+<p>如果你只打算学习一下CoordinatorLayout然后写2个Demo试试，那么本文并没有什么卵用，但是如果你打算在生产环境使用CoordinatorLayout，那么强烈推荐阅读一下本文，可以减少很多弯路，这个东西看起来很好，但是实际上坑也很多。</p>
+<p>###前言<br>很多应用主页常见的构造模式</p>
+<p>一个包含ActionBar和Banner的header+ViewPager的组合模式<br>比如这样：</p>
+<p>补图</p>
+<p>然后需要滚动的时候能够将 ActionBar和Banner滚出界面，但是又需要ViewPager的TabLayout能固定在屏幕顶部</p>
+<p>Github上有很多sticky-viewpager xx-header-viewpager之类的项目提供类似的功能，但是大部分都会存在各种事件冲突问题，比如滑动不流畅，卡顿，弹跳之类的。</p>
+<p>好在Android新的SupportLibrary提供了CoordinatorLayout能直接实现类似功能，具体如何使用参考 SupportLibrary中CoordinatorLayout的使用文档即可，例子也可以直接看<a href="https://github.com/chrisbanes/cheesesquare" target="_blank" rel="external">cheesesquare</a></p>
+<p>我就谈下使用过程中里面的坑：</p>
+<h4 id="不支持ListView-不支持ScrollView，低版本不兼容ViewCompat-setNestedScrollingEnabled"><a href="#不支持ListView-不支持ScrollView，低版本不兼容ViewCompat-setNestedScrollingEnabled" class="headerlink" title="不支持ListView,不支持ScrollView，低版本不兼容ViewCompat.setNestedScrollingEnabled"></a>不支持ListView,不支持ScrollView，低版本不兼容ViewCompat.setNestedScrollingEnabled</h4><p>PS.更新</p>
+<p>support 23.1+新增了</p>
+<pre><code>ViewCompat.setNestedScrollingEnabled(listView/gridview,true); 
+</code></pre><p>可以给ListView提供NestedScrolling支持,但是只在LOLIPOP+版本上生效，下面的方案也一样。</p>
+<p>低版本只能使用RecyclerView</p>
+<hr>
+<p>一些文档/博客文章上说 可以使用一个 可滚动的组件<br>还有些错误的文章说 支持ListView</p>
+<p>实际上该组件必须实现了 NestedScrollingChild接口</p>
+<p>你可以使用RecyclerView,RecyclerView自身就实现了该接口，如果你要使用其他组件，那么可能需要继承原来的View并实现NestedScrollingChild接口</p>
+<p>一个实现了NestedScrollingChild的Listview demo如下：</p>
+<pre><code>public class NestedScrollingListView extends ListView implements NestedScrollingChild {
+
+    private final NestedScrollingChildHelper mScrollingChildHelper;
+
+    public NestedScrollingListView(Context context) {
+        super(context);
+        mScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
+    }
+
+    public NestedScrollingListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        mScrollingChildHelper = new NestedScrollingChildHelper(this);
+        setNestedScrollingEnabled(true);
+    }
+
+    @Override
+    public void setNestedScrollingEnabled(boolean enabled) {
+        mScrollingChildHelper.setNestedScrollingEnabled(enabled);
+    }
+
+    @Override
+    public boolean isNestedScrollingEnabled() {
+        return mScrollingChildHelper.isNestedScrollingEnabled();
+    }
+
+    @Override
+    public boolean startNestedScroll(int axes) {
+        return mScrollingChildHelper.startNestedScroll(axes);
+    }
+
+    @Override
+    public void stopNestedScroll() {
+        mScrollingChildHelper.stopNestedScroll();
+    }
+
+    @Override
+    public boolean hasNestedScrollingParent() {
+        return mScrollingChildHelper.hasNestedScrollingParent();
+    }
+
+    @Override
+    public boolean dispatchNestedScroll(int dxConsumed, int dyConsumed, int dxUnconsumed,
+                                        int dyUnconsumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedScroll(dxConsumed, dyConsumed,
+                dxUnconsumed, dyUnconsumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedPreScroll(int dx, int dy, int[] consumed, int[] offsetInWindow) {
+        return mScrollingChildHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow);
+    }
+
+    @Override
+    public boolean dispatchNestedFling(float velocityX, float velocityY, boolean consumed) {
+        return mScrollingChildHelper.dispatchNestedFling(velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public boolean dispatchNestedPreFling(float velocityX, float velocityY) {
+        return mScrollingChildHelper.dispatchNestedPreFling(velocityX, velocityY);
+    }
+}
+</code></pre><p>其他View也可以使用类似的方式实现。</p>
+<p>只对 5.0+ 生效，低版本无效。</p>
+<h4 id="RecyclerView滑动的时候不流畅"><a href="#RecyclerView滑动的时候不流畅" class="headerlink" title="RecyclerView滑动的时候不流畅"></a>RecyclerView滑动的时候不流畅</h4><p>目前已知 r23.1 &amp; r 23.2  都存在此问题，Google code的提交代码里倒是有相关修复记录，但是目前还没有发布。</p>
+<p>直接原因是Fling Direction错误，导致Fling事件被吃掉了，ACTION_UP/ACTION_CANCEL事件一旦发生，scroll动作直接停止</p>
+<p>一个解决方案是重写一个FlingBehavior</p>
+<pre><code>public final class FlingBehavior extends AppBarLayout.Behavior {
+    private static final int TOP_CHILD_FLING_THRESHOLD = 3;
+    private boolean isPositive;
+
+    public FlingBehavior() {
+    }
+
+    public FlingBehavior(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    @Override
+    public boolean onNestedFling(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, float velocityX, float velocityY, boolean consumed) {
+        if (velocityY &gt; 0 &amp;&amp; !isPositive || velocityY &lt; 0 &amp;&amp; isPositive) {
+            velocityY = velocityY * -1;
+        }
+        if (target instanceof RecyclerView &amp;&amp; velocityY &lt; 0) {
+            final RecyclerView recyclerView = (RecyclerView) target;
+            final View firstChild = recyclerView.getChildAt(0);
+            final int childAdapterPosition = recyclerView.getChildAdapterPosition(firstChild);
+            consumed = childAdapterPosition &gt; TOP_CHILD_FLING_THRESHOLD;
+        }
+        return super.onNestedFling(coordinatorLayout, child, target, velocityX, velocityY, consumed);
+    }
+
+    @Override
+    public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, AppBarLayout child, View target, int dx, int dy, int[] consumed) {
+        super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
+        isPositive = dy &gt; 0;
+    }
+}
+</code></pre><h4 id="不支持adjustResize"><a href="#不支持adjustResize" class="headerlink" title="不支持adjustResize"></a>不支持adjustResize</h4><p>可以参考这个问题<br><a href="http://stackoverflow.com/questions/35599125/adjustresize-does-not-work-with-coordinatorlayout" target="_blank" rel="external">http://stackoverflow.com/questions/35599125/adjustresize-does-not-work-with-coordinatorlayout</a></p>
+<p>解决方案是可以通过ViewTreeObserver.OnGlobalLayoutListener监听界面改变，然后人工处理padding bottom</p>
+<pre><code>public class KeyboardUtil {
+    private View decorView;
+    private View contentView;
+
+    public KeyboardUtil(Activity act, View contentView) {
+        this.decorView = act.getWindow().getDecorView();
+        this.contentView = contentView;
+
+        //only required on newer android versions. it was working on API level 19
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+    public void enable() {
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().addOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+    public void disable() {
+        if (Build.VERSION.SDK_INT &gt;= 19) {
+            decorView.getViewTreeObserver().removeOnGlobalLayoutListener(onGlobalLayoutListener);
+        }
+    }
+
+
+    //a small helper to allow showing the editText focus
+    ViewTreeObserver.OnGlobalLayoutListener onGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            Rect r = new Rect();
+            //r will be populated with the coordinates of your view that area still visible.
+            decorView.getWindowVisibleDisplayFrame(r);
+
+            //get screen height and calculate the difference with the useable area from the r
+            int height = decorView.getContext().getResources().getDisplayMetrics().heightPixels;
+            int diff = height - r.bottom;
+
+            //if it could be a keyboard add the padding to the view
+            if (diff != 0) {
+                // if the use-able screen height differs from the total screen height we assume that it shows a keyboard now
+                //check if the padding is 0 (if yes set the padding for the keyboard)
+                if (contentView.getPaddingBottom() != diff) {
+                    //set the padding of the contentView for the keyboard
+                    contentView.setPadding(0, 0, 0, diff);
+                }
+            } else {
+                //check if the padding is != 0 (if yes reset the padding)
+                if (contentView.getPaddingBottom() != 0) {
+                    //reset the padding of the contentView
+                    contentView.setPadding(0, 0, 0, 0);
+                }
+            }
+        }
+    };
+
+
+    /**
+     * Helper to hide the keyboard
+     *
+     * @param act
+     */
+    public static void hideKeyboard(Activity act) {
+        if (act != null &amp;&amp; act.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) act.getSystemService(Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(act.getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+}
+</code></pre><hr>
+<pre><code>KeyboardUtil keyboardUtil = new KeyboardUtil(this, findViewById(android.R.id.content));
+
+//enable it
+keyboardUtil.enable();
+</code></pre><hr>
+<p>ps.<br>fitSystemWindow 和 adjustResize 和 FLAG_TRANSLUCENT_STATUS 一起使用 一样也会有冲突，造成界面缩放不正常。  当时也是用的这个解决方案。</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2015/12/21/MVC-MVP-MVVM/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">MVC &amp; MVP &amp; MVVM</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="CoordinatorLayout" data-title="CoordinatorLayout中的坑" data-url="http://blog.dk-exp.com/2016/03/30/CoordinatorLayout/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
