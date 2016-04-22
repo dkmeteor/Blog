@@ -164,6 +164,195 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-android-resource-remover" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/14/android-resource-remover/" class="article-date">
+  	<time datetime="2015-01-13T21:30:28.000Z" itemprop="datePublished">2015-01-14</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/14/android-resource-remover/">android-resource-remover</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><a href="https://github.com/KeepSafe/android-resource-remover" target="_blank" rel="external">https://github.com/KeepSafe/android-resource-remover</a></p>
+<p>和刚才那个很类似的脚本…作用是移除所有未使用的资源</p>
+<p>看Python代码…..它只是先帮你跑了一遍lint….然后根据lint的结果删除了未使用的资源….</p>
+<p>留个档</p>
+<pre><code>class=&quot;lang:python decode:true  &quot;&gt;&quot;&quot;&quot;
+    clean_app
+    ~~~~~~~~~~
+
+    Implements methods for removing unused android resources based on Android
+    Lint results.
+
+    :copyright: (c) 2014 by KeepSafe.
+    :license: Apache, see LICENSE for more details.
+&quot;&quot;&quot;
+
+import argparse
+import os
+import re
+import subprocess
+import xml.etree.ElementTree as ET
+from lxml import etree
+
+class Issue:
+
+    &quot;&quot;&quot;
+    Stores a single issue reported by Android Lint
+    &quot;&quot;&quot;
+    pattern = re.compile(&apos;The resource (.+) appears to be unused&apos;)
+
+    def __init__(self, filepath, remove_file):
+        self.filepath = filepath
+        self.remove_file = remove_file
+        self.elements = []
+
+    def __str__(self):
+        return &apos;{0} {1}&apos;.format(self.filepath)
+
+    def __repr__(self):
+        return &apos;{0} {1}&apos;.format(self.filepath)
+
+    def add_element(self, message):
+        res = re.findall(Issue.pattern, message)[0]
+        bits = res.split(&apos;.&apos;)[-2:]
+        self.elements.append((bits[0], bits[1]))
+
+def parse_args():
+    &quot;&quot;&quot;
+    Parse command line arguments.
+    &quot;&quot;&quot;
+    parser = argparse.ArgumentParser()
+    parser.add_argument(&apos;--lint&apos;,
+                        help=&apos;Path to the ADT lint tool. If not specified it assumes lint tool is in your path&apos;,
+                        default=&apos;lint&apos;)
+    parser.add_argument(&apos;--app&apos;,
+                        help=&apos;Path to the Android app. If not specifies it assumes current directory is your Android &apos;
+                             &apos;app directory&apos;,
+                        default=&apos;.&apos;)
+    parser.add_argument(&apos;--xml&apos;,
+                        help=&apos;Path to the list result. If not specifies linting will be done by the script&apos;,
+                        default=None)
+    parser.add_argument(&apos;--ignore-layouts&apos;,
+                        help=&apos;Should ignore layouts&apos;,
+                        action=&apos;store_true&apos;)
+    args = parser.parse_args()
+    return args.lint, args.app, args.xml, args.ignore_layouts
+
+def run_lint_command():
+    &quot;&quot;&quot;
+    Run lint command in the shell and save results to lint-result.xml
+    &quot;&quot;&quot;
+    lint, app_dir, lint_result, ignore_layouts = parse_args()
+    if not lint_result:
+        lint_result = os.path.join(app_dir, &apos;lint-result.xml&apos;)
+        call_result = subprocess.call([lint, app_dir, &apos;--xml&apos;, lint_result], shell=True)
+        if call_result &amp;gt; 0:
+            print(&apos;Running the command failed. Try running it from the console. Arguments for subprocess.call: {0}&apos;.format(
+                [lint, app_dir, &apos;--xml&apos;, lint_result]))
+    return lint_result, app_dir, ignore_layouts
+
+def parse_lint_result(lint_result_path):
+    &quot;&quot;&quot;
+    Parse lint-result.xml and create Issue for every problem found
+    &quot;&quot;&quot;
+    root = ET.parse(lint_result_path).getroot()
+    issues = []
+    for issue_xml in root.findall(&apos;.//issue[@id=&quot;UnusedResources&quot;]&apos;):
+        for location in issue_xml.findall(&apos;location&apos;):
+            filepath = location.get(&apos;file&apos;)
+            # if the location contains line and/or column attribute not the entire resource is unused. that&apos;s a guess ;)
+            # TODO stop guessing
+            remove_entire_file = (location.get(&apos;line&apos;) or location.get(&apos;column&apos;)) is None
+            issue = Issue(filepath, remove_entire_file)
+            issue.add_element(issue_xml.get(&apos;message&apos;))
+            issues.append(issue)
+    return issues
+
+def remove_resource_file(issue, filepath, ignore_layouts):
+    &quot;&quot;&quot;
+    Delete a file from the filesystem
+    &quot;&quot;&quot;
+    if os.path.exists(filepath) and (ignore_layouts is False or issue.elements[0][0] != &apos;layout&apos;):
+        print(&apos;removing resource: {0}&apos;.format(filepath))
+        os.remove(os.path.abspath(filepath))
+
+def remove_resource_value(issue, filepath):
+    &quot;&quot;&quot;
+    Read an xml file and remove an element which is unused, then save the file back to the filesystem
+    &quot;&quot;&quot;
+    for element in issue.elements:
+        print(&apos;removing {0} from resource {1}&apos;.format(element, filepath))
+        parser = etree.XMLParser(remove_blank_text=False, remove_comments=False,
+                                 remove_pis=False, strip_cdata=False, resolve_entities=False)
+        tree = etree.parse(filepath, parser)
+        root = tree.getroot()
+        for unused_value in root.findall(&apos;.//{0}[@name=&quot;{1}&quot;]&apos;.format(element[0], element[1])):
+            root.remove(unused_value)
+        with open(filepath, &apos;wb&apos;) as resource:
+            tree.write(resource, encoding=&apos;utf-8&apos;, xml_declaration=True)
+
+def remove_unused_resources(issues, app_dir, ignore_layouts):
+    &quot;&quot;&quot;
+    Remove the file or the value inside the file depending if the whole file is unused or not.
+    &quot;&quot;&quot;
+    for issue in issues:
+        filepath = os.path.join(app_dir, issue.filepath)
+        if issue.remove_file:
+            remove_resource_file(issue, filepath, ignore_layouts)
+        else:
+            remove_resource_value(issue, filepath)
+
+def main():
+    lint_result_path, app_dir, ignore_layouts = run_lint_command()
+    issues = parse_lint_result(lint_result_path)
+    remove_unused_resources(issues, app_dir, ignore_layouts)
+
+if __name__ == &apos;__main__&apos;:
+    main()
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-android-localization-helper" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1566,76 +1755,6 @@ Android KeyStore security provider
 </blockquote>
 <p></p>
 <p>&nbsp;</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-manifest-xml-bug-with-android-intent-action-main" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/11/10/manifest-xml-bug-with-android-intent-action-main/" class="article-date">
-  	<time datetime="2014-11-10T09:07:07.000Z" itemprop="datePublished">2014-11-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/10/manifest-xml-bug-with-android-intent-action-main/">manifest xml bug with android.intent.action.MAIN</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="manifest-xml-bug"><a href="#manifest-xml-bug" class="headerlink" title="manifest xml bug"></a>manifest xml bug</h1><p>使用如下配置</p>
-<pre><code>&lt;intent-filter&gt;
-    &lt;action android:name=“android.intent.action.VIEW” /&gt;
-    &lt;action android:name=“android.intent.action.MAIN” /&gt;
-    &lt;category android:name=“android.intent.category.LAUNCHER” /&gt;
-&lt;/intent-filter&gt;
-</code></pre><p>在Eclipse上Run, 可以正常安装,并启动应用 若使用下面这个配置(只是调换了VIEW和MAIN的顺序)</p>
-<pre><code>&lt;intent-filter&gt;
-    &lt;action android:name=“android.intent.action.MAIN” /&gt;
-    &lt;action android:name=“android.intent.action.VIEW” /&gt;
-    &lt;category android:name=“android.intent.category.LAUNCHER” /&gt;
-&lt;/intent-filter&gt;
-</code></pre><p>在Eclipse上Run后,提示</p>
-<p>“No Launcher activity found!</p>
-<p>The launch will only sync the application package on the device!”</p>
-<p>虽然也能安装成功,但是程序不会自动启动</p>
-<p>——————————————————————————-</p>
-<p>目测是Eclipse自身的bug, 蛋疼.</p>
 
       
     </div>

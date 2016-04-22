@@ -164,6 +164,76 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-manifest-xml-bug-with-android-intent-action-main" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/10/manifest-xml-bug-with-android-intent-action-main/" class="article-date">
+  	<time datetime="2014-11-10T09:07:07.000Z" itemprop="datePublished">2014-11-10</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/10/manifest-xml-bug-with-android-intent-action-main/">manifest xml bug with android.intent.action.MAIN</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="manifest-xml-bug"><a href="#manifest-xml-bug" class="headerlink" title="manifest xml bug"></a>manifest xml bug</h1><p>使用如下配置</p>
+<pre><code>&lt;intent-filter&gt;
+    &lt;action android:name=“android.intent.action.VIEW” /&gt;
+    &lt;action android:name=“android.intent.action.MAIN” /&gt;
+    &lt;category android:name=“android.intent.category.LAUNCHER” /&gt;
+&lt;/intent-filter&gt;
+</code></pre><p>在Eclipse上Run, 可以正常安装,并启动应用 若使用下面这个配置(只是调换了VIEW和MAIN的顺序)</p>
+<pre><code>&lt;intent-filter&gt;
+    &lt;action android:name=“android.intent.action.MAIN” /&gt;
+    &lt;action android:name=“android.intent.action.VIEW” /&gt;
+    &lt;category android:name=“android.intent.category.LAUNCHER” /&gt;
+&lt;/intent-filter&gt;
+</code></pre><p>在Eclipse上Run后,提示</p>
+<p>“No Launcher activity found!</p>
+<p>The launch will only sync the application package on the device!”</p>
+<p>虽然也能安装成功,但是程序不会自动启动</p>
+<p>——————————————————————————-</p>
+<p>目测是Eclipse自身的bug, 蛋疼.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-googlemap-without-google-play-service" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -876,61 +946,6 @@ WaterDrop drop = (WaterDrop) convertView.findViewById(R.id.drop);
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-pull-to-refresh-sticky-list" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/07/pull-to-refresh-sticky-list/" class="article-date">
-  	<time datetime="2014-08-07T08:14:45.000Z" itemprop="datePublished">2014-08-07</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/07/pull-to-refresh-sticky-list/">pull-to-refresh-sticky-list</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>merge StickyList and PullToRefresh</p>
-<p><img src="/images/sticky_refresh.gif" alt="demo"></p>
-<p><a href="https://github.com/dkmeteor/pull-to-refresh-sticky-list" target="_blank" rel="external">https://github.com/dkmeteor/pull-to-refresh-sticky-list</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
 	</div>
 
 

@@ -164,6 +164,101 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Mediaplayer-ConfigPriority-0x6f800002-ERROR-on-Marshmallow" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/04/22/Mediaplayer-ConfigPriority-0x6f800002-ERROR-on-Marshmallow/" class="article-date">
+  	<time datetime="2016-04-22T07:59:30.000Z" itemprop="datePublished">2016-04-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/22/Mediaplayer-ConfigPriority-0x6f800002-ERROR-on-Marshmallow/">Mediaplayer ConfigPriority(0x6f800002)) ERROR on Marshmallow</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Mediaplayer ConfigPriority(0x6f800002)) ERROR on Marshmallow</p>
+<p>Android 6.0 使用源生MediaPlayer播放小于15s的音频文件时,有可能会抛出此错误 ConfigPriority(0x6f800002))<br>不会crash,但是没有声音</p>
+<p>log:</p>
+<pre><code>04-21 16:42:11.787 745-21846/? I/QComExtractorFactory: Sniff: Set key to use qti parser
+04-21 16:42:11.787 745-21846/? I/FFmpegExtractor: android-source:0xee977200
+04-21 16:42:11.790 745-21846/? E/FFmpegExtractor: android-source:0xee977200: avformat_open_input failed, err:Invalid data found when processing input
+04-21 16:42:11.790 745-21846/? W/FFmpegExtractor: sniff through BetterSniffFFMPEG failed, try LegacySniffFFMPEG
+04-21 16:42:11.793 745-21846/? E/FFmpegExtractor: android-source:0xee977200|file:: avformat_open_input failed, err:Invalid data found when processing input
+04-21 16:42:11.793 745-21846/? D/FFmpegExtractor: SniffFFMPEG failed to sniff this source
+04-21 16:42:11.793 745-21846/? I/ExtendedExtractor: QTIParser is prefered
+04-21 16:42:11.793 745-21846/? D/MMParserExtractor: setExtraFlags called with flags 3 for paser instance ee977340
+04-21 16:42:11.793 745-21846/? D/MMParserExtractor: using bigger parser buffers
+04-21 16:42:11.793 745-21846/? I/ExtendedExtractor: ExtendedExtractor::create 0xee977340
+04-21 16:42:11.793 745-21846/? I/ExtendedExtractor: ExtendedExtractor::updateExtractor: Use default QTI parser 
+04-21 16:42:11.793 745-21846/? D/MMParserExtractor: Overiding Parser out buffer size  = 262144 
+04-21 16:42:11.794 745-21845/? D/NuPlayerDriver: notifyListener_l(0xefee20a0), (1, 0, 0)
+04-21 16:42:11.796 745-3258/? D/NuPlayerDriver: start(0xefee20a0), state is 4, eos is 0
+04-21 16:42:11.796 745-21845/? I/GenericSource: start
+04-21 16:42:11.797 745-21845/? I/AudioPolicyManagerCustom: Offload min duration is 15s
+04-21 16:42:11.797 745-21845/? I/AudioPolicyManagerCustom: PCM offload property is enabled
+04-21 16:42:11.797 745-21845/? I/AudioPolicyManagerCustom: Offload min duration is 15s
+04-21 16:42:11.798 745-21845/? I/AudioPolicyManagerCustom: Offload min duration is 15s
+04-21 16:42:11.798 745-21845/? I/AudioPolicyManagerCustom: PCM offload property is enabled
+04-21 16:42:11.798 745-21845/? I/AudioPolicyManagerCustom: Offload min duration is 15s
+04-21 16:42:11.812 745-21850/? E/OMXNodeInstance: setConfig(21f:google.aac.decoder, ConfigPriority(0x6f800002)) ERROR: Undefined(0x80001001)
+04-21 16:42:11.812 745-21850/? I/ACodec: codec does not support config priority (err -2147483648)
+04-21 16:42:11.813 745-21850/? I/MediaCodec: MediaCodec will operate in async mode
+04-21 16:42:11.814 745-21851/? I/SoftAAC2: Reconfiguring decoder: 0-&gt;44100 Hz, 0-&gt;0 channels
+04-21 16:42:11.815 745-21851/? W/SoftAAC2: aacDecoder_DecodeFrame decoderErr = 0x4007
+04-21 16:42:11.815 745-21851/? W/SoftAAC2: AAC decoder returned error 0x4007, substituting silence
+04-21 16:42:11.816 745-21849/? I/NuPlayerDecoder: [audio] saw output EOS
+04-21 16:42:11.816 745-21845/? I/ExtendedNuPlayer: notifyListener 2 0 0
+04-21 16:42:11.816 745-21845/? D/NuPlayerDriver: notifyListener_l(0xefee20a0), (2, 0, 0)
+04-21 16:42:11.816 745-21848/? W/NuPlayerRenderer: onDrainAudioQueue(): audio sink is not ready
+</code></pre><p>google issue已经确认了此Bug,目前处在assign状态,不过在6.0.1上测试时已经正常.</p>
+<p>ref <a href="https://code.google.com/p/android/issues/detail?id=189051" target="_blank" rel="external">google issue</a> [需翻墙]</p>
+<p>从log和更新记录上看,猜测似乎是offload的影响</p>
+<pre><code>av.offload.enable=true 
+av.streaming.offload.enable=true 
+audio.offload.buffer.size.kb=64 
+audio.offload.min.duration.secs=30 
+audio.offload.gapless.enabled=true 
+audio.offload.pcm.16bit.enable=true 
+audio.offload.pcm.24bit.enable=true
+</code></pre><p>从源码上看 似乎针对不同长度的音频文件 ,根据offload.enable和offload.min.duration,会有不同的处理方式</p>
+<p>Audio Offload 音频分载, 具体代码逻辑没有细看,也不大清楚具体错误原因</p>
+<p>目前唯一已知解决方案是,降级到5.0或升级到6.0.1+</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-CoordinatorLayout" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1899,185 +1994,6 @@ fastboot flash userdata userdata.img
 	<a class="article-category-link" href="/categories/android/">android</a>
 	</div>
 
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-Update-Radial-Blur-Library" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/09/03/Update-Radial-Blur-Library/" class="article-date">
-  	<time datetime="2015-09-02T18:24:42.000Z" itemprop="datePublished">2015-09-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/03/Update-Radial-Blur-Library/">Update Radial Blur Library</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>因为看了@drakeet的FingerTransparentView想起来去年自己也写过一个类似的动态模糊(Motion Blur)的库</p>
-<p>于是翻出来看了一下,花了点时间迁移到了Android Studio</p>
-<p>在看的时候自己发现一个问题,这TM根本不是 <code>Motion Blur</code> ,我自己写的代码实际上实现的效果是 径向模糊(<code>Radial Blur</code>)</p>
-<p>嘛…我还是要说一下 MotionBlur和RadialBlur看起来很像,但实际上是不一样的,我之前也是误解了,后来仔细看了些效果图,下面提到的几个库算法实现虽然名字都是叫MotionBlur,但是实现的效果其实都是RadialBlur</p>
-<p>Demo效果</p>
-<p><img src="https://raw.githubusercontent.com/dkmeteor/MotionBlur-Android/master/release/blur_center.png" alt="Examples list"></p>
-<p>因为涉及到重复draw,当时我写得时候就记得性能很一般,这次迁移顺便也打算看看这个问题</p>
-<p>核心代码其实很简单</p>
-<pre><code>  public static Bitmap doRadialBlur(Bitmap src, int centerX, int centerY, float factor, int times) {
-
-    Bitmap dst = Bitmap.createBitmap(src.getWidth(), src.getHeight(), Bitmap.Config.ARGB_8888);
-    Canvas canvas = new Canvas(dst);
-    Matrix matrix = new Matrix();
-    Paint paint = new Paint();
-    canvas.drawBitmap(src, matrix, paint);
-    paint.setAlpha(51);
-
-    for (int i = 0; i &lt; times; i++) {
-        matrix.setScale(i * factor + 1, i * factor + 1, centerX, centerY);
-        canvas.drawBitmap(src, matrix, paint);
-    }
-    return dst;
-}
-</code></pre><p>为了实现效果需要反复的Scale并重复的draw同一张Bitmap,性能当然狠捉急.<br>测试时发现渲染一次需要 1400ms 左右.</p>
-<p>图片是2400<em>2400的,换成800</em>800的以后,减少到200ms左右,作为一个滤镜来讲,尚可接受吧,一时间也想不到什么优化的方法.<br>优化到16ms以下可以做成实时滤镜,否则的话,似乎意义不大.</p>
-<p>想起jhlab也有 径向模糊 的滤镜算法,于是拔出来代码看了下</p>
-<pre><code> public BufferedImage filter( BufferedImage src, BufferedImage dst ) {
-    if ( dst == null )
-        dst = createCompatibleDestImage( src, null );
-    BufferedImage tsrc = src;
-    float cx = (float)src.getWidth() * centreX;
-    float cy = (float)src.getHeight() * centreY;
-    float imageRadius = (float)Math.sqrt( cx*cx + cy*cy );
-    float translateX = (float)(distance * Math.cos( angle ));
-    float translateY = (float)(distance * -Math.sin( angle ));
-    float scale = zoom;
-    float rotate = rotation;
-    float maxDistance = distance + Math.abs(rotation*imageRadius) + zoom*imageRadius;
-    int steps = log2((int)maxDistance);
-
-    translateX /= maxDistance;
-    translateY /= maxDistance;
-    scale /= maxDistance;
-    rotate /= maxDistance;
-
-    if ( steps == 0 ) {
-        Graphics2D g = dst.createGraphics();
-        g.drawRenderedImage( src, null );
-        g.dispose();
-        return dst;
-    }
-
-    BufferedImage tmp = createCompatibleDestImage( src, null );
-    for ( int i = 0; i &lt; steps; i++ ) {
-        Graphics2D g = tmp.createGraphics();
-        g.drawImage( tsrc, null, null );
-        g.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
-        g.setRenderingHint( RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR );
-        g.setComposite( AlphaComposite.getInstance( AlphaComposite.SRC_OVER, 0.5f ) );
-
-        g.translate( cx+translateX, cy+translateY );
-        g.scale( 1.0001+scale, 1.0001+scale );  // The .0001 works round a bug on Windows where drawImage throws an ArrayIndexOutofBoundException
-        if ( rotation != 0 )
-            g.rotate( rotate );
-        g.translate( -cx, -cy );
-
-        g.drawImage( dst, null, null );
-        g.dispose();
-        BufferedImage ti = dst;
-        dst = tmp;
-        tmp = ti;
-        tsrc = dst;
-
-        translateX *= 2;
-        translateY *= 2;
-        scale *= 2;
-        rotate *= 2;
-    }
-    return dst;
-}
-</code></pre><p>Jhlabs比较古老,BufferedImage是awt里面,做Android的如果不了解的话当Bitmap理解就好了.<br>可以看到Jhlabs的代码逻辑也没什么区别,一样是通过反复draw image实现的径向模糊效果.</p>
-<p>参考意义不大.</p>
-<p>另外在Github上搜索了一下,一个叫做AndroidFastImageProcessing的库也支持MotionBlur,其实现机制比较特别</p>
-<p>核心代码是这样</p>
-<pre><code>protected String getFragmentShader() {
-    return 
-             &quot;precision mediump float;\n&quot; 
-            +&quot;uniform sampler2D &quot;+UNIFORM_TEXTURE0+&quot;;\n&quot;  
-            +&quot;varying vec2 &quot;+VARYING_TEXCOORD+&quot;;\n&quot;    
-            +&quot;uniform float &quot;+UNIFORM_TEXELWIDTH+&quot;;\n&quot;
-            +&quot;uniform float &quot;+UNIFORM_TEXELHEIGHT+&quot;;\n&quot;
-
-              +&quot;void main(){\n&quot;
-              +&quot;   vec2 step = vec2(&quot;+UNIFORM_TEXELWIDTH+&quot;, &quot;+UNIFORM_TEXELHEIGHT+&quot;);\n&quot;
-              +&quot;   vec4 fragColour = texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot;) * 0.18;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; + step) * 0.15;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; - step) * 0.15;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; + step * 2.0) * 0.12;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; - step * 2.0) * 0.12;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; + step * 3.0) * 0.09;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; - step * 3.0) * 0.09;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; + step * 4.0) * 0.05;\n&quot;
-              +&quot;   fragColour += texture2D(&quot;+UNIFORM_TEXTURE0+&quot;, &quot;+VARYING_TEXCOORD+&quot; - step * 4.0) * 0.05;\n&quot;
-              +&quot;   gl_FragColor = fragColour;\n&quot;
-              +&quot;}\n&quot;;
-}
-</code></pre><p>可以看到 这是生成了一段代码</p>
-<p>然后对应的执行部分</p>
-<pre><code>GLES20.glShaderSource(fragmentShaderHandle, fragmentShader);
-GLES20.glCompileShader(fragmentShaderHandle);
-</code></pre><p>好吧,其实我压根就不懂OpenGl.大概是把图片作为Shader进行了多次渲染来实现MontionBlur的效果.</p>
-<p>这个研究基本上没有结果,往下层去看都是native方法,OpenGl可能是一个可行的优化方法,可惜是我不懂OpenGL,看了一点点实在没什么头绪,可能需要系统的从头学习一下.</p>
-<hr>
-<p>然后过程中还发现个比较奇特的问题</p>
-<p>将项目发布到jcenter以后,打算自己测试一下,但是一直编译不过,提示如下:</p>
-<pre><code>Error:A problem occurred configuring project &apos;:app&apos;.
-&gt; Could not resolve all dependencies for configuration &apos;:app:_debugCompile&apos;.
-   &gt; Could not resolve com.dk.image.process.radialblur:library:0.1.0.
-     Required by:
-         MotionBlur-Android:app:unspecified
-      &gt; Could not resolve com.dk.image.process.radialblur:library:0.1.0.
-         &gt; Could not get resource &apos;https://jcenter.bintray.com/com/dk/image/process/radialblur/library/0.1.0/library-0.1.0.pom&apos;.
-            &gt; Could not HEAD &apos;https://jcenter.bintray.com/com/dk/image/process/radialblur/library/0.1.0/library-0.1.0.pom&apos;. Received status code 400 from server: Bad Request
-</code></pre><p>我自己反复确认了几次, <a href="https://jcenter.bintray.com/com/dk/image/process/radialblur/library/0.1.0/library-0.1.0.pom" target="_blank" rel="external">https://jcenter.bintray.com/com/dk/image/process/radialblur/library/0.1.0/library-0.1.0.pom</a> 绝对是可以访问的.</p>
-<p>然后我一想,可能是代理的问题,但是我确定自己肯定没给Android Studio配过代理,因为我自己用的代理是 红杏,需要全局代理的时候我用的mxvpm需要客户端登陆,根本不会在Android Studio里配置,<br>不过还是检查了下Android Studio的代理配置,代理配置确实是空的,但是最顶部有一个Warnning提示,提示我JVM里配置了一个Proxy</p>
-<p><code>mirrors.opencas.cn</code></p>
-<p>我其实不大理解什么叫JVM PROXY,不过这个代理服务器地址我一看就知道是我在SDK Manager里使用的镜像的地址,我也不知道为什么Android Studio会把SDK Manager里的配置读过来,之前是从来没有过的.<br>打开SDK Manager,删掉镜像配置,重启Android Studio,恢复了正常,denpendices可以正常sync.</p>
-<p>关掉Android Studio,再打开SDK Manager,把镜像重新配回去.重启Android Studio,检查代理设置,正常.</p>
-<p>这我就不理解了,什么情况下Android Studio会读取SDK Mananger的代理配置,什么时候不会?</p>
-<p>出现问题的版本 Android Studio版本1.3.1 </p>
-<p>之前从来没有遇到过,因为我SDK Manager里一直是挂着镜像的地址.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
 
       
       <div class="clearfix"></div>
