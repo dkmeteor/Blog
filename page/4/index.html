@@ -164,6 +164,150 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-transformationtool" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/14/transformationtool/" class="article-date">
+  	<time datetime="2015-01-13T21:42:24.000Z" itemprop="datePublished">2015-01-14</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/14/transformationtool/">TransformationTool </a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>既然想到脚本…翻了下…把我原来写的dp百分比换算脚本翻了出来…  反正java也可以用来写写小工具嘛</p>
+<p>作用是把所有 dp/sp 单位进行百分比换算….例如在 720X1280 &amp; density = 2 时</p>
+<p>1dp = 2px</p>
+<p>在 480*800 &amp; density =1.5 时</p>
+<p>2/720*480/1.5 = 0.8888889 dp</p>
+<p>目的是保证所有元素在不同分辨率上保持比例完全一致</p>
+<p>但是大家都知道 android本身设计逻辑不是这样的……dp是物理尺寸相关的单位…所以最后我把UX说服了没用这么个奇怪的方案….不过脚本当时已经写好了….记录一下免得丢了..</p>
+<p>至于为什么输入数据是dp单位是因为我写这个脚本的时候界面已经用dp适配好了….否则就该严格按照px先写1920*1080分辨率的…然后用脚本生成所有其它分辨率的…..</p>
+<pre><code>import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * 
+ * @author Peter.Ding
+ * 
+ */
+public class TransformationTool {
+    private static final String resourceFolder = &quot;C:\\Users\\peter.ding\\Desktop\\src_folder&quot;;
+    private static final String targetFolder = &quot;C:\\Users\\peter.ding\\Desktop\\target_folder&quot;;
+
+    private static final Pattern PATTERN_DP = Pattern.compile(&quot;[0-9]{1,3}dp&quot;);
+    private static final Pattern PATTERN_SP = Pattern.compile(&quot;[0-9]{1,3}sp&quot;);
+
+    private static final String SOLUTION_480X800 = &quot;480x800&quot;;
+    private static final String SOLUTION_720X1280 = &quot;720x1280&quot;;
+    private static final String SOLUTION_1080x1920 = &quot;1080x1920&quot;;
+
+    private static HashMap&amp;lt;String, Float&amp;gt; densityMap = new HashMap&amp;lt;&amp;gt;();
+
+    private static String SRC_SOLUTION = SOLUTION_720X1280;
+    private static String TARGET_SOLUTION = SOLUTION_480X800;
+
+    private static int SRC_SOLUTION_WIDTH;
+    private static int TARGET_SOLUTION_WIDTH;
+
+    public static void main(String[] args) throws IOException {
+
+        SRC_SOLUTION_WIDTH = Integer.parseInt(SRC_SOLUTION.split(&quot;x&quot;)[0]);
+        TARGET_SOLUTION_WIDTH = Integer.parseInt(TARGET_SOLUTION.split(&quot;x&quot;)[0]);
+
+        densityMap.put(SOLUTION_720X1280, 2f);
+        densityMap.put(SOLUTION_480X800, 1.5f);
+        densityMap.put(SOLUTION_1080x1920, 3.0f);
+
+        File directory = new File(resourceFolder);
+        File[] files = directory.listFiles();
+
+        for (File srcFile : files) {
+            FileReader fr = new FileReader(srcFile);
+            BufferedReader br = new BufferedReader(fr);
+
+            String content = &quot;&quot;;
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                content += line;
+            }
+            br.close();
+            fr.close();
+
+            Matcher matcher = PATTERN_DP.matcher(content);
+            while (matcher.find()) {
+                String srcString = matcher.group();
+                int originDp = Integer.parseInt(srcString.substring(0, srcString.length() - 2));
+                String targetString = originDp * densityMap.get(SRC_SOLUTION) * TARGET_SOLUTION_WIDTH / SRC_SOLUTION_WIDTH
+                        / densityMap.get(TARGET_SOLUTION) + &quot;dp&quot;;
+                content = content.replace(srcString, targetString);
+            }
+
+            Matcher matcher_sp = PATTERN_SP.matcher(content);
+            while (matcher_sp.find()) {
+                String srcString = matcher_sp.group();
+                int originDp = Integer.parseInt(srcString.substring(0, srcString.length() - 2));
+                String targetString = originDp * densityMap.get(SRC_SOLUTION) * TARGET_SOLUTION_WIDTH / SRC_SOLUTION_WIDTH
+                        / densityMap.get(TARGET_SOLUTION) + &quot;sp&quot;;
+                content = content.replace(srcString, targetString);
+            }
+
+            File targetFile = new File(targetFolder + File.separatorChar + srcFile.getName());
+            FileWriter fw = new FileWriter(targetFile);
+            fw.write(content);
+            fw.flush();
+            fw.close();
+        }
+
+    }
+}
+</code></pre>
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-android-resource-remover" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1523,238 +1667,6 @@ public void draw(Canvas canvas) {
 <p>If you have references to external sources put them in a zip file:<br>YourProject-&gt;rightClick-&gt;Properties-&gt;Java Build Path-&gt;libraries-&gt;…, and then most notably android.jar, but other libs can be the culprit too. Expand it and and select Source attachment, and then (if it doesn’t say ‘None’) press the ‘Edit…’-button. If that points to a directory waht you should do is compress that <strong>source-directory</strong> into a zip file and make the source attachment point to that file.Apparently eclipse/adt feels the need to refresh sources on the file-system. When they’re in a zip-file it seems confident that they have not changed….</p>
 </blockquote>
 <p>Just unattached source code is OK.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-securerandom-changed-in-latest-android-versionmaybe-since-4-2" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/" class="article-date">
-  	<time datetime="2014-11-10T18:13:15.000Z" itemprop="datePublished">2014-11-11</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/">SecureRandom changed in latest Android version(maybe since 4.2)</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出</p>
-<pre><code>11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
-</code></pre><p>源代码如下:</p>
-<pre><code>import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.SecureRandom;
-import java.security.Security;
-import java.util.Locale;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.KeyGenerator;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-/**
-* 
-* @author Peter.Ding
-* 
-*/public class AESTools {
-    private static AESTools instance = new AESTools();
-    private String password = &quot;peter.ding@augmentum.com&quot;;
-    private KeyGenerator kgen;
-
-    private AESTools() {
-    }
-
-    public static AESTools getInstance() {
-        return instance;
-    }
-
-    public String encrypt(String content) {
-        try {
-            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
-            Provider p = Security.getProvider(&quot;BC&quot;);
-            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
-
-            //The right code 
-            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
-            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
-
-            s.setSeed(password.getBytes());
-            kgen.init(128, s);
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
-            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
-            byte[] byteContent = content.getBytes(&quot;utf-8&quot;);
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] result = cipher.doFinal(byteContent);
-            return bytesToHexString(result);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String decrypt(String str) {
-        byte[] content = hexStringToByte(str);
-        try {
-            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
-            Provider p = Security.getProvider(&quot;BC&quot;);
-            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
-
-            //The right code 
-            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
-            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
-
-            s.setSeed(password.getBytes());
-            kgen.init(128, s);
-            SecretKey secretKey = kgen.generateKey();
-            byte[] enCodeFormat = secretKey.getEncoded();
-            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
-            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
-            cipher.init(Cipher.DECRYPT_MODE, key);
-            byte[] result = cipher.doFinal(content);
-            System.out.println(bytesToHexString(result));
-            return new String(result, &quot;utf-8&quot;);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public String bytesToHexString(byte[] src) {
-        StringBuilder stringBuilder = new StringBuilder(&quot;&quot;);
-        if (src == null || src.length &amp;lt;= 0) {
-            return null;
-        }
-        for (int i = 0; i &amp;lt; src.length; i++) {
-            int v = src[i] &amp;amp; 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() &amp;lt; 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }
-        return stringBuilder.toString().toUpperCase(Locale.ENGLISH);
-    }
-
-    public static byte[] hexStringToByte(String hex) {
-        int len = (hex.length() / 2);
-        byte[] result = new byte[len];
-        char[] achar = hex.toCharArray();
-        for (int i = 0; i &amp;lt; len; i++) {
-            int pos = i * 2;
-            result[i] = (byte) (toByte(achar[pos]) &amp;lt;&amp;lt; 4 | toByte(achar[pos + 1]));
-        }
-        return result;
-    }
-
-    private static byte toByte(char c) {
-        byte b = (byte) &quot;0123456789ABCDEF&quot;.indexOf(c);
-        return b;
-    }
-
-}
-</code></pre><p>以上代码是我12年的时候为 加密数据库写的,我马上意识到肯定是Android又修改了Security Provider,当时2.1 2.3适配把我坑了一次,4.0适配又把我坑了一次,没想到还要坑我第三次…..无语…</p>
-<pre><code>Provider p = Security.getProvider(&quot;BC&quot;);
-SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
-</code></pre><p>报错的就是上面这行代码,果断复制粘贴百度</p>
-<p>结果搜出来结果就是这个 <a href="http://dkmeteor.iteye.com/blog/1394887" target="_blank" rel="external">http://dkmeteor.iteye.com/blog/1394887</a></p>
-<p>仔细一看还是我2012年写的blog…. 算了….不看也知道肯定是 Provider和SecureRandom又改动了…</p>
-<p>直接拉Provider列表</p>
-<pre><code>Android&apos;s OpenSSL-backed security provider
-1ASN.1, DER, PkiPath, PKCS7
-BouncyCastle Security Provider v1.49
-HARMONY (SHA1 digest; SecureRandom; SHA1withDSA signature)
-Harmony JSSE Provider
-Android KeyStore security provider
-</code></pre><p><a href="http://www.bouncycastle.org/" target="_blank" rel="external">http://www.bouncycastle.org/</a> 翻了一下文档 <code>BouncyCastle</code> 是支持AES的,不知为何直接调用会抛NoSuchAlgorithmException 没看到关于Android内Provider支持的Algorithm具体列表.</p>
-<p>试了下使用 Android OpenSSL (2.3以下版本不支持) , 一样会抛出该错误,最后想了想改成原始版本的默认值 SHA1PRNG和Crypto. Done. (2.3+版本默认Default Provider修改成了 Android OpenSSL)</p>
-<hr>
-<p>后来又找到一篇 Security Enhancements in Jelly Bean 的文档</p>
-<p><a href="http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html</a></p>
-<p>原文在墙外,关键部分我复制保存以下</p>
-<blockquote>
-<p>New implementation of SecureRandom</p>
-<p>Android 4.2 includes a new default implementation of SecureRandom based on OpenSSL. In the older Bouncy Castle-based implementation, given a known seed, SecureRandom could technically (albeit incorrectly) be treated as a source of deterministic data. With the new OpenSSL-based implementation, this is no longer possible.</p>
-<p>In general, the switch to the new SecureRandom implementation should be transparent to apps. However, if your app is relying on SecureRandom to generate deterministic data, such as keys for encrypting data, you may need to modify this area of your app. For example, if you have been using SecureRandom to retrieve keys for encrypting/decrypting content, you will need to find another means of doing that.</p>
-<p>A recommended approach is to generate a truly random AES key upon first launch and store that key in internal storage. For more information, see the post “Using Cryptography to Store Credentials Safely”.<br>还有另一篇关于 最佳实践的</p>
-</blockquote>
-<p><a href="http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html</a></p>
-<p>&nbsp;</p>
-<blockquote>
-<p>The right way</p>
-<p>A more reasonable approach is simply to generate a truly random AES key when an application is first launched:</p>
-<p>public static SecretKey generateKey() throws NoSuchAlgorithmException {<br>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
-<p>SecureRandom secureRandom = new SecureRandom();<br>// Do <em>not</em> seed secureRandom! Automatically seeded from system entropy.<br>KeyGenerator keyGenerator = KeyGenerator.getInstance(“AES”);<br>keyGenerator.init(outputKeyLength, secureRandom);<br>SecretKey key = keyGenerator.generateKey();<br>return key;<br>}<br>Note that the security of this approach relies on safeguarding the generated key, which is is predicated on the security of the internal storage. Leaving the target file unencrypted (but set to MODE_PRIVATE) would provide similar security.</p>
-<p>Even more security<br>If your app needs additional encryption, a recommended approach is to require a passphase or PIN to access your application. This passphrase could be fed into PBKDF2 to generate the encryption key. (PBKDF2 is a commonly used algorithm for deriving key material from a passphrase, using a technique known as “key stretching”.) Android provides an implementation of this algorithm inside SecretKeyFactory as PBKDF2WithHmacSHA1:</p>
-<p>public static SecretKey generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {<br>// Number of PBKDF2 hardening rounds to use. Larger values increase<br>// computation time. You should select a value that causes computation<br>// to take &gt;100ms.<br>final int iterations = 1000;</p>
-<p>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
-<p>SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(“PBKDF2WithHmacSHA1”);<br>KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);<br>SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);<br>return secretKey;<br>}<br>The salt should be a random string, again generated using SecureRandom and persisted on internal storage alongside any encrypted data. This is important to mitigate the risk of attackers using a rainbow table to precompute password hashes.<br>因为使用了固定的seed作为随机种子生成器(RNG)的参数,导致生成的随机数其实是固定的,所以官方不推荐这种用法,当然我类库里的seed其实就是 加密密码,如果不需要指定密码的话, 倒是可以用官方的推荐的这种方式.</p>
-</blockquote>
-<p></p>
-<p>&nbsp;</p>
 
       
     </div>

@@ -164,6 +164,72 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-about-vysor" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/09/03/about-vysor/" class="article-date">
+  	<time datetime="2015-09-02T19:07:13.000Z" itemprop="datePublished">2015-09-03</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/09/03/about-vysor/">Vysor</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近大家都在说vysor,于是我也弄来体验了一下.</p>
+<p>只能说达不到预期的效果吧.</p>
+<p>几个问题:</p>
+<ul>
+<li>帧率低</li>
+<li>动画的时候画面会变模糊</li>
+<li>手机熄屏后,vysor也黑了</li>
+</ul>
+<p>对于开发来讲,意义不是特别大.</p>
+<p>你可以用GenyMotion或者Android Studio自带模拟器,体验基本上是一样的.</p>
+<p>而必须用到真机测试的东西,往往你没法在vysor上完成,比如拍照,摇一摇之类的,测试的时候还是要把手机拿起来折腾</p>
+<p><img src="/images/vysor_screen_shot.jpg" alt="img"></p>
+<p>一般情况下还好,左右滑动的时候,就会迅速变得非常模糊,一会之后才会恢复.</p>
+<p>不过如果电脑内存比较小,开了模拟器会爆内存的话,这个还是挺有用的,可以让你Build以后手不离开键盘鼠标就完成测试操作.减少打断和干扰吧.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-Update-Radial-Blur-Library" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1235,89 +1301,6 @@ public void setRevealClip(boolean shouldClip, float x, float y, float radius)&lt
 <p>回归正题</p>
 <p>Euclid可以做到这个效果的原因真的很傻逼，因为它的List界面和Detail界面在同一个Activity中….</p>
 <p>所以…..剩下就是普通的 ObjectAnimator ……… sad ….</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-different-between-mipmap-and-drawable" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/03/17/different-between-mipmap-and-drawable/" class="article-date">
-  	<time datetime="2015-03-17T07:48:33.000Z" itemprop="datePublished">2015-03-17</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/17/different-between-mipmap-and-drawable/">mipmap 目录和drawable 目录有什么区别</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>我简单总结一下：</p>
-<p>使用上没有任何区别,你把它当drawable用就好了。</p>
-<p>但是用mipmap系统会在缩放上提供一定的性能优化。</p>
-<p>#官方介绍：</p>
-<blockquote>
-<p>Mipmapping for drawables</p>
-<p>  Using a mipmap as the source for your bitmap or drawable is a simple way to provide a quality image and various image scales, which can be particularly useful if you expect your image to be scaled during an animation.</p>
-<p>  Android 4.2 (API level 17) added support for mipmaps in the Bitmap class—Android swaps the mip images in your Bitmap when you’ve supplied a mipmap source and have enabled setHasMipMap(). Now in Android 4.3, you can enable mipmaps for a BitmapDrawable object as well, by providing a mipmap asset and setting the android:mipMap attribute in a bitmap resource file or by calling hasMipMap().</p>
-</blockquote>
-<p>&nbsp;</p>
-<hr>
-<p>#应用场景：</p>
-<blockquote>
-<p>If you know that you are going to draw this bitmap at less than 50% of its original size, you may be able to obtain a higher quality by turning this property on. Note that if the renderer respects this hint it might have to allocate extra memory to hold the mipmap levels for this bitmap.</p>
-</blockquote>
-<p>&nbsp;</p>
-<hr>
-<p>#一个应用实例：</p>
-<blockquote>
-<p>Nexus 6<br>  Screen<br>  The Nexus 6 boasts an impressive 5.96” Quad HD screen display at a resolution of 2560 x 1440 (493 ppi). This translates to ~ 730 x 410 dp (density independent pixels).</p>
-<p>  Check your assets<br>  It has a quantized density of 560 dpi, which falls in between the xxhdpi and xxxhdpi primary density buckets. <strong>For the Nexus 6, the platform will scale down xxxhdpi assets</strong>, but if those aren’t available, then it will scale up xxhdpi assets.</p>
-<p>  Provide at least an xxxhdpi app icon because devices can display large app icons on the launcher. It’s best practice to place your app icons in mipmap- folders (not the drawable- folders) because they are used at resolutions different from the device’s current density. For example, an xxxhdpi app icon can be used on the launcher for an xxhdpi device.</p>
-<p>  res/<br>  mipmap-mdpi/<br>  ic_launcher.png<br>  mipmap-hdpi/<br>  ic_launcher.png<br>  mipmap-xhdpi/<br>  ic_launcher.png<br>  mipmap-xxhdpi/<br>  ic_launcher.png<br>  mipmap-xxxhdpi/<br>  ic_launcher.png # App icon used on Nexus 6 device launcher<br>  Choosing to add xxxhdpi versions for the rest of your assets will provide a sharper visual experience on the Nexus 6, but does increase apk size, so you should make an appropriate decision for your app.</p>
-<p>  res/<br>  drawable-mdpi/<br>  ic_sunny.png<br>  drawable-hdpi/<br>  ic_sunny.png<br>  drawable-xhdpi/<br>  ic_sunny.png<br>  drawable-xxhdpi/ # Fall back to these if xxxhdpi versions aren’t available<br>  ic_sunny.png<br>  drawable-xxxhdpi/ # Higher resolution assets for Nexus 6<br>  ic_sunny.png</p>
-</blockquote>
-<p>#总结<br>这个实例总结一下是这样：<br>Nexus 6 有 493 ppi<br>它刚好在 xxhdpi和xxxhdpi之间<br>所以显示的时候需要对xxxhdpi的资源进行缩小<br>如果你用了mipmap-xxxhdpi,那么这里会对sclae有一个优化，性能更好，占用内存更少。</p>
-<p>所以现在官方推荐使用mipmap</p>
-<blockquote>
-<p>It’s best practice to place your app icons in mipmap- folders (not the drawable- folders) because they are used at resolutions different from the device’s current density.</p>
-</blockquote>
-<p>&nbsp;</p>
 
       
     </div>

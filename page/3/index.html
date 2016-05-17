@@ -164,6 +164,89 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-different-between-mipmap-and-drawable" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/03/17/different-between-mipmap-and-drawable/" class="article-date">
+  	<time datetime="2015-03-17T07:48:33.000Z" itemprop="datePublished">2015-03-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/17/different-between-mipmap-and-drawable/">mipmap 目录和drawable 目录有什么区别</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>我简单总结一下：</p>
+<p>使用上没有任何区别,你把它当drawable用就好了。</p>
+<p>但是用mipmap系统会在缩放上提供一定的性能优化。</p>
+<p>#官方介绍：</p>
+<blockquote>
+<p>Mipmapping for drawables</p>
+<p>  Using a mipmap as the source for your bitmap or drawable is a simple way to provide a quality image and various image scales, which can be particularly useful if you expect your image to be scaled during an animation.</p>
+<p>  Android 4.2 (API level 17) added support for mipmaps in the Bitmap class—Android swaps the mip images in your Bitmap when you’ve supplied a mipmap source and have enabled setHasMipMap(). Now in Android 4.3, you can enable mipmaps for a BitmapDrawable object as well, by providing a mipmap asset and setting the android:mipMap attribute in a bitmap resource file or by calling hasMipMap().</p>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p>#应用场景：</p>
+<blockquote>
+<p>If you know that you are going to draw this bitmap at less than 50% of its original size, you may be able to obtain a higher quality by turning this property on. Note that if the renderer respects this hint it might have to allocate extra memory to hold the mipmap levels for this bitmap.</p>
+</blockquote>
+<p>&nbsp;</p>
+<hr>
+<p>#一个应用实例：</p>
+<blockquote>
+<p>Nexus 6<br>  Screen<br>  The Nexus 6 boasts an impressive 5.96” Quad HD screen display at a resolution of 2560 x 1440 (493 ppi). This translates to ~ 730 x 410 dp (density independent pixels).</p>
+<p>  Check your assets<br>  It has a quantized density of 560 dpi, which falls in between the xxhdpi and xxxhdpi primary density buckets. <strong>For the Nexus 6, the platform will scale down xxxhdpi assets</strong>, but if those aren’t available, then it will scale up xxhdpi assets.</p>
+<p>  Provide at least an xxxhdpi app icon because devices can display large app icons on the launcher. It’s best practice to place your app icons in mipmap- folders (not the drawable- folders) because they are used at resolutions different from the device’s current density. For example, an xxxhdpi app icon can be used on the launcher for an xxhdpi device.</p>
+<p>  res/<br>  mipmap-mdpi/<br>  ic_launcher.png<br>  mipmap-hdpi/<br>  ic_launcher.png<br>  mipmap-xhdpi/<br>  ic_launcher.png<br>  mipmap-xxhdpi/<br>  ic_launcher.png<br>  mipmap-xxxhdpi/<br>  ic_launcher.png # App icon used on Nexus 6 device launcher<br>  Choosing to add xxxhdpi versions for the rest of your assets will provide a sharper visual experience on the Nexus 6, but does increase apk size, so you should make an appropriate decision for your app.</p>
+<p>  res/<br>  drawable-mdpi/<br>  ic_sunny.png<br>  drawable-hdpi/<br>  ic_sunny.png<br>  drawable-xhdpi/<br>  ic_sunny.png<br>  drawable-xxhdpi/ # Fall back to these if xxxhdpi versions aren’t available<br>  ic_sunny.png<br>  drawable-xxxhdpi/ # Higher resolution assets for Nexus 6<br>  ic_sunny.png</p>
+</blockquote>
+<p>#总结<br>这个实例总结一下是这样：<br>Nexus 6 有 493 ppi<br>它刚好在 xxhdpi和xxxhdpi之间<br>所以显示的时候需要对xxxhdpi的资源进行缩小<br>如果你用了mipmap-xxxhdpi,那么这里会对sclae有一个优化，性能更好，占用内存更少。</p>
+<p>所以现在官方推荐使用mipmap</p>
+<blockquote>
+<p>It’s best practice to place your app icons in mipmap- folders (not the drawable- folders) because they are used at resolutions different from the device’s current density.</p>
+</blockquote>
+<p>&nbsp;</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-faceboo-list-performance-update" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1101,150 +1184,6 @@ return 10;
 <p>&nbsp;</p>
 <p>更关键的是 MeshVerts这部分对应有Java接口可以直接调用了</p>
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-transformationtool" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/14/transformationtool/" class="article-date">
-  	<time datetime="2015-01-13T21:42:24.000Z" itemprop="datePublished">2015-01-14</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/14/transformationtool/">TransformationTool </a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>既然想到脚本…翻了下…把我原来写的dp百分比换算脚本翻了出来…  反正java也可以用来写写小工具嘛</p>
-<p>作用是把所有 dp/sp 单位进行百分比换算….例如在 720X1280 &amp; density = 2 时</p>
-<p>1dp = 2px</p>
-<p>在 480*800 &amp; density =1.5 时</p>
-<p>2/720*480/1.5 = 0.8888889 dp</p>
-<p>目的是保证所有元素在不同分辨率上保持比例完全一致</p>
-<p>但是大家都知道 android本身设计逻辑不是这样的……dp是物理尺寸相关的单位…所以最后我把UX说服了没用这么个奇怪的方案….不过脚本当时已经写好了….记录一下免得丢了..</p>
-<p>至于为什么输入数据是dp单位是因为我写这个脚本的时候界面已经用dp适配好了….否则就该严格按照px先写1920*1080分辨率的…然后用脚本生成所有其它分辨率的…..</p>
-<pre><code>import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-/**
- * 
- * @author Peter.Ding
- * 
- */
-public class TransformationTool {
-    private static final String resourceFolder = &quot;C:\\Users\\peter.ding\\Desktop\\src_folder&quot;;
-    private static final String targetFolder = &quot;C:\\Users\\peter.ding\\Desktop\\target_folder&quot;;
-
-    private static final Pattern PATTERN_DP = Pattern.compile(&quot;[0-9]{1,3}dp&quot;);
-    private static final Pattern PATTERN_SP = Pattern.compile(&quot;[0-9]{1,3}sp&quot;);
-
-    private static final String SOLUTION_480X800 = &quot;480x800&quot;;
-    private static final String SOLUTION_720X1280 = &quot;720x1280&quot;;
-    private static final String SOLUTION_1080x1920 = &quot;1080x1920&quot;;
-
-    private static HashMap&amp;lt;String, Float&amp;gt; densityMap = new HashMap&amp;lt;&amp;gt;();
-
-    private static String SRC_SOLUTION = SOLUTION_720X1280;
-    private static String TARGET_SOLUTION = SOLUTION_480X800;
-
-    private static int SRC_SOLUTION_WIDTH;
-    private static int TARGET_SOLUTION_WIDTH;
-
-    public static void main(String[] args) throws IOException {
-
-        SRC_SOLUTION_WIDTH = Integer.parseInt(SRC_SOLUTION.split(&quot;x&quot;)[0]);
-        TARGET_SOLUTION_WIDTH = Integer.parseInt(TARGET_SOLUTION.split(&quot;x&quot;)[0]);
-
-        densityMap.put(SOLUTION_720X1280, 2f);
-        densityMap.put(SOLUTION_480X800, 1.5f);
-        densityMap.put(SOLUTION_1080x1920, 3.0f);
-
-        File directory = new File(resourceFolder);
-        File[] files = directory.listFiles();
-
-        for (File srcFile : files) {
-            FileReader fr = new FileReader(srcFile);
-            BufferedReader br = new BufferedReader(fr);
-
-            String content = &quot;&quot;;
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                content += line;
-            }
-            br.close();
-            fr.close();
-
-            Matcher matcher = PATTERN_DP.matcher(content);
-            while (matcher.find()) {
-                String srcString = matcher.group();
-                int originDp = Integer.parseInt(srcString.substring(0, srcString.length() - 2));
-                String targetString = originDp * densityMap.get(SRC_SOLUTION) * TARGET_SOLUTION_WIDTH / SRC_SOLUTION_WIDTH
-                        / densityMap.get(TARGET_SOLUTION) + &quot;dp&quot;;
-                content = content.replace(srcString, targetString);
-            }
-
-            Matcher matcher_sp = PATTERN_SP.matcher(content);
-            while (matcher_sp.find()) {
-                String srcString = matcher_sp.group();
-                int originDp = Integer.parseInt(srcString.substring(0, srcString.length() - 2));
-                String targetString = originDp * densityMap.get(SRC_SOLUTION) * TARGET_SOLUTION_WIDTH / SRC_SOLUTION_WIDTH
-                        / densityMap.get(TARGET_SOLUTION) + &quot;sp&quot;;
-                content = content.replace(srcString, targetString);
-            }
-
-            File targetFile = new File(targetFolder + File.separatorChar + srcFile.getName());
-            FileWriter fw = new FileWriter(targetFile);
-            fw.write(content);
-            fw.flush();
-            fw.close();
-        }
-
-    }
-}
-</code></pre>
       
     </div>
     

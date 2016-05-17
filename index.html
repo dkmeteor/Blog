@@ -164,6 +164,110 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Android-App-ABI-setting" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/05/17/Android-App-ABI-setting/" class="article-date">
+  	<time datetime="2016-05-17T02:18:43.000Z" itemprop="datePublished">2016-05-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/17/Android-App-ABI-setting/">Android-App-ABI-setting</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>先放结论:<br>最优性能且不考虑安装包体积<br>提供armeabi,armeabi-v7a,arm64-v8a,x86_64</p>
+<p>全适配+最小体积<br>提供armeabi,armeabi-v7a</p>
+<p>最小体积+99%适配<br>提供armeabi-v7a</p>
+<hr>
+<p>首先官方的ABI说明<br>ref: <a href="https://developer.android.com/ndk/guides/abis.html" target="_blank" rel="external">https://developer.android.com/ndk/guides/abis.html</a></p>
+<p>理想情况下,App应当同时提供armeabi,armeabi-v7a,arm64-v8a,x86,x86_64,mips,mips64的so文件<br>一些比较小的类库提供全部的so以保证在全平台能以最优性能运行,是没有问题的</p>
+<p>但是有时候会有一些较大的类库,比如ffmpeg,opencv之类,一个so文件就有3~5mb,全部提供会让APK体积过于膨胀,这个时候就需要进行适当的权衡.</p>
+<hr>
+<p>不考虑最优性能的话:</p>
+<p>其中 x86(x86_32) 的真实设备实际上并不存在,只有模拟器可以调成x86_32,实际存在的CPU都是x86_64的<br>并且,所有x86_64的设备都支持Secondary ABI, 大部分配置都是 armeabi/armeabi-v7a , 不考虑性能最优的话,是可以不提供的</p>
+<p>mips略过,印象中只有早期起一些android laptop 是这种架构.</p>
+<hr>
+<p>这样我们需要实际考虑的ABI只有armeabi,armeabi-v7a,arm64-v8a</p>
+<p>考虑最小体积,其实只提供一个armeabi-v7a对于99%的机型就足够了<br>目前就测试结果看<br>只有 MX4 / MX4 PRO 的5.1/5.1.1 会无法找到so文件,猜测可能Primary ABI是 arm64-v8a 并且 Secondary ABI是 armeabi<br>完美的避过了v7a ,当然也有可能是别的原因.目前观察到的只有这款机型有问题</p>
+<hr>
+<p>之后因为armeabi(实际上是V5)的设备现在市面上几乎已经没有了,考虑兼容,当时尝试使用了v7a+v8a的so,没有提供armeabi版本的so<br>大约也能覆盖98%的设备<br>上线后发现OPPO R7(全系列几乎都有),魅蓝Metal,魅蓝Note,魅族 PRO 5出现大量crash,马上做了hotfix.<br>从数据看,只发生在 Oppo和魅族上,其它机型完全没有.<br>我也很郁闷,这几款机型CPU都是 arm64的,反而找不到v8a的so,具体是个什么情况我不是很理解</p>
+<p>就最终结果来看,使用v7a就能覆盖99%的设备(除了魅族 MX4 / MX 4 PRO)<br>为了支持这一设备,再配上个armeabi的so就好了</p>
+<hr>
+<p>主要观察的数据是应用在umeng后台的错误统计<br>以下是一些测试数据</p>
+<p>OPPO R7 V5       OK</p>
+<p>OPPO R7 v7 OK</p>
+<p>OPPO R7 V5+v7    OK</p>
+<p>OPPO R7 V5+v7+V8 OK</p>
+<p>OPPO R7 v7+V8 CRASH</p>
+<p>OPPO R7 5.0 V7+V8 OK</p>
+<p>魅蓝note2 V5   CRASH</p>
+<p>魅蓝note2 v7   OK </p>
+<p>魅蓝note2 v7+v8   OK</p>
+<p>魅蓝note2 V5+v7+v8 OK   </p>
+<p>乐视 V5   CRASH</p>
+<p>乐视 v7      OK</p>
+<p>乐视 v7+v8      OK</p>
+<p>乐视 V5+v7+v8    OK</p>
+<p>NEXUS 5X V5 CRASH</p>
+<p>NEXUS 5X V7 OK</p>
+<p>NEXUS 5X V7+V8 OK </p>
+<p>PRO 5 V7 CRASH</p>
+<p>PRO 5 V7+V8 CRASH</p>
+<p>PRO 5 V5 OK</p>
+<p>PRO 5 V5+V7+V8 OK</p>
+<p>GALAXY S6 V7 OK</p>
+<p>GALAXY S6 V5+V7 OK</p>
+<p>最终方案使用 v5+v7,v8a以兼容模式运行32位库<br>以下设备测试没问题.</p>
+<p>OPPO R7 OK</p>
+<p>三星 S6 OK</p>
+<p>华为 mate S OK</p>
+<p>魅蓝note2 OK</p>
+<p>魅族 PRO 5 OK</p>
+<p>nexus 5X OK</p>
+<p>小米4C OK</p>
+<p>乐视手机 OK</p>
+<p>nexus 5 OK</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-Mediaplayer-ConfigPriority-0x6f800002-ERROR-on-Marshmallow" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1917,72 +2021,6 @@ fastboot flash userdata userdata.img
 <li><p>目前看起来还没发现什么问题,和preview3看起来也没什么区别.</p>
 </li>
 </ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-about-vysor" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/09/03/about-vysor/" class="article-date">
-  	<time datetime="2015-09-02T19:07:13.000Z" itemprop="datePublished">2015-09-03</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/09/03/about-vysor/">Vysor</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近大家都在说vysor,于是我也弄来体验了一下.</p>
-<p>只能说达不到预期的效果吧.</p>
-<p>几个问题:</p>
-<ul>
-<li>帧率低</li>
-<li>动画的时候画面会变模糊</li>
-<li>手机熄屏后,vysor也黑了</li>
-</ul>
-<p>对于开发来讲,意义不是特别大.</p>
-<p>你可以用GenyMotion或者Android Studio自带模拟器,体验基本上是一样的.</p>
-<p>而必须用到真机测试的东西,往往你没法在vysor上完成,比如拍照,摇一摇之类的,测试的时候还是要把手机拿起来折腾</p>
-<p><img src="/images/vysor_screen_shot.jpg" alt="img"></p>
-<p>一般情况下还好,左右滑动的时候,就会迅速变得非常模糊,一会之后才会恢复.</p>
-<p>不过如果电脑内存比较小,开了模拟器会爆内存的话,这个还是挺有用的,可以让你Build以后手不离开键盘鼠标就完成测试操作.减少打断和干扰吧.</p>
 
       
     </div>

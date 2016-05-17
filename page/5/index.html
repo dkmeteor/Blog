@@ -164,6 +164,238 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-securerandom-changed-in-latest-android-versionmaybe-since-4-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/" class="article-date">
+  	<time datetime="2014-11-10T18:13:15.000Z" itemprop="datePublished">2014-11-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/11/securerandom-changed-in-latest-android-versionmaybe-since-4-2/">SecureRandom changed in latest Android version(maybe since 4.2)</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>使用以前的自己写的一个AES加密工具类的时候发现跑不通了,调用会直接crash,并抛出</p>
+<pre><code>11-11 09:05:16.747: W/System.err(13832): java.security.NoSuchAlgorithmException: SecureRandom AES implementation not found
+</code></pre><p>源代码如下:</p>
+<pre><code>import java.io.UnsupportedEncodingException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Provider;
+import java.security.SecureRandom;
+import java.security.Security;
+import java.util.Locale;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
+/**
+* 
+* @author Peter.Ding
+* 
+*/public class AESTools {
+    private static AESTools instance = new AESTools();
+    private String password = &quot;peter.ding@augmentum.com&quot;;
+    private KeyGenerator kgen;
+
+    private AESTools() {
+    }
+
+    public static AESTools getInstance() {
+        return instance;
+    }
+
+    public String encrypt(String content) {
+        try {
+            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
+            Provider p = Security.getProvider(&quot;BC&quot;);
+            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+
+            //The right code 
+            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
+            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
+
+            s.setSeed(password.getBytes());
+            kgen.init(128, s);
+            SecretKey secretKey = kgen.generateKey();
+            byte[] enCodeFormat = secretKey.getEncoded();
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
+            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
+            byte[] byteContent = content.getBytes(&quot;utf-8&quot;);
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] result = cipher.doFinal(byteContent);
+            return bytesToHexString(result);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String decrypt(String str) {
+        byte[] content = hexStringToByte(str);
+        try {
+            kgen = KeyGenerator.getInstance(&quot;AES&quot;);
+            Provider p = Security.getProvider(&quot;BC&quot;);
+            SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+
+            //The right code 
+            //Provider p = Security.getProvider(&quot;Crypto&quot;); 
+            //SecureRandom s = SecureRandom.getInstance(&quot;SHA1PRNG&quot;, p);
+
+            s.setSeed(password.getBytes());
+            kgen.init(128, s);
+            SecretKey secretKey = kgen.generateKey();
+            byte[] enCodeFormat = secretKey.getEncoded();
+            SecretKeySpec key = new SecretKeySpec(enCodeFormat, &quot;AES&quot;);
+            Cipher cipher = Cipher.getInstance(&quot;AES/ECB/PKCS5Padding&quot;);
+            cipher.init(Cipher.DECRYPT_MODE, key);
+            byte[] result = cipher.doFinal(content);
+            System.out.println(bytesToHexString(result));
+            return new String(result, &quot;utf-8&quot;);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public String bytesToHexString(byte[] src) {
+        StringBuilder stringBuilder = new StringBuilder(&quot;&quot;);
+        if (src == null || src.length &amp;lt;= 0) {
+            return null;
+        }
+        for (int i = 0; i &amp;lt; src.length; i++) {
+            int v = src[i] &amp;amp; 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() &amp;lt; 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }
+        return stringBuilder.toString().toUpperCase(Locale.ENGLISH);
+    }
+
+    public static byte[] hexStringToByte(String hex) {
+        int len = (hex.length() / 2);
+        byte[] result = new byte[len];
+        char[] achar = hex.toCharArray();
+        for (int i = 0; i &amp;lt; len; i++) {
+            int pos = i * 2;
+            result[i] = (byte) (toByte(achar[pos]) &amp;lt;&amp;lt; 4 | toByte(achar[pos + 1]));
+        }
+        return result;
+    }
+
+    private static byte toByte(char c) {
+        byte b = (byte) &quot;0123456789ABCDEF&quot;.indexOf(c);
+        return b;
+    }
+
+}
+</code></pre><p>以上代码是我12年的时候为 加密数据库写的,我马上意识到肯定是Android又修改了Security Provider,当时2.1 2.3适配把我坑了一次,4.0适配又把我坑了一次,没想到还要坑我第三次…..无语…</p>
+<pre><code>Provider p = Security.getProvider(&quot;BC&quot;);
+SecureRandom s = SecureRandom.getInstance(&quot;AES&quot;, p);
+</code></pre><p>报错的就是上面这行代码,果断复制粘贴百度</p>
+<p>结果搜出来结果就是这个 <a href="http://dkmeteor.iteye.com/blog/1394887" target="_blank" rel="external">http://dkmeteor.iteye.com/blog/1394887</a></p>
+<p>仔细一看还是我2012年写的blog…. 算了….不看也知道肯定是 Provider和SecureRandom又改动了…</p>
+<p>直接拉Provider列表</p>
+<pre><code>Android&apos;s OpenSSL-backed security provider
+1ASN.1, DER, PkiPath, PKCS7
+BouncyCastle Security Provider v1.49
+HARMONY (SHA1 digest; SecureRandom; SHA1withDSA signature)
+Harmony JSSE Provider
+Android KeyStore security provider
+</code></pre><p><a href="http://www.bouncycastle.org/" target="_blank" rel="external">http://www.bouncycastle.org/</a> 翻了一下文档 <code>BouncyCastle</code> 是支持AES的,不知为何直接调用会抛NoSuchAlgorithmException 没看到关于Android内Provider支持的Algorithm具体列表.</p>
+<p>试了下使用 Android OpenSSL (2.3以下版本不支持) , 一样会抛出该错误,最后想了想改成原始版本的默认值 SHA1PRNG和Crypto. Done. (2.3+版本默认Default Provider修改成了 Android OpenSSL)</p>
+<hr>
+<p>后来又找到一篇 Security Enhancements in Jelly Bean 的文档</p>
+<p><a href="http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/security-enhancements-in-jelly-bean.html</a></p>
+<p>原文在墙外,关键部分我复制保存以下</p>
+<blockquote>
+<p>New implementation of SecureRandom</p>
+<p>Android 4.2 includes a new default implementation of SecureRandom based on OpenSSL. In the older Bouncy Castle-based implementation, given a known seed, SecureRandom could technically (albeit incorrectly) be treated as a source of deterministic data. With the new OpenSSL-based implementation, this is no longer possible.</p>
+<p>In general, the switch to the new SecureRandom implementation should be transparent to apps. However, if your app is relying on SecureRandom to generate deterministic data, such as keys for encrypting data, you may need to modify this area of your app. For example, if you have been using SecureRandom to retrieve keys for encrypting/decrypting content, you will need to find another means of doing that.</p>
+<p>A recommended approach is to generate a truly random AES key upon first launch and store that key in internal storage. For more information, see the post “Using Cryptography to Store Credentials Safely”.<br>还有另一篇关于 最佳实践的</p>
+</blockquote>
+<p><a href="http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html" target="_blank" rel="external">http://android-developers.blogspot.com/2013/02/using-cryptography-to-store-credentials.html</a></p>
+<p>&nbsp;</p>
+<blockquote>
+<p>The right way</p>
+<p>A more reasonable approach is simply to generate a truly random AES key when an application is first launched:</p>
+<p>public static SecretKey generateKey() throws NoSuchAlgorithmException {<br>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
+<p>SecureRandom secureRandom = new SecureRandom();<br>// Do <em>not</em> seed secureRandom! Automatically seeded from system entropy.<br>KeyGenerator keyGenerator = KeyGenerator.getInstance(“AES”);<br>keyGenerator.init(outputKeyLength, secureRandom);<br>SecretKey key = keyGenerator.generateKey();<br>return key;<br>}<br>Note that the security of this approach relies on safeguarding the generated key, which is is predicated on the security of the internal storage. Leaving the target file unencrypted (but set to MODE_PRIVATE) would provide similar security.</p>
+<p>Even more security<br>If your app needs additional encryption, a recommended approach is to require a passphase or PIN to access your application. This passphrase could be fed into PBKDF2 to generate the encryption key. (PBKDF2 is a commonly used algorithm for deriving key material from a passphrase, using a technique known as “key stretching”.) Android provides an implementation of this algorithm inside SecretKeyFactory as PBKDF2WithHmacSHA1:</p>
+<p>public static SecretKey generateKey(char[] passphraseOrPin, byte[] salt) throws NoSuchAlgorithmException, InvalidKeySpecException {<br>// Number of PBKDF2 hardening rounds to use. Larger values increase<br>// computation time. You should select a value that causes computation<br>// to take &gt;100ms.<br>final int iterations = 1000;</p>
+<p>// Generate a 256-bit key<br>final int outputKeyLength = 256;</p>
+<p>SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(“PBKDF2WithHmacSHA1”);<br>KeySpec keySpec = new PBEKeySpec(passphraseOrPin, salt, iterations, outputKeyLength);<br>SecretKey secretKey = secretKeyFactory.generateSecret(keySpec);<br>return secretKey;<br>}<br>The salt should be a random string, again generated using SecureRandom and persisted on internal storage alongside any encrypted data. This is important to mitigate the risk of attackers using a rainbow table to precompute password hashes.<br>因为使用了固定的seed作为随机种子生成器(RNG)的参数,导致生成的随机数其实是固定的,所以官方不推荐这种用法,当然我类库里的seed其实就是 加密密码,如果不需要指定密码的话, 倒是可以用官方的推荐的这种方式.</p>
+</blockquote>
+<p></p>
+<p>&nbsp;</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-manifest-xml-bug-with-android-intent-action-main" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -884,68 +1116,6 @@ WaterDrop drop = (WaterDrop) convertView.findViewById(R.id.drop);
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-eclipse" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/10/eclipse/" class="article-date">
-  	<time datetime="2014-08-10T07:11:53.000Z" itemprop="datePublished">2014-08-10</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/10/eclipse/">Eclipse  Unhandled event loop exception</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Eclipse使用一段时间后， 突然弹出这个</p>
-<p><img src="/images/eclipse-conflict-error1.jpg" alt="error1"><br>点击OK后弹出下面这个</p>
-<p><img src="/images/eclipse-conflict-error2.jpg" alt="error2"><br>再点击 No….过一会上面按个又会弹出…</p>
-<h2 id="家里的电脑配的环境，本来就用的少，不影响正常工作，就是很烦…"><a href="#家里的电脑配的环境，本来就用的少，不影响正常工作，就是很烦…" class="headerlink" title="家里的电脑配的环境，本来就用的少，不影响正常工作，就是很烦….."></a>家里的电脑配的环境，本来就用的少，不影响正常工作，就是很烦…..</h2><p>因为这个问题特意重新下载了最新的 adt-bundle-windows-x86_64-20140702<br>问题依然存在….同时，我公司的电脑用的同样版本的Eclipse就没有这个问题…</p>
-<p>百度了下…有说和XX杀毒冲突的，有让改AVD配置的,有让改eclipse.exe名字的。。。。试验了下没什么用…..</p>
-<p>Any other solution?——————</p>
-<p>2014/08/10</p>
-<h2 id="把整个-metadata-删掉了-好了…-当然-整个workspace里的工程都没了-全部要重新导入…"><a href="#把整个-metadata-删掉了-好了…-当然-整个workspace里的工程都没了-全部要重新导入…" class="headerlink" title="把整个 .metadata 删掉了..好了….当然 整个workspace里的工程都没了..全部要重新导入…"></a>把整个 .metadata 删掉了..好了….当然 整个workspace里的工程都没了..全部要重新导入…</h2><p>2014/08/10</p>
-<p>又出现了…….百度到一个帖子说是和<code>hydradm.exe hydradm64.exe</code> 冲突….<br>这2个是 AMD显卡驱动带的催化剂…把这2个进程杀掉看看</p>
-<p>杀掉以后目前还没出现过…</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
 	</div>
 
 
