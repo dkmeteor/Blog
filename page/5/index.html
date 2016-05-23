@@ -164,6 +164,63 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-how-to-soleve-eclipse-refresh-external-folder" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/11/21/how-to-soleve-eclipse-refresh-external-folder/" class="article-date">
+  	<time datetime="2014-11-21T00:33:53.000Z" itemprop="datePublished">2014-11-21</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/11/21/how-to-soleve-eclipse-refresh-external-folder/">How to soleve eclipse refresh external folder</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="How-to-soleve-eclipse-refresh-external-folder"><a href="#How-to-soleve-eclipse-refresh-external-folder" class="headerlink" title="How to soleve eclipse refresh external folder"></a>How to soleve eclipse refresh external folder</h3><p>According to the stackoverflow:</p>
+<blockquote>
+<p>If you have references to external sources put them in a zip file:<br>YourProject-&gt;rightClick-&gt;Properties-&gt;Java Build Path-&gt;libraries-&gt;…, and then most notably android.jar, but other libs can be the culprit too. Expand it and and select Source attachment, and then (if it doesn’t say ‘None’) press the ‘Edit…’-button. If that points to a directory waht you should do is compress that <strong>source-directory</strong> into a zip file and make the source attachment point to that file.Apparently eclipse/adt feels the need to refresh sources on the file-system. When they’re in a zip-file it seems confident that they have not changed….</p>
+</blockquote>
+<p>Just unattached source code is OK.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-securerandom-changed-in-latest-android-versionmaybe-since-4-2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1053,61 +1110,6 @@ WaterDrop drop = (WaterDrop) convertView.findViewById(R.id.drop);
 <h2 id="License"><a href="#License" class="headerlink" title="License"></a>License</h2><p>Copyright (c) 2014 <a href="http://dk-exp.com" target="_blank" rel="external">Dean Ding</a></p>
 <p>Licensed under the <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_blank" rel="external">Apache License, Version 2.0</a></p>
 
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-smoothswitch" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/12/smoothswitch/" class="article-date">
-  	<time datetime="2014-08-12T06:38:58.000Z" itemprop="datePublished">2014-08-12</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/12/smoothswitch/">SmoothSwitch</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id=""><a href="#" class="headerlink" title=""></a><img src="/images/SmoothTransition_big.gif" alt="demo"></h2><p>Smooth activity switch animation.</p>
-<p>You can get all these animation by just one line:</p>
-<pre><code>new SwitchAnimationUtil().startAnimation(getWindow().getDecorView(), AnimationType.SCALE);
-</code></pre>
       
     </div>
     

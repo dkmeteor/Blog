@@ -164,6 +164,79 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-euclid-code-anaylsis" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/03/19/euclid-code-anaylsis/" class="article-date">
+  	<time datetime="2015-03-19T09:30:38.000Z" itemprop="datePublished">2015-03-19</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/19/euclid-code-anaylsis/">Euclid 源码分析</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Euclid 源码分析</p>
+<p>Euclid<br><a href="https://github.com/Yalantis/Euclid" target="_blank" rel="external">https://github.com/Yalantis/Euclid</a></p>
+<p>效果比较惊艳，clone下来分析一下源码~</p>
+<p>99%的UI动效都是Trick…..<br>看完源码蛋都碎了….</p>
+<hr>
+<p>看源码之前比较疑惑如何做到Activity切换时动效这么流畅<br>还以为是 android.Transition Framework 的一个我不知道的用法..</p>
+<p>表现形式上很像新的转场动画特效（Shared elements between activities）</p>
+<blockquote>
+<p>android.Transition Framework can be used for three main things:</p>
+<ul>
+<li>Animate View elements in transitions between activites (or fragments)</li>
+<li>Animate shared elements (hero views) in transitions between activities (or fragments)</li>
+<li>Animate View elements from one activity scene to another.</li>
+</ul>
+</blockquote>
+<p>Github上有个低版本的兼容库 <a href="https://github.com/tianzhijiexian/ActivityOptionsICS" target="_blank" rel="external">https://github.com/tianzhijiexian/ActivityOptionsICS</a><br>使用在Intent上传递Bitmap做到View的传递，不过只有视觉上的效果，因为传过去的并不是View，只是用指定View生成的Bitmap</p>
+<p>我自己的ScreenTransitionTool原理也和这个一样…….不过当时没写完…丢下了就有点捡不起来了..</p>
+<p>这个时候就觉得 IOS 的 ViewController系统优势的多,Controller切换时可以同时访问前后2个Controller</p>
+<p>回归正题</p>
+<p>Euclid可以做到这个效果的原因真的很傻逼，因为它的List界面和Detail界面在同一个Activity中….</p>
+<p>所以…..剩下就是普通的 ObjectAnimator ……… sad ….</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-different-between-mipmap-and-drawable" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1004,185 +1077,6 @@ try {
 <p>比如图像处理应用。使用颜色渲染器，光线渲染，分层/块/区处理，自动裁切，构造Gif/短视频 等等等，其在单一功能上流程长复杂度高，那么使用IOC分离这些模块非常棒。</p>
 <p>遗憾的是目前我常做的这些 社交/电商 应用 在层级上非常非常浅，更多的UI/交互/业务逻辑 之类的玩意，这些东西属于很恶心很麻烦，但是不复杂也不难的东西。</p>
 <p>恩。。。发到SegmenFault看看别人是什么看法。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-renderscript" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/26/renderscript/" class="article-date">
-  	<time datetime="2015-01-25T20:45:44.000Z" itemprop="datePublished">2015-01-26</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/26/renderscript/">一个RenderScript效果分析</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/images/rs-youyube.png" alt="rs"></p>
-<p>填个坑…很早以前就知道这个效果,当时只知道是用RenderScript做的..</p>
-<p>正好有空研究一下 , 翻了一下RenderScript的资料…..这个效果最早的出处应该就是这个PPT了</p>
-<p><a href="http://pan.baidu.com/s/1kT0zTiR" target="_blank" rel="external">PPT</a></p>
-<p>&nbsp;</p>
-<hr>
-<p>&nbsp;</p>
-<p>把图片放大又看了一下….我犯了个错误…误以为这是个球面…..就像 黑客帝国 里 球形监控室 的效果….</p>
-<p>其实不是的…….所以用 HorizonList/Grid/RecyclerView 配合Transform Matrix就可以了……..</p>
-<p>看这个设计也只能横向滚动,而不是可360°滚动的….我想多了…毕竟是11年的东西….</p>
-<hr>
-<p>&nbsp;</p>
-<h1 id="假设是球面效果的话"><a href="#假设是球面效果的话" class="headerlink" title="假设是球面效果的话"></a>假设是球面效果的话</h1><p>&nbsp;</p>
-<p>感觉还是比较奇怪…..</p>
-<p>要讨论能不能的话….当然是可以做的….</p>
-<p>即使不用RenderScript直接用 MeshVerts 也可以实现该效果…</p>
-<p>找到坐标对应关系就可以做 球面映射 .</p>
-<p>&nbsp;</p>
-<p>&nbsp;</p>
-<p>问题在于无论是 RenderScript 还是 MeshVerts 处理的目标都是 Bitmap (或者 像素数组)</p>
-<p>静态帧处理没有问题….实时性无法保证…不知道意义何在….</p>
-<p>&nbsp;</p>
-<p>如果要保证实时性的话…似乎整个界面都需要实时渲染….整个界面都用SurfaceView / OpenGl 绘制的话代价也太大了.</p>
-<hr>
-<p>&nbsp;</p>
-<p>Google一直以来都没有大力推广过RenderScript, 看来其复杂性和实用性还有待考虑……既然用Matrix就可以搞定就没必要写RS脚本了..</p>
-<p>&nbsp;</p>
-<hr>
-<p>贴一下11年实现这个效果的RS脚本</p>
-<p>&nbsp;</p>
-<p><pre class="lang:default decode:true ">/**</pre></p>
-<ul>
-<li>This code is based on the work of daoki2</li>
-<li><a href="http://code.google.com/p/renderscript-examples/" target="_blank" rel="external">http://code.google.com/p/renderscript-examples/</a></li>
-<li>carousel.rs</li>
-<li>Copyright (c) 2011 daoki2<br>*/</li>
-</ul>
-<p>#pragma version(1)</p>
-<p>#pragma rs java_package_name(de.inovex.mobi.rsdemos)</p>
-<p>#include “rs_graphics.rsh”</p>
-<p>#define NUM_ITEMS 15</p>
-<p>#define RADIUS 1900</p>
-<p>rs_program_vertex gProgVertex;<br>rs_program_fragment gProgFragmentTexture;<br>rs_program_store gProgStoreBlendNone;<br>rs_program_raster gCullNone;<br>rs_sampler gLinearClamp;</p>
-<p>rs_allocation gTex_00, gTex_01, gTex_02, gTex_03, gTex_04;<br>rs_allocation gTex_05, gTex_06, gTex_07, gTex_08, gTex_09, gTex_10, gTex_11, gTex_12, gTex_13, gTex_14;</p>
-<p>typedef struct <strong>attribute</strong>((packed, aligned(4))) Bitmaps {<br>    rs_allocation data;<br>} Bitmaps_t;<br>Bitmaps_t *bitmap;</p>
-<p>float gPx = 0;<br>float gPy = 0;<br>float gVx = 0;<br>float gVy = 0;</p>
-<p>//float gDt = 0;</p>
-<p>static float vertices[60];<br>static float len;<br>static int rot = 360/NUM_ITEMS/2; // Default angle<br>static int initialized = 0;</p>
-<p>void init() {<br>}</p>
-<p>static void displayCarousel() {<br>    // Default vertex shader<br>    rsgBindProgramVertex(gProgVertex);</p>
-<pre><code>// Setup the projection matrix
-rs_matrix4x4 proj;    
-float aspect = (float)rsgGetWidth() / (float)rsgGetHeight();
-rsMatrixLoadPerspective(&amp;amp;proj, 30.0f, aspect, 0.1f, 2500.0f);
-rsgProgramVertexLoadProjectionMatrix(&amp;amp;proj);
-
-// Fragment shader with texture
-rsgBindProgramStore(gProgStoreBlendNone);
-rsgBindProgramFragment(gProgFragmentTexture);
-rsgBindProgramRaster(gCullNone);
-rsgBindSampler(gProgFragmentTexture, 0, gLinearClamp);
-
-// Reduce the rotation speed
-if (gVx != 0) {
-    rot = rot + gVx;
-    gVx = gVx * 0.995f;
-    if ( gVx &amp;lt; 0.00001f) {
-        gVx = 0;
-    }
-}
-
-// Load vertex matrix as model matrix
-rs_matrix4x4 matrix;
-rsMatrixLoadTranslate(&amp;amp;matrix, 0.0f, 0.0f, -400.0f); // camera position
-rsMatrixRotate(&amp;amp;matrix, rot, 0.0f, 1.0f, 0.0f); // camera rotation
-rsgProgramVertexLoadModelMatrix(&amp;amp;matrix);
-
-// Draw the rectangles
-Bitmaps_t *b = bitmap;
-for (int i = 0; i &amp;lt; 15; i++) {
-    rsgBindTexture(gProgFragmentTexture, 0, b-&amp;gt;data);
-    rsgDrawQuadTexCoords(
-        vertices[i*3],
-        -(len/2),
-        vertices[i*3+2],
-        0,1,
-        vertices[i*3],
-        len/2,
-        vertices[i*3+2],
-        0,0,
-        vertices[i == 14 ? 0 : (i+1)*3],
-        len/2,
-        vertices[i == 14 ? 0 + 2 : (i+1)*3 + 2],
-        1,0,
-        vertices[i == 14 ? 0 : (i+1)*3],
-        -(len/2),
-        vertices[i == 14 ? 0 + 2 : (i+1)*3 + 2],
-        1,1
-    );
-    b++;
-}
-</code></pre><p>}</p>
-<p>static void initBitmaps() {<br>    // Set the bitmap address to the structure<br>    Bitmaps_t *b = bitmap;<br>    b-&gt;data = gTex_00; b++;<br>    b-&gt;data = gTex_01; b++;<br>    b-&gt;data = gTex_02; b++;<br>    b-&gt;data = gTex_03; b++;<br>    b-&gt;data = gTex_04; b++;<br>    b-&gt;data = gTex_05; b++;<br>    b-&gt;data = gTex_06; b++;<br>    b-&gt;data = gTex_07; b++;<br>    b-&gt;data = gTex_08; b++;<br>    b-&gt;data = gTex_09; b++;<br>    b-&gt;data = gTex_10; b++;<br>    b-&gt;data = gTex_11; b++;<br>    b-&gt;data = gTex_12; b++;<br>    b-&gt;data = gTex_13; b++;<br>    b-&gt;data = gTex_14; b++;</p>
-<pre><code>// Calculate the length of the polygon
-len = RADIUS * 2 * sin(M_PI/NUM_ITEMS);
-
-// Calculate the vertices of rectangles
-float angle;
-for (int i = 0; i &amp;lt; NUM_ITEMS; i++) {
-    angle = i * 360 / NUM_ITEMS;
-    vertices[i*3] = sin(angle * M_PI / 180) * RADIUS;
-    vertices[i*3 + 1] = 0;
-    vertices[i*3 + 2] = -cos(angle * M_PI / 180) * RADIUS;
-}
-</code></pre><p>}</p>
-<p>int root() {<br>    if (initialized == 0) {<br>        initBitmaps();<br>        initialized = 1;<br>    }</p>
-<pre><code>//gDt = rsGetDt();
-rsgClearColor(0.0f, 0.0f, 0.3333f, 0.0f);
-rsgClearDepth(1.0f);
-
-displayCarousel();
-
-return 10;
-</code></pre><p>}<br><br>&nbsp;</p>
-<p>现在参考FancyCoverFlow或者3DGallery之类有太多简单的实现方法了…</p>
-<p>&nbsp;</p>
-<p>更关键的是 MeshVerts这部分对应有Java接口可以直接调用了</p>
 
       
     </div>
