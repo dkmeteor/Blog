@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成主线程阻塞 | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="#播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成线程阻塞
+播放本地音频时,prepare阶段很短,基本不会发生这种情况,但是播放网络音频时,无论是使用prepare() 还是 prepareAsync()MediaPlayer都会进入lock状态,此时调用MediaPlayer的任何API,比如stop/release/reset时,都会直接阻塞调用的线程,直到P">
+<meta property="og:type" content="article">
+<meta property="og:title" content="播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成主线程阻塞">
+<meta property="og:url" content="http://blog.dk-exp.com/2016/05/27/mediaplayer-suspend-bug/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="#播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成线程阻塞
+播放本地音频时,prepare阶段很短,基本不会发生这种情况,但是播放网络音频时,无论是使用prepare() 还是 prepareAsync()MediaPlayer都会进入lock状态,此时调用MediaPlayer的任何API,比如stop/release/reset时,都会直接阻塞调用的线程,直到P">
+<meta property="og:updated_time" content="2016-05-30T08:19:49.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成主线程阻塞">
+<meta name="twitter:description" content="#播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成线程阻塞
+播放本地音频时,prepare阶段很短,基本不会发生这种情况,但是播放网络音频时,无论是使用prepare() 还是 prepareAsync()MediaPlayer都会进入lock状态,此时调用MediaPlayer的任何API,比如stop/release/reset时,都会直接阻塞调用的线程,直到P">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-mediaplayer-suspend-bug" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/05/27/mediaplayer-suspend-bug/" class="article-date">
+  	<time datetime="2016-05-27T09:48:00.000Z" itemprop="datePublished">2016-05-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成主线程阻塞
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成线程阻塞</p>
+<p>播放本地音频时,prepare阶段很短,基本不会发生这种情况,但是播放网络音频时,无论是使用prepare() 还是 prepareAsync()<br>MediaPlayer都会进入lock状态,此时调用MediaPlayer的任何API,比如stop/release/reset时,都会直接阻塞调用的线程,直到Prepare完成或失败.应用会抛出ANR. </p>
+<p>当时文件服务使用的是七牛,据观察,七牛CDN在我这里似乎有点问题,请求成功率大概只有95%左右,在糟糕的网络环境下,这个问题更容易出现</p>
+<p>这个问题比较蛋疼,由于当时需求是需要在前台播放一段网络音频,不需要后台播放,所以MediaPlayer对象直接由前台持有,切换音频时,不销毁MediaPlayer,而是stop() &amp; reset()以后重新Prepare().</p>
+<p>但是发现用户快速切换音频时,有时会发生anr,抓了一些anr log以后发现,anr竟然是在stop()release()上发生的.</p>
+<p>尝试过新建Thread去prepare,也试过prepareAsync(),都不解决问题,阻塞是在调用stop/reset时发生的.</p>
+<p>相关的Google issue : <a href="https://code.google.com/p/android/issues/detail?id=959" target="_blank" rel="external">https://code.google.com/p/android/issues/detail?id=959</a></p>
+<p>最后的我的解决方案是,将MediaPlayer做一下包装,prepare完成前不允许访问其任何方法(比如 stop getDuration release reset …),需要访问的时候,比如退出界面的时候Stop/release 单独开一个Thread来call这些方法,这样也只会阻塞一个异步线程.</p>
+<p>这样配置以后基本解决了该问题</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/05/23/android-secondary-sdcard/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Android中如何获取Secondary External Storage路径(android secondary sdcard setting)</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="mediaplayer-suspend-bug" data-title="播放网络音频时,MediaPlayer在Prepare阶段访问任何API都会造成主线程阻塞" data-url="http://blog.dk-exp.com/2016/05/27/mediaplayer-suspend-bug/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2016 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>

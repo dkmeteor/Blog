@@ -164,6 +164,97 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-use-ioc-in-android" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/28/use-ioc-in-android/" class="article-date">
+  	<time datetime="2015-01-28T08:21:10.000Z" itemprop="datePublished">2015-01-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/28/use-ioc-in-android/">是否有必要在Android项目中使用IOC框架</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>本来只是想找个注解库用一下<br>结果顺便看了看相关的库</p>
+<p>首先是<br>butterknife   <a href="https://github.com/JakeWharton/butterknife" target="_blank" rel="external">https://github.com/JakeWharton/butterknife</a></p>
+<p>在任何项目中使用butterknife都是正确且没有问题的. 非常轻量级的库.<br>可以缩减一部分代码.<br>不过对一般应用而言..90%的时间是处理业务逻辑….View binding这种工作量其实很小…而且在IDE有代码提示的情况下其实也不会多敲几下键盘,  findviewById(R.id.text)<br>有智能提示的比如 AS 打 fv然后回车就好了…..对比 InjectView(R.id.text)</p>
+<p>onClick绑定一般会用公共的OnClickListener写在一起然后用Switch Case去区分每个按钮的事件..<br>阅读性上还可以…也不算复杂….用butterknife可以直接做方法绑定…略微方便了一点点.</p>
+<p>总统而言  便捷性上和可阅读性上有一定提升,虽然推荐使用,但是影响没有大到一定要用的地步.</p>
+<p>其次是<br>Dagger <a href="https://github.com/square/dagger" target="_blank" rel="external">https://github.com/square/dagger</a></p>
+<p>Dagger其实和butterknife一样也是<span style="color: #999999;"> </span><span style="color: #444444;"><a href="https://github.com/JakeWharton" target="_blank" rel="external">JakeWharton</a> 写的, 算是一家的产品吧.</span><br><span style="color: #444444; font-family: Helvetica, arial, freesans, clean, sans-serif, 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: small;">View binding注解部分和</span>butterknife几乎一致.可以认为没有区别.<br>Dagger额外提供了 IOC框架 功能</p>
+<p>最后是<br>RoboGuice <a href="https://github.com/roboguice/roboguice" target="_blank" rel="external">https://github.com/roboguice/roboguice</a>  和<br>google guice <a href="https://github.com/google/guice" target="_blank" rel="external">https://github.com/google/guice</a></p>
+<p>据说 Dagger2.0 也被移交给Google管理了</p>
+<p>RoboGuice在View Binding上和以上2个库没有区别<br>也额外提供了 IOC框架功能</p>
+<p>它和 Dagger 的区别是<br>RoboGuice 是 运行时 通过反射实现的IOC<br>Dagger 是通过 <span style="color: #333333;">APT(Annotation Process Tool)  在运行时 生成辅助类 实现的 IOC</span><br><span style="color: #333333;"> </span><br><span style="color: #333333;">原理上来讲 Dagger性能当然比 </span>RoboGuice 要好…但是 如果不是大量通过IOC生成对象…<br>仅仅普通使用应当差别可以忽略不计..未测试…</p>
+<hr>
+<p>以上都是背景…下面进入正题…</p>
+<p>不考虑RoboGuice和Dagger对代码的精简作用,是否有必要在Android上使用IOC框架?<br>(因为只考虑代码精简的话,butterknife就可以了….IOC更多的是设计上的考虑)</p>
+<p>首先把这个文章看了2遍<br><a href="https://github.com/android-cn/android-open-project-analysis/tree/master/dagger" target="_blank" rel="external">https://github.com/android-cn/android-open-project-analysis/tree/master/dagger</a></p>
+<p>又翻了一下Spring中使用IOC的例子…</p>
+<p>IOC的核心是解耦…<br>解耦的目的是 …. 修改耦合对象时不影响另外一个对象…降低模块之间的关联</p>
+<p>从Spring来看…..在Spring中IOC更多的是依靠 xml的配置…</p>
+<p>而以上Android上的IOC框架均不使用xml配置系统….而且也没有必要….<br>毕竟不是web要去考虑server/system/db/web容器的差异…</p>
+<p>常见的例子..</p>
+<p><pre class="lang:default decode:true ">public class MainActivity extends Activity {<br>    @Inject Boss boss;<br>    …<br>}</pre><br>&nbsp;</p>
+<p>就看 <a href="https://github.com/rengwuxian" target="_blank" rel="external">扔物线</a> 写的这个例子好了..</p>
+<p>对于这个设计而言…谁被解耦了?</p>
+<p>MainActivity和Boss被解耦了…..更确切的讲….MainActivity和Boss的构造方法解耦了…<br>如果你下面需要使用Boss对象,仍然需要调用Boss中的方法…那么Boss和MainActivity依然存在依赖关系..<br>好处是,我修改Boss的构造方法不会影响MainActivity了…我可以修改Provider去自己获取参数..<br>仅此而已?</p>
+<p>Android中 Activity 一般不会参与复用..你不会去再写一个Activity继承MainActivity,也不会去生成多个MainActivity….即使同时存在多个MainActivity实例也是归系统管理..和你没有关系…. 所有通常我认为只有Boss是会复用的会变化的会被继承的…MainActivity的变化只和它自身有关系,不会影响系统中其它部分..</p>
+<p>仔细思考,即使是在IOC框架中,耦合性也并没有消失,只是将耦合的部分从 Class之间转移到了 Class和IOC容器之间<br>回到上面这个部分…</p>
+<p>你觉得 Activity 在 Android app中 处于 一个什么角色??<br>Activity不能充当容器角色么?</p>
+<p>UI / 业务逻辑 / DB / Conection / Cache<br>所有组件都只和Activity产生依赖关系,互相之间互不影响….</p>
+<p>在Activity外再嵌套一层IOC容器来解耦偶到底有无必要?<br>Activity为什么还需要解耦?</p>
+<p>画一下2个模型图</p>
+<p><img src="/images/IOC.png" alt="IOC"></p>
+<p>有区别?<br>我构造一个场景<br>Activity需要做请求网络的操作,操作完成后写DB和Cache,IOC给你注入一个 HttpMananger / DBManager / CacheManager 又如何,你不要调用它们的方法吗? 耦合性并没有降低。</p>
+<hr>
+<p>总之我认为在这样的典型场景下使用IOC并无必要，因为目前为止我看到的Android上使用IOC的例子均是类似这样注入一个单例/工程 管理类。</p>
+<p>如果其中某一个模块复杂度非常高，可以被分离成多个子模块，那么在子模块间使用IOC进行解耦是很不错的方案。遗憾的是，目前没遇到这样的应用。</p>
+<p>我猜想在某一个专业领域非常深入的应用可能会更需要这样的功能。</p>
+<p>比如图像处理应用。使用颜色渲染器，光线渲染，分层/块/区处理，自动裁切，构造Gif/短视频 等等等，其在单一功能上流程长复杂度高，那么使用IOC分离这些模块非常棒。</p>
+<p>遗憾的是目前我常做的这些 社交/电商 应用 在层级上非常非常浅，更多的UI/交互/业务逻辑 之类的玩意，这些东西属于很恶心很麻烦，但是不复杂也不难的东西。</p>
+<p>恩。。。发到SegmenFault看看别人是什么看法。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-renderscript" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1720,75 +1811,6 @@ public void draw(Canvas canvas) {
 <p>然后这个挤压效果还要把x轴总长按y轴位置等比压缩一下….</p>
 <p>原效果verts矩阵是 5*15的…棱角还比较大…..不知道加大verts点数对性能有多大影响…</p>
 <p>记录一下,元旦再弄了…有点蛋疼……一次要把这么多玩意载入脑子里面….一旦被interrupt就完了…看来是只适合半夜写了…</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-clientprotocolexception-circularredirectexception" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/01/clientprotocolexception-circularredirectexception/" class="article-date">
-  	<time datetime="2014-12-01T00:37:26.000Z" itemprop="datePublished">2014-12-01</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/01/clientprotocolexception-circularredirectexception/">ClientProtocolException / CircularRedirectException</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="ClientProtocolException-CircularRedirectException"><a href="#ClientProtocolException-CircularRedirectException" class="headerlink" title="ClientProtocolException / CircularRedirectException"></a>ClientProtocolException / CircularRedirectException</h2><p><img src="/images/redirect.png" alt="redirect"></p>
-<p>CircularRedirectException 循环重定向<br>其实并没有真的发生循环重定向</p>
-<p>三个请求顺序如下:</p>
-<p><a href="https://stage.ajinga.com/v1/client-jobs/2680" target="_blank" rel="external">https://stage.ajinga.com/v1/client-jobs/2680</a></p>
-<p>–&gt;</p>
-<p><a href="http://stage.ajinga.com/m/client-jobs/2680/" target="_blank" rel="external">http://stage.ajinga.com/m/client-jobs/2680/</a></p>
-<p>–&gt;</p>
-<p><a href="https://stage.ajinga.com/m/client-jobs/2680/" target="_blank" rel="external">https://stage.ajinga.com/m/client-jobs/2680/</a></p>
-<p>由于第2个和第3个请求 地址完全一致,<br>httpclient错误的判定其为 循环重定向.</p>
-<p>当然实际上 第一次 redirect就该把请求重定向到 <a href="https://stage.ajinga.com/m/client-jobs/2680/" target="_blank" rel="external">https://stage.ajinga.com/m/client-jobs/2680/</a></p>
-<p>但是server错误的返回了<br><a href="http://stage.ajinga.com/m/client-jobs/2680/" target="_blank" rel="external">http://stage.ajinga.com/m/client-jobs/2680/</a></p>
-<p>由于server不支持非ssl方式连接,自动触发了重定向,又将其重定向至<a href="https://stage.ajinga.com/m/client-jobs/2680/" target="_blank" rel="external">https://stage.ajinga.com/m/client-jobs/2680/</a></p>
-<p>逻辑上也没大问题,就是多了一次请求的时间.</p>
-<p>通过设置参数</p>
-<pre><code>httpClient.getHttpClient().getParams().setParameter(ClientPNames.ALLOW_CIRCULAR_REDIRECTS, true);
-</code></pre><p>可以ignore 循环重定向问题.</p>
-<p>但是本质上 server第一次就应当返回正确的https方式的redirect地址.</p>
 
       
     </div>
