@@ -17,7 +17,7 @@
 当Android同时拥有内置存储区和外置SD卡时,外置存储卡会被识别为 Secondary External Storage.本文讨论的是该情况下 Secondart External Storage的识别和读写问题,如果你没有SD卡,或没有内置存储区的设备,只要简单使用Environment.getExternalStorageDirectory() 就好了
 
 如何获得外置SD卡路径">
-<meta property="og:updated_time" content="2016-05-23T11:41:20.000Z">
+<meta property="og:updated_time" content="2016-06-01T10:35:42.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Android中如何获取Secondary External Storage路径(android secondary sdcard setting)">
 <meta name="twitter:description" content="前置条件
@@ -222,125 +222,8 @@ var _hmt = _hmt || [];
 </ol>
 <p>一种方式是可以通过<code>mount</code>命令的返回来搜索SD卡路径,不是特别靠谱<br>相关代码可以参考 <a href="http://stackoverflow.com/questions/5694933/find-an-external-sd-card-location/9406276#9406276" target="_blank" rel="external">http://stackoverflow.com/questions/5694933/find-an-external-sd-card-location/9406276#9406276</a><br>但是请注意,我看到过4~5种不一样的匹配方法,感觉和manufacture关系很大,国内瞎几把定制ROM不确定性更大,请配合<code>File.canRead()</code>验证使用.</p>
 <p>代码贴一下:</p>
-<pre><code>import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
-import android.util.Log;
-
-
-/**
- * @author ajeet
- *05-Dec-2014  2014
- *
- */
-public class StorageUtil {
-
-    public boolean isRemovebleSDCardMounted() {
-        File file = new File(&quot;/sys/class/block/&quot;);
-        File[] files = file.listFiles(new MmcblkFilter(&quot;mmcblk\\d$&quot;));
-        boolean flag = false;
-        for (File mmcfile : files) {
-            File scrfile = new File(mmcfile, &quot;device/scr&quot;);
-            if (scrfile.exists()) {
-                flag = true;
-                break;
-            }
-        }
-        return flag;
-    }
-
-    public String getRemovebleSDCardPath() throws IOException {
-        String sdpath = null;
-        File file = new File(&quot;/sys/class/block/&quot;);
-        File[] files = file.listFiles(new MmcblkFilter(&quot;mmcblk\\d$&quot;));
-        String sdcardDevfile = null;
-        for (File mmcfile : files) {
-            Log.d(&quot;SDCARD&quot;, mmcfile.getAbsolutePath());
-            File scrfile = new File(mmcfile, &quot;device/scr&quot;);
-            if (scrfile.exists()) {
-                sdcardDevfile = mmcfile.getName();
-                Log.d(&quot;SDCARD&quot;, mmcfile.getName());
-                break;
-            }
-        }
-        if (sdcardDevfile == null) {
-            return null;
-        }
-        FileInputStream is;
-        BufferedReader reader;
-
-        files = file.listFiles(new MmcblkFilter(sdcardDevfile + &quot;p\\d+&quot;));
-        String deviceName = null;
-        if (files.length &gt; 0) {
-            Log.d(&quot;SDCARD&quot;, files[0].getAbsolutePath());
-            File devfile = new File(files[0], &quot;dev&quot;);
-            if (devfile.exists()) {
-                FileInputStream fis = new FileInputStream(devfile);
-                reader = new BufferedReader(new InputStreamReader(fis));
-                String line = reader.readLine();
-                deviceName = line;
-            }
-            Log.d(&quot;SDCARD&quot;, &quot;&quot; + deviceName);
-            if (deviceName == null) {
-                return null;
-            }
-            Log.d(&quot;SDCARD&quot;, deviceName);
-
-            final File mountFile = new File(&quot;/proc/self/mountinfo&quot;);
-
-            if (mountFile.exists()) {
-                is = new FileInputStream(mountFile);
-                reader = new BufferedReader(new InputStreamReader(is));
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    // Log.d(&quot;SDCARD&quot;, line);
-                    // line = reader.readLine();
-                    // Log.d(&quot;SDCARD&quot;, line);
-                    String[] mPonts = line.split(&quot;\\s+&quot;);
-                    if (mPonts.length &gt; 6) {
-                        if (mPonts[2].trim().equalsIgnoreCase(deviceName)) {
-                            if (mPonts[4].contains(&quot;.android_secure&quot;)
-                                    || mPonts[4].contains(&quot;asec&quot;)) {
-                                continue;
-                            }
-                            sdpath = mPonts[4];
-                            Log.d(&quot;SDCARD&quot;, mPonts[4]);
-
-                        }
-                    }
-
-                }
-            }
-
-        }
-
-        return sdpath;
-    }
-
-    static class MmcblkFilter implements FilenameFilter {
-        private String pattern;
-
-        public MmcblkFilter(String pattern) {
-            this.pattern = pattern;
-
-        }
-
-        @Override
-        public boolean accept(File dir, String filename) {
-            if (filename.matches(pattern)) {
-                return true;
-            }
-            return false;
-        }
-
-    }
-
-}
-</code></pre><p>以红米1举例,插入SD卡后,mount返回如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br></pre></td><td class="code"><pre><span class="line">   <span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.FilenameFilter;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.io.InputStreamReader;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.util.Log;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span><br><span class="line"> * <span class="doctag">@author</span> ajeet</span><br><span class="line"> *05-Dec-2014  2014</span><br><span class="line"> *</span><br><span class="line"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StorageUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isRemovebleSDCardMounted</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"/sys/class/block/"</span>);</span><br><span class="line">        File[] files = file.listFiles(<span class="keyword">new</span> MmcblkFilter(<span class="string">"mmcblk\\d$"</span>));</span><br><span class="line">        <span class="keyword">boolean</span> flag = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (File mmcfile : files) &#123;</span><br><span class="line">            File scrfile = <span class="keyword">new</span> File(mmcfile, <span class="string">"device/scr"</span>);</span><br><span class="line">            <span class="keyword">if</span> (scrfile.exists()) &#123;</span><br><span class="line">                flag = <span class="keyword">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> flag;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getRemovebleSDCardPath</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        String sdpath = <span class="keyword">null</span>;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"/sys/class/block/"</span>);</span><br><span class="line">        File[] files = file.listFiles(<span class="keyword">new</span> MmcblkFilter(<span class="string">"mmcblk\\d$"</span>));</span><br><span class="line">        String sdcardDevfile = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (File mmcfile : files) &#123;</span><br><span class="line">            Log.d(<span class="string">"SDCARD"</span>, mmcfile.getAbsolutePath());</span><br><span class="line">            File scrfile = <span class="keyword">new</span> File(mmcfile, <span class="string">"device/scr"</span>);</span><br><span class="line">            <span class="keyword">if</span> (scrfile.exists()) &#123;</span><br><span class="line">                sdcardDevfile = mmcfile.getName();</span><br><span class="line">                Log.d(<span class="string">"SDCARD"</span>, mmcfile.getName());</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (sdcardDevfile == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        FileInputStream is;</span><br><span class="line">        BufferedReader reader;</span><br><span class="line"></span><br><span class="line">        files = file.listFiles(<span class="keyword">new</span> MmcblkFilter(sdcardDevfile + <span class="string">"p\\d+"</span>));</span><br><span class="line">        String deviceName = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (files.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            Log.d(<span class="string">"SDCARD"</span>, files[<span class="number">0</span>].getAbsolutePath());</span><br><span class="line">            File devfile = <span class="keyword">new</span> File(files[<span class="number">0</span>], <span class="string">"dev"</span>);</span><br><span class="line">            <span class="keyword">if</span> (devfile.exists()) &#123;</span><br><span class="line">                FileInputStream fis = <span class="keyword">new</span> FileInputStream(devfile);</span><br><span class="line">                reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(fis));</span><br><span class="line">                String line = reader.readLine();</span><br><span class="line">                deviceName = line;</span><br><span class="line">            &#125;</span><br><span class="line">            Log.d(<span class="string">"SDCARD"</span>, <span class="string">""</span> + deviceName);</span><br><span class="line">            <span class="keyword">if</span> (deviceName == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            Log.d(<span class="string">"SDCARD"</span>, deviceName);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">final</span> File mountFile = <span class="keyword">new</span> File(<span class="string">"/proc/self/mountinfo"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (mountFile.exists()) &#123;</span><br><span class="line">                is = <span class="keyword">new</span> FileInputStream(mountFile);</span><br><span class="line">                reader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(is));</span><br><span class="line">                String line = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">while</span> ((line = reader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// Log.d("SDCARD", line);</span></span><br><span class="line">                    <span class="comment">// line = reader.readLine();</span></span><br><span class="line">                    <span class="comment">// Log.d("SDCARD", line);</span></span><br><span class="line">                    String[] mPonts = line.split(<span class="string">"\\s+"</span>);</span><br><span class="line">                    <span class="keyword">if</span> (mPonts.length &gt; <span class="number">6</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (mPonts[<span class="number">2</span>].trim().equalsIgnoreCase(deviceName)) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (mPonts[<span class="number">4</span>].contains(<span class="string">".android_secure"</span>)</span><br><span class="line">                                    || mPonts[<span class="number">4</span>].contains(<span class="string">"asec"</span>)) &#123;</span><br><span class="line">                                <span class="keyword">continue</span>;</span><br><span class="line">                            &#125;</span><br><span class="line">                            sdpath = mPonts[<span class="number">4</span>];</span><br><span class="line">                            Log.d(<span class="string">"SDCARD"</span>, mPonts[<span class="number">4</span>]);</span><br><span class="line"></span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> sdpath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MmcblkFilter</span> <span class="keyword">implements</span> <span class="title">FilenameFilter</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String pattern;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MmcblkFilter</span><span class="params">(String pattern)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.pattern = pattern;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">accept</span><span class="params">(File dir, String filename)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (filename.matches(pattern)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以红米1举例,插入SD卡后,mount返回如下</p>
 <pre><code>rootfs / rootfs ro,relatime 0 0
 tmpfs /dev tmpfs rw,seclabel,nosuid,relatime,size=437680k,nr_inodes=109420,mode=755 0 0
 devpts /dev/pts devpts rw,seclabel,relatime,mode=600 0 0
@@ -366,31 +249,8 @@ none /dev/cpuctl cgroup rw,relatime,cpu 0 0
 </code></pre><p>可以看到,以上面的字符串匹配或者stackoverflow上其它几种验证方法(asec / vfat / void),都匹配不到最后那条记录</p>
 <p>另一种方法:<br>读取 <code>/system/etc/vold.fstab</code></p>
 <p>示例代码如下</p>
-<pre><code>try {
-        Scanner scanner = new Scanner(new File(&quot;/system/etc/vold.fstab&quot;));
-        while (scanner.hasNext()) {
-            String line = scanner.nextLine();
-            if (line.startsWith(&quot;dev_mount&quot;)) {
-                String[] lineElements = line.split(&quot; &quot;);
-                String element = lineElements[2];
-
-                if (element.contains(&quot;:&quot;))
-                    element = element.substring(0, element.indexOf(&quot;:&quot;));
-
-                if (element.contains(&quot;usb&quot;))
-                    continue;
-
-                // don&apos;t add the default vold path
-                // it&apos;s already in the list.
-                if (!out.contains(element))
-                    //这里就是你要的SD卡路径了
-                    out.add(element);
-            }
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-</code></pre><p>还是以红米1为例,贴一下’/system/etc/vold.fstab’的内容</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">        Scanner scanner = <span class="keyword">new</span> Scanner(<span class="keyword">new</span> File(<span class="string">"/system/etc/vold.fstab"</span>));</span><br><span class="line">        <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">            String line = scanner.nextLine();</span><br><span class="line">            <span class="keyword">if</span> (line.startsWith(<span class="string">"dev_mount"</span>)) &#123;</span><br><span class="line">                String[] lineElements = line.split(<span class="string">" "</span>);</span><br><span class="line">                String element = lineElements[<span class="number">2</span>];</span><br><span class="line">    </span><br><span class="line">                <span class="keyword">if</span> (element.contains(<span class="string">":"</span>))</span><br><span class="line">                    element = element.substring(<span class="number">0</span>, element.indexOf(<span class="string">":"</span>));</span><br><span class="line">    </span><br><span class="line">                <span class="keyword">if</span> (element.contains(<span class="string">"usb"</span>))</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">    </span><br><span class="line">                <span class="comment">// don't add the default vold path</span></span><br><span class="line">                <span class="comment">// it's already in the list.</span></span><br><span class="line">                <span class="keyword">if</span> (!out.contains(element))</span><br><span class="line">                    <span class="comment">//这里就是你要的SD卡路径了</span></span><br><span class="line">                    out.add(element);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>还是以红米1为例,贴一下’/system/etc/vold.fstab’的内容</p>
 <pre><code># Copyright (c) 2012, The Linux Foundation. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
