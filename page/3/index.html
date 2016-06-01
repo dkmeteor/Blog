@@ -164,6 +164,141 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-checkbox-paddingleft" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/03/26/checkbox-paddingleft/" class="article-date">
+  	<time datetime="2015-03-26T08:30:09.000Z" itemprop="datePublished">2015-03-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/26/checkbox-paddingleft/">关于CheckBox的PaddingLeft</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在不同Android版本中对PaddingLeft的计算方式不同</p>
+<p>在Android 4.1.2 之前,Checkbox的 paddingleft 是从View最左侧开始计算的</p>
+<p>而Android 4.1.2 之后,Checkbox的 paddingLeft 是从drawableLeft的右侧开始计算起的</p>
+<p>2个版本之间的 paddingLeft会差一个 drawableLeft的宽度</p>
+<p>一个兼容实现方式</p>
+<pre><code>//View hack for fucking difference between versions
+        if (Build.VERSION.SDK_INT &amp;lt;= 16) {//4.1.2
+            mCheckBox.setPadding(ViewUtils.getPixels(20 + 10, mContext), 0, 0, 0);
+            } else {
+            mCheckBox.setPadding(ViewUtils.getPixels(10,mContext), 0, 0, 0);
+        }
+</code></pre><p>讨厌这种写法。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-circleanimation-update" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/03/22/circleanimation-update/" class="article-date">
+  	<time datetime="2015-03-22T10:35:39.000Z" itemprop="datePublished">2015-03-22</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/03/22/circleanimation-update/">CircleAnimation Update</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/circle_animation_demo2.gif" alt="circle_animation"></p>
+<p>修改了实现方式，不再依赖RevealAnimator</p>
+<p>也不再依赖</p>
+<pre><code>/** @hide */
+public void setRevealClip(boolean shouldClip, float x, float y, float radius)&lt;/pre&gt;
+</code></pre><p>删除了反射的setRevealClip的部分</p>
+<hr>
+<p>新的实现完全基于老的Canvas API，兼容低版本</p>
+<hr>
+<p>缩放的部分加了个bounce效果，不过效果并不好，估计是系数选的不对，看来还是去找一套算好的系数。</p>
+<p>最后再把相关接口调整一下，一坨AnimatorSet的嵌套逻辑最后用 playSequentially 整理一下应该就可以结束了。</p>
+<hr>
+<p>顺带 看了下 CircularReveal <a href="https://github.com/ozodrukh/CircularReveal/" target="_blank" rel="external">https://github.com/ozodrukh/CircularReveal/</a> 的源代码</p>
+<p>用这个方案来实现也可以，不过</p>
+<p>先draw再clipPath</p>
+<p>和</p>
+<p>drawCircle with BitmapShader</p>
+<p>从结果上来看是完全等价的。</p>
+<p>以后需要在ViewGroup上实现该效果可能才用得上这个方案</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-circleanimation" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -918,161 +1053,9 @@ instrumentTest.setRoot(&apos;tests&apos;)
 
 
   
-    <article id="post-blur-drawer" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/08/blur-drawer/" class="article-date">
-  	<time datetime="2015-02-08T07:56:18.000Z" itemprop="datePublished">2015-02-08</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/08/blur-drawer/">Blur-Drawer</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/images/blur-drawer.gif" alt="blur-drawer"></p>
-<p><a href="https://github.com/charbgr/BlurNavigationDrawer" target="_blank" rel="external">https://github.com/charbgr/BlurNavigationDrawer</a></p>
-<p>对客户这个UX实在心里没底….赶紧了找了套备胎先放着….</p>
-<p>回头让我再改我就用这一套…</p>
-<p>这一套代码和我的Folder-DrawerLayout一样 是直接从android.support.v4.widget.DrawerLayout继承下来的…</p>
-<p>兼容和升级会非常方便</p>
-<p>Blur算法部分和我常用的那一套也一样。。。高版本走RenderScript，低版本用StackBlur…支持先ScaleDown再Blur..性能也OK..不用再做额外的性能优化..</p>
-<p>考虑到Blur半径比较大…其实Scale还可以开大一点…</p>
-<hr>
-<p>目前看来唯一一个问题是 Blur的触发点在ActionBarDrawerToggle里的onDrawerSlide里….</p>
-<p>项目目前把ActionBar干掉了…也没用ToolBar    顶上现在是个自定义Header….</p>
-<p>不知道会有多大影响。。。</p>
-<p>不过最坏情况也不过把这部分逻辑摘出来扔在Drawerlayout的Listener里…时间上考虑还比较safe.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-run-rm---rf-on-Android" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/05/run-rm---rf-on-Android/" class="article-date">
-  	<time datetime="2015-02-05T07:23:17.000Z" itemprop="datePublished">2015-02-05</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/05/run-rm---rf-on-Android/">在Android上执行 rm -rf /</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>和人讨论在Android上执行linux的命令问题。</p>
-<p>于是试了试每个人都会试的 rm -rf /</p>
-<p>过程略去</p>
-<p>最终结果代码是这样</p>
-<pre><code>Process process = null;
-DataOutputStream os = null;
-try {
-    process = Runtime.getRuntime().exec(&quot;su&quot;);
-    os = new DataOutputStream(process.getOutputStream());
-    os.writeBytes(&quot;rm -rf /&quot; + &quot;\n&quot;);
-    os.writeBytes(&quot;exit\n&quot;);
-    os.flush();
-    process.waitFor();
-
-} catch (IOException e) {
-    e.printStackTrace();
-} catch (InterruptedException e) {
-    e.printStackTrace();
-} finally {
-    if (os != null)
-        try {
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    process.destroy();
-}
-</code></pre><p>主要麻烦是玩坏了就要重建虚拟机…好在Genymotion启动速度还可以</p>
-<p>比较奇怪的时候 成功执行以后</p>
-<p>系统黑屏 卡死 无反应</p>
-<p>但是重启以后，系统居然回到未初始化状态…类似于 恢复出厂设置 的结果……</p>
-<p><img src="/images/rm.jpg" alt="rm"></p>
-<p>真机未测试…看有没有勇者试一下…变砖了本人不负任何责任….</p>
-<hr>
-<p>本来计划看一下galaxy.rs的脚本….但是这几天状态太差……感觉需要调整一下作息…….</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/4/">Next &raquo;</a>
     </nav>
   
 </div>

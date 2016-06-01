@@ -164,6 +164,142 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Receiver-not-registered-android-widget-ZoomButtonsController-crash" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/05/31/Receiver-not-registered-android-widget-ZoomButtonsController-crash/" class="article-date">
+  	<time datetime="2016-05-31T04:28:39.000Z" itemprop="datePublished">2016-05-31</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/31/Receiver-not-registered-android-widget-ZoomButtonsController-crash/">Receiver not registered: android.widget.ZoomButtonsController crash</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#好吧,继续整理 最近一段时间遇到的比较离奇的Bug</p>
+<p>这个Bug log是这样</p>
+<pre><code>java.lang.IllegalArgumentException: Receiver not registered: android.widget.ZoomButtonsController$1@487a4290
+at android.app.ActivityThread$PackageInfo.forgetReceiverDispatcher(ActivityThread.java:793)
+at android.app.ContextImpl.unregisterReceiver(ContextImpl.java:913)
+at android.content.ContextWrapper.unregisterReceiver(ContextWrapper.java:331)
+at android.widget.ZoomButtonsController.setVisible(ZoomButtonsController.java:404)
+at android.widget.ZoomButtonsController$2.handleMessage(ZoomButtonsController.java:178)
+at android.os.Handler.dispatchMessage(Handler.java:99)
+at android.os.Looper.loop(Looper.java:123)
+at android.app.ActivityThread.main(ActivityThread.java:4627)
+at java.lang.reflect.Method.invokeNative(Native Method)
+at java.lang.reflect.Method.invoke(Method.java:521)
+at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:858)
+at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+at dalvik.system.NativeStart.main(Native Method)
+</code></pre><p>因为这个Log Trace里没有任何我的代码,所以感觉上和我的应用没什么关系,而且也看不出是在哪个界面哪个地方发生的,当时也没办法复现.<br>只是在Umeng的后台会不断收集到这样的crash log,不多,但是偶尔就会有那么几个.<br>后来花时间研究了一下,发现应用中只有Webview中有这个东西.</p>
+<p>这样有针对性的来测试,很快就找到了重现路径. zoom controller有个默认的渐隐动画,只要在动画进行重退出Activity,就会重现这个crash</p>
+<p>同时也找到了几个相关issue:<br><a href="https://code.google.com/p/android/issues/detail?id=15694" target="_blank" rel="external">https://code.google.com/p/android/issues/detail?id=15694</a><br><a href="http://stackoverflow.com/questions/5267639/how-to-safely-turn-webview-zooming-on-and-off-as-needed" target="_blank" rel="external">http://stackoverflow.com/questions/5267639/how-to-safely-turn-webview-zooming-on-and-off-as-needed</a><br><a href="http://stackoverflow.com/questions/4908794/webview-throws-receiver-not-registered-android-widget-zoombuttonscontroller" target="_blank" rel="external">http://stackoverflow.com/questions/4908794/webview-throws-receiver-not-registered-android-widget-zoombuttonscontroller</a></p>
+<p>解决方案是各种hack</p>
+<ol>
+<li>如果不需要直接禁用即可</li>
+<li>重载webview,destroy的时候处理zoomButtonController</li>
+<li>重载Activity,延迟2秒destroy webview</li>
+<li>finish之前把webview及所有子view从rootview里remove掉. (这个没试过)</li>
+</ol>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-java-lang-IllegalStateException-package-not-installed" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2016/05/31/java-lang-IllegalStateException-package-not-installed/" class="article-date">
+  	<time datetime="2016-05-31T04:05:31.000Z" itemprop="datePublished">2016-05-31</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/31/java-lang-IllegalStateException-package-not-installed/">java.lang.IllegalStateException: package not installed</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#java.lang.IllegalStateException: package not installed</p>
+<p>用了Android Studio的时候偶尔会遇到这个问题.</p>
+<p>ref: <a href="http://stackoverflow.com/questions/24426635/caused-by-java-lang-illegalstateexception-package-not-installed" target="_blank" rel="external">http://stackoverflow.com/questions/24426635/caused-by-java-lang-illegalstateexception-package-not-installed</a><br>ref: <a href="http://stackoverflow.com/questions/35675855/android-studio-floatingactionbutton-error" target="_blank" rel="external">http://stackoverflow.com/questions/35675855/android-studio-floatingactionbutton-error</a></p>
+<p>解决方案很简单,gradle重新sync一下就好了.</p>
+<p>重现步骤大概是这样,gradle sync/build中,修改lib/compile配置,或者同时在命令行clean build,会导致build过程中某些该编译进去的jar/module丢失,于是运行时会报各种奇怪的Bug.大部分那都是 package not installed / class not found 一类的</p>
+<p>这种时候修改一下gradle文件重新sync 就能修复此问题.本质上是IDE/gradle的bug,不知道原因的话解决起来有点蛋疼.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li></ul>
+	</div>
+
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-mediaplayer-suspend-bug" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1897,286 +2033,9 @@ Drawable.ConstantState cs =sPreloadedDrawable.get(key);
 
 
   
-    <article id="post-Bubble-Notification-Update" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/10/25/Bubble-Notification-Update/" class="article-date">
-  	<time datetime="2015-10-25T08:48:18.000Z" itemprop="datePublished">2015-10-25</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/25/Bubble-Notification-Update/">Bubble-Notification Update</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="Bubble-Notification-Update"><a href="#Bubble-Notification-Update" class="headerlink" title="Bubble-Notification Update"></a>Bubble-Notification Update</h1><p><a href="https://github.com/dkmeteor/Bubble-Notification" target="_blank" rel="external">Bubble-Notification</a></p>
-<p><a href="https://github.com/dkmeteor/Bubble-Notification" target="_blank" rel="external">https://github.com/dkmeteor/Bubble-Notification</a></p>
-<p><img src="/images/bubble_notification_heart.gif" alt=""></p>
-<p>做了一次大更新</p>
-<p>记录一下相关内容</p>
-<p>#1.Bug fix</p>
-<h2 id="1-1-贝塞尔曲线调整"><a href="#1-1-贝塞尔曲线调整" class="headerlink" title="1.1 贝塞尔曲线调整"></a>1.1 贝塞尔曲线调整</h2><p>看了这篇文章</p>
-<p><a href="http://isux.tencent.com/qq-mobile-off-duty.html" target="_blank" rel="external">QQ手机版 5.0“一键下班”设计小结</a>以后,修改了一下贝塞尔曲线的绘制方式</p>
-<p>这文章作者是个设计师,并不是程序员</p>
-<p>我也没有完全按他的去画这个贝塞尔曲线,优化了一下曲线函数,主要贝塞尔曲线参考点的修改,修复几个参考点计算错误的问题</p>
-<h3 id="1-2-修复由StatusBar高度导致的位置计算偏移"><a href="#1-2-修复由StatusBar高度导致的位置计算偏移" class="headerlink" title="1.2 修复由StatusBar高度导致的位置计算偏移"></a>1.2 修复由StatusBar高度导致的位置计算偏移</h3><p>检讨一下,由于这部分公式计算比较复杂,且两种绘图方式坐标不统一,代码中有大量的位置换算,导致了很多小的误差.</p>
-<p>#2. 新功能</p>
-<p>##2.1 添加特效</p>
-<p>最近看了 <a href="https://github.com/tyrantgit/ExplosionField" target="_blank" rel="external">ExplosionField</a> ,  <a href="https://github.com/ZhaoKaiQiang/Par
-ticleLayout" target="_blank" rel="external">ParticleLayout</a>等项目,有了一些新的想法,打算更新一下Bubble-Notification的特效,添加几个新的.</p>
-<p>由于Bubble-Notification的Explosion本身设计上是相当于一个微型粒子引擎,通过添加新粒子类型,给粒子添加更多属性和字段,可以挺方便的定制各种特效.</p>
-<p>不过凑巧,那天正好戳到一个AE教程,稍微看了一下,然后我意识到, AE作为专业的特效工具,其提供的功能远远不是目前这种简陋的效果能比的.</p>
-<p>结合起来也许能做一些更有趣的东西.</p>
-<p>##2.2 添加GifRender</p>
-<p>AE导出的效果只能是movie gif 或 序列帧,目前看来使用比较方便的只有gif和序列帧<br>先添加一个Gif支持来试试水</p>
-<p>由于所有效果都直接绘制在SurfaceView上,需要自身控制,所以不方便使用第三方Gif库,好在通过android.graphics.Movie自己撸一个也很简单.</p>
-<p>写了GifRender包装了一下,为了和Explosion保持一致,添加了GifUpdateThread用来刷新Gif</p>
-<p>#3. 重构</p>
-<p>添加GifRender过程后,由于以后可能还会添加新的特效模式,于是重构了下代码,将最后Explosion特效相关的代码从DropCover类中全部抽离,DropCover只负责贝塞尔曲线和圆形的绘制.</p>
-<p>相关杂七杂八过程控制代码都丢入CoverMananger类中,这不是一个特别好的方案,不过把200行代码按OOP的方针分割成4~5个类也不是特别好的方案.暂且保持这样.如果控制过程的代码在将来会膨胀的话,到时候必须将CoverMananger中的代码拆分成各个独立的功能模块,不过目前没有必要.</p>
-<hr>
-<h3 id="具体算法过程描述"><a href="#具体算法过程描述" class="headerlink" title="具体算法过程描述:"></a>具体算法过程描述:</h3><p>这个一定要写一下,看半年前的代码完全看不懂了,到处都是坑,90%的问题都是 坐标点换算造成的.</p>
-<pre><code>    private void drawDrop() {
-    Canvas canvas = getHolder().lockCanvas();
-    if (canvas != null) {
-        canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
-
-        if (isDraw) {
-            double distance = Math.sqrt(Math.pow(mBaseX - mTargetX, 2) + Math.pow(mBaseY - mTargetY, 2));
-            mPaint.setColor(0xffff0000);
-            mPaint.setStyle(Paint.Style.FILL);
-            if (distance &lt; mMaxDistance) {
-                //计算圆形半径
-                mStrokeWidth = (float) ((1f - distance / mMaxDistance) * mRadius);
-                //绘制 原位置的圆形,会随着拖动距离还减小,注意mBaseX,mBaseY是圆心坐标
-                canvas.drawCircle(mBaseX, mBaseY, mStrokeWidth / 2, mPaint);
-                drawBezier(canvas);
-            }
-            //绘制拖动后的图形,注意mTargetX,mTargetY是左上角坐标
-            canvas.drawBitmap(mDest, mTargetX, mTargetY, mPaint);
-        }
-        getHolder().unlockCanvasAndPost(canvas);
-    }
-}
-</code></pre><p>注意<code>drawCircle</code>和<code>drawBitmap</code> 使用的坐标是不一样的,一个是圆心,一个是图片左上角.<br>进行坐标计算时使用的都是 圆心坐标,可以参考下面的图片</p>
-<p>注意换算,非常操蛋.</p>
-<hr>
-<h1 id="算法详细"><a href="#算法详细" class="headerlink" title="算法详细"></a>算法详细</h1><p>可以参考<a href="http://isux.tencent.com/qq-mobile-off-duty.html" target="_blank" rel="external">QQ手机版 5.0“一键下班”设计小结</a>,基本上是一致的,就是贝塞尔曲线的参考点不会移动</p>
-<p>计算2根贝塞尔曲线的4个起点/终点</p>
-<p>看代码可能不明白,还原下其实就是简单的三角函数</p>
-<pre><code>/**
- * ax=by=0 x^2+y^2=s/2
- * &lt;p/&gt;
- * ==&gt;
- * &lt;p/&gt;
- * x=a^2/(a^2+b^2)*s/2
- *
- * @param start
- * @param end
- * @return
- */
-private Point[] calculate(Point start, Point end) {
-    float a = end.x - start.x;
-    float b = end.y - start.y;
-
-    float y1 = (float) Math.sqrt(a * a / (a * a + b * b) * (mStrokeWidth / 2f) * (mStrokeWidth / 2f));
-    float x1 = -b / a * y1;
-
-    float y2 = (float) Math.sqrt(a * a / (a * a + b * b) * (targetWidth / 2f) * (targetHeight / 2f));
-    float x2 = -b / a * y2;
-
-
-    Point[] result = new Point[4];
-
-    result[0] = new Point(start.x + x1, start.y + y1);
-    result[1] = new Point(end.x + x2, end.y + y2);
-
-    result[2] = new Point(start.x - x1, start.y - y1);
-    result[3] = new Point(end.x - x2, end.y - y2);
-
-    return result;
-}
-</code></pre><hr>
-<p>绘制贝塞尔曲线</p>
-<p>贝塞尔曲线使用的参考点为 centerX,centerY,为两圆圆心连线的中点</p>
-<pre><code>private void drawBezier(Canvas canvas) {
-
-    Point[] points = calculate(new Point(mBaseX, mBaseY), new Point(mTargetX + mDest.getWidth() / 2f, mTargetY + mDest.getHeight() / 2f));
-
-    float centerX = (points[0].x + points[1].x + points[2].x + points[3].x) / 4f;
-    float centerY = (points[0].y + points[1].y + points[2].y + points[3].y) / 4f;
-
-    Path path1 = new Path();
-    path1.moveTo(points[0].x, points[0].y);
-    path1.quadTo(centerX, centerY, points[1].x, points[1].y);
-    path1.lineTo(points[3].x, points[3].y);
-
-    path1.quadTo(centerX, centerY, points[2].x, points[2].y);
-    path1.lineTo(points[0].x, points[0].y);
-    canvas.drawPath(path1, mPaint);
-}
-</code></pre><p>按腾讯那文章来看,参考点随距离移动效果可能会更好,我尝试了一下,看不出明显的区别. </p>
-<hr>
-<p>加了个Note:</p>
-<pre><code>The origin circle drawn by  canvas.drawCircle(mBaseX, mBaseY, mStrokeWidth / 2, mPaint);
-
-so mBaseX, mBaseY are center position.
-
-The Moved circle drawn by  canvas.drawBitmap(mDest, mTargetX, mTargetY, mPaint);
-
-so mTargetX,mTargetY are left top corner position.
-</code></pre><p>计算过程中时刻记得这2点,之前好多bug就是因为这个造成的.</p>
-<hr>
-<p>Explosion</p>
-<p>其实这个东西非常简单.</p>
-<p>一个简单的粒子生成器,实例化直接生成所有粒子</p>
-<p>随机生成每个例子的颜色 x速度 y速度</p>
-<p>然后由ExplosionUpdateThread刷新每个粒子的坐标并绘图</p>
-<p>正常的 粒子引擎 功能要复杂的多的多, 不过上cocos2d或者别的图形/游戏引擎感觉没有必要</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-PathEffectTextView-Update" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/10/17/PathEffectTextView-Update/" class="article-date">
-  	<time datetime="2015-10-17T06:11:43.000Z" itemprop="datePublished">2015-10-17</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/10/17/PathEffectTextView-Update/">PathEffectTextView Update</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>更新了一下<a href="https://github.com/dkmeteor/PathEffectTextView" target="_blank" rel="external">PathEffectTextView</a></p>
-<ul>
-<li><p>添加了字体大小 颜色 字重(bold) 阴影 等设置项.</p>
-</li>
-<li><p>更新了下Demo.</p>
-</li>
-<li><p>做了几个新的Demo Gif</p>
-</li>
-<li><p>发布到Jcenter</p>
-</li>
-</ul>
-<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO:"></a>TODO:</h2><ul>
-<li>等有空的时候,添加各种笔刷.</li>
-</ul>
-<hr>
-<p>#Screenshot</p>
-<p>Please waiting for loading the gif…</p>
-<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path1.gif?raw=true" alt=""></p>
-<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path2.gif?raw=true" alt=""></p>
-<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path3.gif?raw=true" alt=""></p>
-<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path4.gif?raw=true" alt=""></p>
-<p>#How to use</p>
-<p>Step 1: add denpendence</p>
-<pre><code>compile(&apos;com.dk.view.patheffect:Library:0.1.1@aar&apos;)
-</code></pre><p>If you are still using <code>Eclipse</code>, you can just copy source code or jar file to you project.</p>
-<p>Step 2: add view to your layout:</p>
-<pre><code>&lt;com.dk.view.patheffect.PathTextView
-    android:id=&quot;@+id/path&quot;
-    android:layout_width=&quot;wrap_content&quot;
-    android:layout_height=&quot;wrap_content&quot;/&gt;
-</code></pre><p>step 3: call <code>init</code> method like this:</p>
-<pre><code>PathTextView mPathTextView = (PathTextView) findViewById(R.id.path);
-mPathTextView.init(&quot;Hello World&quot;);
-</code></pre><p>Option settings:</p>
-<pre><code>mPathTextView.setPaintType(PathTextView.Type.MULTIPLY);
-mPathTextView.setTextColor(color);
-mPathTextView.setTextSize(size);
-mPathTextView.setTextWeight(weight);
-mPathTextView.setDuration(duration);
-mPathTextView.setShadow(radius, dx, dy, shadowColor);
-</code></pre><p>#NOTE</p>
-<ul>
-<li><p>Only Support capital letter, you can check this file for <a href="https://github.com/dkmeteor/PathEffectTextView/blob/master/Library/src/main/java/com/dk/view/patheffect/MatchPath.java" target="_blank" rel="external"><code>Path Data</code></a>, the data comes from <a href="https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh/" target="_blank" rel="external">android-Ultra-Pull-To-Refresh</a></p>
-</li>
-<li><p>the size unit is px , 72 means 72px*72px.</p>
-</li>
-<li><p>the text weight unit is px.</p>
-</li>
-</ul>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
     </nav>
   
 </div>

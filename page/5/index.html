@@ -164,6 +164,147 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-generic-type-function" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/07/generic-type-function/" class="article-date">
+  	<time datetime="2015-01-07T08:26:45.000Z" itemprop="datePublished">2015-01-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/07/generic-type-function/">泛型函数</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>今天看到一黑科技….</p>
+<p>泛型类 泛型参数倒是很常用…</p>
+<p>用在返回值类型上的泛型函数我还是第一次见到这么玩的…</p>
+<p>写起代码来大概是这样</p>
+<pre><code>public class MainActivity extends Activity{
+    private Button mButton;
+    private TextView mTextView;
+    private ListView mListView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        mButton = $(R.id.button);
+        mTextView = $(R.id.textview);
+        mListView = $(R.id.listview);
+
+    }
+
+    public &lt;T extends View&gt; T $(int id)
+    {
+        return (T) super.findViewById(id);
+    }
+}
+</code></pre><p>一种JQuery的感觉。。。主要是这个$伪装成操作符的样子很有迷惑性…当然JQuery里的$本身也是这样实现的…..</p>
+<p>好处大概是代码压缩的厉害。。省掉了强制类型转换。。写起代码来清晰一些。。</p>
+<p>使用起来方便。。一共才1行代码。。扔BaseActivity里就好了。。</p>
+<p>当然功能很弱逼。。。比注解形的弱多了。。。</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-folder-drawerlayout-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/12/28/folder-drawerlayout-1/" class="article-date">
+  	<time datetime="2014-12-28T10:42:40.000Z" itemprop="datePublished">2014-12-28</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/12/28/folder-drawerlayout-1/">Folder-DrawerLayout 开发日志0</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/Folder-DrawerLayout-develop-0.gif" alt="folder-drawer-layout"><br><img src="/images/moring-routine.png" alt="morning-routine"></p>
+<p>又仔细看了下MorningRoutine….发现还有个渐变阴影…</p>
+<p>目测应该是在挂verts之前用shader先渲染在原图上的</p>
+<p>x轴看起来也不是均匀的….首</p>
+<p>大概先是要把波长写成x相关的函数多代换一层…..</p>
+<p>然后这个挤压效果还要把x轴总长按y轴位置等比压缩一下….</p>
+<p>原效果verts矩阵是 5*15的…棱角还比较大…..不知道加大verts点数对性能有多大影响…</p>
+<p>记录一下,元旦再弄了…有点蛋疼……一次要把这么多玩意载入脑子里面….一旦被interrupt就完了…看来是只适合半夜写了…</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-clientprotocolexception-circularredirectexception" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -940,198 +1081,9 @@ Memory:2536 kb
 
 
   
-    <article id="post-OJ-1384" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/24/OJ-1384/" class="article-date">
-  	<time datetime="2014-09-23T18:52:48.000Z" itemprop="datePublished">2014-09-24</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/24/OJ-1384/">九度OJ 题目1384：二维数组中的查找</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><a href="http://ac.jobdu.com/problem.php?pid=1384" target="_blank" rel="external">http://ac.jobdu.com/problem.php?pid=1384</a></p>
-<p>题目描述：在一个二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。</p>
-<p>输入：输入可能包含多个测试样例，对于每个测试案例，<br>输入的第一行为两个整数m和n(1&lt;=m,n&lt;=1000)：代表将要输入的矩阵的行数和列数。<br>输入的第二行包括一个整数t(1&lt;=t&lt;=1000000)：代表要查找的数字。<br>接下来的m行，每行有n个数，代表题目所给出的m行n列的矩阵(矩阵如题目描述所示，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。</p>
-<p>输出：对应每个测试案例，<br>输出”Yes”代表在二维数组中找到了数字t。<br>输出”No”代表在二维数组中没有找到数字t。</p>
-<p>样例输入：<br>3 3<br>5<br>1 2 3<br>4 5 6<br>7 8 9<br>3 3<br>1<br>2 3 4<br>5 6 7<br>8 9 10<br>3 3<br>12<br>2 3 4<br>5 6 7<br>8 9 10</p>
-<p>样例输出：<br>Yes<br>No<br>No</p>
-<p>答疑：解题遇到问题?分享解题心得?讨论本题请访问：<a href="http://t.jobdu.com/thread-8107-1-1.html" target="_blank" rel="external">http://t.jobdu.com/thread-8107-1-1.html</a></p>
-<p>AC Code:</p>
-<p>#include &lt;stdio.h&gt;</p>
-<p>using namespace std;</p>
-<p>int main()<br>{<br>    int rows,cols;<br>     while (scanf(“%d %d”, &amp;rows, &amp;cols) != EOF)<br>    {<br>        int find;<br>        scanf(“%d”, &amp;find);</p>
-<pre><code>    int ** arr = new int *[rows];
-    for (int r = 0; r &amp;lt; rows; r ++)
-    {
-        arr[r] = new int [cols];
-        for (int c = 0; c &amp;lt; cols; c ++)
-        {
-            scanf(&quot;%d&quot;, &amp;amp;arr[r][c]);
-        }
-    }
-
-    if(find &amp;lt;arr[0][0] || find&amp;gt;arr[rows-1][cols-1])
-    {
-        printf(&quot;%s&quot;, &quot;No\n&quot;);
-    }
-    else
-    {
-        bool flag_find=0;
-        for(int i=0;i&amp;lt;rows &amp;amp;&amp;amp; !flag_find;i++)
-        {
-            if(find&amp;lt;arr[i][0])
-            {
-                for(int j=0;j&amp;lt;cols &amp;amp;&amp;amp; !flag_find;j++)
-                {
-                    if(find==arr[i-1][j])
-                    {
-                        flag_find=1;
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-
-        for(int j=0;j&amp;lt;cols &amp;amp;&amp;amp; !flag_find;j++)
-        {
-            if(find==arr[rows-1][j])
-            {
-                flag_find=1;
-            }
-        }
-
-    if(flag_find)
-    {
-        printf(&quot;%s&quot;, &quot;Yes\n&quot;);
-    }
-    else
-     {
-        printf(&quot;%s&quot;, &quot;No\n&quot;);
-     }
-    }
-
-    for(int j = 0; j &amp;lt; rows; j++)
-        delete arr[j];
-    delete arr;
-
-}
-
-return 0;
-</code></pre><p>}</p>
-<hr>
-<pre><code>Problem: 1384
-User: dkmeteor
-Language: C++
-Result: Accepted
-Time:700 ms
-Memory:4852 kb
-</code></pre><p>TODO:<br>第一次用OJ,用最简单的写法做个测试,等会更新下二分查找.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-bither" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/08/27/bither/" class="article-date">
-  	<time datetime="2014-08-27T00:08:51.000Z" itemprop="datePublished">2014-08-27</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/08/27/bither/">Bither </a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>bither:</p>
-<p><img src="/images/bither-bither.jpg" alt="bither"></p>
-<p>android:</p>
-<p><img src="/images/bither-android.jpg" alt="android"></p>
-<p>Enlarge image with <strong>3200%</strong> , the bither-android-jpeg is more smooth.</p>
-<p>肉眼比较难看出区别，不过确实使用bither重编译的jpeg lib compress出的图片质量更高。</p>
-<p><a href="https://github.com/bither/bither-android" target="_blank" rel="external">https://github.com/bither/bither-android</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/4/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/6/">Next &raquo;</a>
     </nav>
   
 </div>

@@ -164,6 +164,283 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-Bubble-Notification-Update" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/25/Bubble-Notification-Update/" class="article-date">
+  	<time datetime="2015-10-25T08:48:18.000Z" itemprop="datePublished">2015-10-25</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/25/Bubble-Notification-Update/">Bubble-Notification Update</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="Bubble-Notification-Update"><a href="#Bubble-Notification-Update" class="headerlink" title="Bubble-Notification Update"></a>Bubble-Notification Update</h1><p><a href="https://github.com/dkmeteor/Bubble-Notification" target="_blank" rel="external">Bubble-Notification</a></p>
+<p><a href="https://github.com/dkmeteor/Bubble-Notification" target="_blank" rel="external">https://github.com/dkmeteor/Bubble-Notification</a></p>
+<p><img src="/images/bubble_notification_heart.gif" alt=""></p>
+<p>做了一次大更新</p>
+<p>记录一下相关内容</p>
+<p>#1.Bug fix</p>
+<h2 id="1-1-贝塞尔曲线调整"><a href="#1-1-贝塞尔曲线调整" class="headerlink" title="1.1 贝塞尔曲线调整"></a>1.1 贝塞尔曲线调整</h2><p>看了这篇文章</p>
+<p><a href="http://isux.tencent.com/qq-mobile-off-duty.html" target="_blank" rel="external">QQ手机版 5.0“一键下班”设计小结</a>以后,修改了一下贝塞尔曲线的绘制方式</p>
+<p>这文章作者是个设计师,并不是程序员</p>
+<p>我也没有完全按他的去画这个贝塞尔曲线,优化了一下曲线函数,主要贝塞尔曲线参考点的修改,修复几个参考点计算错误的问题</p>
+<h3 id="1-2-修复由StatusBar高度导致的位置计算偏移"><a href="#1-2-修复由StatusBar高度导致的位置计算偏移" class="headerlink" title="1.2 修复由StatusBar高度导致的位置计算偏移"></a>1.2 修复由StatusBar高度导致的位置计算偏移</h3><p>检讨一下,由于这部分公式计算比较复杂,且两种绘图方式坐标不统一,代码中有大量的位置换算,导致了很多小的误差.</p>
+<p>#2. 新功能</p>
+<p>##2.1 添加特效</p>
+<p>最近看了 <a href="https://github.com/tyrantgit/ExplosionField" target="_blank" rel="external">ExplosionField</a> ,  <a href="https://github.com/ZhaoKaiQiang/Par
+ticleLayout" target="_blank" rel="external">ParticleLayout</a>等项目,有了一些新的想法,打算更新一下Bubble-Notification的特效,添加几个新的.</p>
+<p>由于Bubble-Notification的Explosion本身设计上是相当于一个微型粒子引擎,通过添加新粒子类型,给粒子添加更多属性和字段,可以挺方便的定制各种特效.</p>
+<p>不过凑巧,那天正好戳到一个AE教程,稍微看了一下,然后我意识到, AE作为专业的特效工具,其提供的功能远远不是目前这种简陋的效果能比的.</p>
+<p>结合起来也许能做一些更有趣的东西.</p>
+<p>##2.2 添加GifRender</p>
+<p>AE导出的效果只能是movie gif 或 序列帧,目前看来使用比较方便的只有gif和序列帧<br>先添加一个Gif支持来试试水</p>
+<p>由于所有效果都直接绘制在SurfaceView上,需要自身控制,所以不方便使用第三方Gif库,好在通过android.graphics.Movie自己撸一个也很简单.</p>
+<p>写了GifRender包装了一下,为了和Explosion保持一致,添加了GifUpdateThread用来刷新Gif</p>
+<p>#3. 重构</p>
+<p>添加GifRender过程后,由于以后可能还会添加新的特效模式,于是重构了下代码,将最后Explosion特效相关的代码从DropCover类中全部抽离,DropCover只负责贝塞尔曲线和圆形的绘制.</p>
+<p>相关杂七杂八过程控制代码都丢入CoverMananger类中,这不是一个特别好的方案,不过把200行代码按OOP的方针分割成4~5个类也不是特别好的方案.暂且保持这样.如果控制过程的代码在将来会膨胀的话,到时候必须将CoverMananger中的代码拆分成各个独立的功能模块,不过目前没有必要.</p>
+<hr>
+<h3 id="具体算法过程描述"><a href="#具体算法过程描述" class="headerlink" title="具体算法过程描述:"></a>具体算法过程描述:</h3><p>这个一定要写一下,看半年前的代码完全看不懂了,到处都是坑,90%的问题都是 坐标点换算造成的.</p>
+<pre><code>    private void drawDrop() {
+    Canvas canvas = getHolder().lockCanvas();
+    if (canvas != null) {
+        canvas.drawColor(Color.TRANSPARENT, Mode.CLEAR);
+
+        if (isDraw) {
+            double distance = Math.sqrt(Math.pow(mBaseX - mTargetX, 2) + Math.pow(mBaseY - mTargetY, 2));
+            mPaint.setColor(0xffff0000);
+            mPaint.setStyle(Paint.Style.FILL);
+            if (distance &lt; mMaxDistance) {
+                //计算圆形半径
+                mStrokeWidth = (float) ((1f - distance / mMaxDistance) * mRadius);
+                //绘制 原位置的圆形,会随着拖动距离还减小,注意mBaseX,mBaseY是圆心坐标
+                canvas.drawCircle(mBaseX, mBaseY, mStrokeWidth / 2, mPaint);
+                drawBezier(canvas);
+            }
+            //绘制拖动后的图形,注意mTargetX,mTargetY是左上角坐标
+            canvas.drawBitmap(mDest, mTargetX, mTargetY, mPaint);
+        }
+        getHolder().unlockCanvasAndPost(canvas);
+    }
+}
+</code></pre><p>注意<code>drawCircle</code>和<code>drawBitmap</code> 使用的坐标是不一样的,一个是圆心,一个是图片左上角.<br>进行坐标计算时使用的都是 圆心坐标,可以参考下面的图片</p>
+<p>注意换算,非常操蛋.</p>
+<hr>
+<h1 id="算法详细"><a href="#算法详细" class="headerlink" title="算法详细"></a>算法详细</h1><p>可以参考<a href="http://isux.tencent.com/qq-mobile-off-duty.html" target="_blank" rel="external">QQ手机版 5.0“一键下班”设计小结</a>,基本上是一致的,就是贝塞尔曲线的参考点不会移动</p>
+<p>计算2根贝塞尔曲线的4个起点/终点</p>
+<p>看代码可能不明白,还原下其实就是简单的三角函数</p>
+<pre><code>/**
+ * ax=by=0 x^2+y^2=s/2
+ * &lt;p/&gt;
+ * ==&gt;
+ * &lt;p/&gt;
+ * x=a^2/(a^2+b^2)*s/2
+ *
+ * @param start
+ * @param end
+ * @return
+ */
+private Point[] calculate(Point start, Point end) {
+    float a = end.x - start.x;
+    float b = end.y - start.y;
+
+    float y1 = (float) Math.sqrt(a * a / (a * a + b * b) * (mStrokeWidth / 2f) * (mStrokeWidth / 2f));
+    float x1 = -b / a * y1;
+
+    float y2 = (float) Math.sqrt(a * a / (a * a + b * b) * (targetWidth / 2f) * (targetHeight / 2f));
+    float x2 = -b / a * y2;
+
+
+    Point[] result = new Point[4];
+
+    result[0] = new Point(start.x + x1, start.y + y1);
+    result[1] = new Point(end.x + x2, end.y + y2);
+
+    result[2] = new Point(start.x - x1, start.y - y1);
+    result[3] = new Point(end.x - x2, end.y - y2);
+
+    return result;
+}
+</code></pre><hr>
+<p>绘制贝塞尔曲线</p>
+<p>贝塞尔曲线使用的参考点为 centerX,centerY,为两圆圆心连线的中点</p>
+<pre><code>private void drawBezier(Canvas canvas) {
+
+    Point[] points = calculate(new Point(mBaseX, mBaseY), new Point(mTargetX + mDest.getWidth() / 2f, mTargetY + mDest.getHeight() / 2f));
+
+    float centerX = (points[0].x + points[1].x + points[2].x + points[3].x) / 4f;
+    float centerY = (points[0].y + points[1].y + points[2].y + points[3].y) / 4f;
+
+    Path path1 = new Path();
+    path1.moveTo(points[0].x, points[0].y);
+    path1.quadTo(centerX, centerY, points[1].x, points[1].y);
+    path1.lineTo(points[3].x, points[3].y);
+
+    path1.quadTo(centerX, centerY, points[2].x, points[2].y);
+    path1.lineTo(points[0].x, points[0].y);
+    canvas.drawPath(path1, mPaint);
+}
+</code></pre><p>按腾讯那文章来看,参考点随距离移动效果可能会更好,我尝试了一下,看不出明显的区别. </p>
+<hr>
+<p>加了个Note:</p>
+<pre><code>The origin circle drawn by  canvas.drawCircle(mBaseX, mBaseY, mStrokeWidth / 2, mPaint);
+
+so mBaseX, mBaseY are center position.
+
+The Moved circle drawn by  canvas.drawBitmap(mDest, mTargetX, mTargetY, mPaint);
+
+so mTargetX,mTargetY are left top corner position.
+</code></pre><p>计算过程中时刻记得这2点,之前好多bug就是因为这个造成的.</p>
+<hr>
+<p>Explosion</p>
+<p>其实这个东西非常简单.</p>
+<p>一个简单的粒子生成器,实例化直接生成所有粒子</p>
+<p>随机生成每个例子的颜色 x速度 y速度</p>
+<p>然后由ExplosionUpdateThread刷新每个粒子的坐标并绘图</p>
+<p>正常的 粒子引擎 功能要复杂的多的多, 不过上cocos2d或者别的图形/游戏引擎感觉没有必要</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-PathEffectTextView-Update" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/10/17/PathEffectTextView-Update/" class="article-date">
+  	<time datetime="2015-10-17T06:11:43.000Z" itemprop="datePublished">2015-10-17</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/10/17/PathEffectTextView-Update/">PathEffectTextView Update</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>更新了一下<a href="https://github.com/dkmeteor/PathEffectTextView" target="_blank" rel="external">PathEffectTextView</a></p>
+<ul>
+<li><p>添加了字体大小 颜色 字重(bold) 阴影 等设置项.</p>
+</li>
+<li><p>更新了下Demo.</p>
+</li>
+<li><p>做了几个新的Demo Gif</p>
+</li>
+<li><p>发布到Jcenter</p>
+</li>
+</ul>
+<h2 id="TODO"><a href="#TODO" class="headerlink" title="TODO:"></a>TODO:</h2><ul>
+<li>等有空的时候,添加各种笔刷.</li>
+</ul>
+<hr>
+<p>#Screenshot</p>
+<p>Please waiting for loading the gif…</p>
+<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path1.gif?raw=true" alt=""></p>
+<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path2.gif?raw=true" alt=""></p>
+<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path3.gif?raw=true" alt=""></p>
+<p><img src="https://github.com/dkmeteor/PathEffectTextView/blob/master/path4.gif?raw=true" alt=""></p>
+<p>#How to use</p>
+<p>Step 1: add denpendence</p>
+<pre><code>compile(&apos;com.dk.view.patheffect:Library:0.1.1@aar&apos;)
+</code></pre><p>If you are still using <code>Eclipse</code>, you can just copy source code or jar file to you project.</p>
+<p>Step 2: add view to your layout:</p>
+<pre><code>&lt;com.dk.view.patheffect.PathTextView
+    android:id=&quot;@+id/path&quot;
+    android:layout_width=&quot;wrap_content&quot;
+    android:layout_height=&quot;wrap_content&quot;/&gt;
+</code></pre><p>step 3: call <code>init</code> method like this:</p>
+<pre><code>PathTextView mPathTextView = (PathTextView) findViewById(R.id.path);
+mPathTextView.init(&quot;Hello World&quot;);
+</code></pre><p>Option settings:</p>
+<pre><code>mPathTextView.setPaintType(PathTextView.Type.MULTIPLY);
+mPathTextView.setTextColor(color);
+mPathTextView.setTextSize(size);
+mPathTextView.setTextWeight(weight);
+mPathTextView.setDuration(duration);
+mPathTextView.setShadow(radius, dx, dy, shadowColor);
+</code></pre><p>#NOTE</p>
+<ul>
+<li><p>Only Support capital letter, you can check this file for <a href="https://github.com/dkmeteor/PathEffectTextView/blob/master/Library/src/main/java/com/dk/view/patheffect/MatchPath.java" target="_blank" rel="external"><code>Path Data</code></a>, the data comes from <a href="https://github.com/liaohuqiu/android-Ultra-Pull-To-Refresh/" target="_blank" rel="external">android-Ultra-Pull-To-Refresh</a></p>
+</li>
+<li><p>the size unit is px , 72 means 72px*72px.</p>
+</li>
+<li><p>the text weight unit is px.</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-SurfaceView-flashes-black-on-load" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1258,144 +1535,9 @@ public class MainActivity extends Activity {
 
 
   
-    <article id="post-checkbox-paddingleft" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/03/26/checkbox-paddingleft/" class="article-date">
-  	<time datetime="2015-03-26T08:30:09.000Z" itemprop="datePublished">2015-03-26</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/26/checkbox-paddingleft/">关于CheckBox的PaddingLeft</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在不同Android版本中对PaddingLeft的计算方式不同</p>
-<p>在Android 4.1.2 之前,Checkbox的 paddingleft 是从View最左侧开始计算的</p>
-<p>而Android 4.1.2 之后,Checkbox的 paddingLeft 是从drawableLeft的右侧开始计算起的</p>
-<p>2个版本之间的 paddingLeft会差一个 drawableLeft的宽度</p>
-<p>一个兼容实现方式</p>
-<pre><code>//View hack for fucking difference between versions
-        if (Build.VERSION.SDK_INT &amp;lt;= 16) {//4.1.2
-            mCheckBox.setPadding(ViewUtils.getPixels(20 + 10, mContext), 0, 0, 0);
-            } else {
-            mCheckBox.setPadding(ViewUtils.getPixels(10,mContext), 0, 0, 0);
-        }
-</code></pre><p>讨厌这种写法。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-circleanimation-update" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/03/22/circleanimation-update/" class="article-date">
-  	<time datetime="2015-03-22T10:35:39.000Z" itemprop="datePublished">2015-03-22</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/03/22/circleanimation-update/">CircleAnimation Update</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/images/circle_animation_demo2.gif" alt="circle_animation"></p>
-<p>修改了实现方式，不再依赖RevealAnimator</p>
-<p>也不再依赖</p>
-<pre><code>/** @hide */
-public void setRevealClip(boolean shouldClip, float x, float y, float radius)&lt;/pre&gt;
-</code></pre><p>删除了反射的setRevealClip的部分</p>
-<hr>
-<p>新的实现完全基于老的Canvas API，兼容低版本</p>
-<hr>
-<p>缩放的部分加了个bounce效果，不过效果并不好，估计是系数选的不对，看来还是去找一套算好的系数。</p>
-<p>最后再把相关接口调整一下，一坨AnimatorSet的嵌套逻辑最后用 playSequentially 整理一下应该就可以结束了。</p>
-<hr>
-<p>顺带 看了下 CircularReveal <a href="https://github.com/ozodrukh/CircularReveal/" target="_blank" rel="external">https://github.com/ozodrukh/CircularReveal/</a> 的源代码</p>
-<p>用这个方案来实现也可以，不过</p>
-<p>先draw再clipPath</p>
-<p>和</p>
-<p>drawCircle with BitmapShader</p>
-<p>从结果上来看是完全等价的。</p>
-<p>以后需要在ViewGroup上实现该效果可能才用得上这个方案</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/">Next &raquo;</a>
     </nav>
   
 </div>

@@ -164,6 +164,158 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-blur-drawer" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/08/blur-drawer/" class="article-date">
+  	<time datetime="2015-02-08T07:56:18.000Z" itemprop="datePublished">2015-02-08</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/08/blur-drawer/">Blur-Drawer</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/blur-drawer.gif" alt="blur-drawer"></p>
+<p><a href="https://github.com/charbgr/BlurNavigationDrawer" target="_blank" rel="external">https://github.com/charbgr/BlurNavigationDrawer</a></p>
+<p>对客户这个UX实在心里没底….赶紧了找了套备胎先放着….</p>
+<p>回头让我再改我就用这一套…</p>
+<p>这一套代码和我的Folder-DrawerLayout一样 是直接从android.support.v4.widget.DrawerLayout继承下来的…</p>
+<p>兼容和升级会非常方便</p>
+<p>Blur算法部分和我常用的那一套也一样。。。高版本走RenderScript，低版本用StackBlur…支持先ScaleDown再Blur..性能也OK..不用再做额外的性能优化..</p>
+<p>考虑到Blur半径比较大…其实Scale还可以开大一点…</p>
+<hr>
+<p>目前看来唯一一个问题是 Blur的触发点在ActionBarDrawerToggle里的onDrawerSlide里….</p>
+<p>项目目前把ActionBar干掉了…也没用ToolBar    顶上现在是个自定义Header….</p>
+<p>不知道会有多大影响。。。</p>
+<p>不过最坏情况也不过把这部分逻辑摘出来扔在Drawerlayout的Listener里…时间上考虑还比较safe.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
+    <article id="post-run-rm---rf-on-Android" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/05/run-rm---rf-on-Android/" class="article-date">
+  	<time datetime="2015-02-05T07:23:17.000Z" itemprop="datePublished">2015-02-05</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/05/run-rm---rf-on-Android/">在Android上执行 rm -rf /</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>和人讨论在Android上执行linux的命令问题。</p>
+<p>于是试了试每个人都会试的 rm -rf /</p>
+<p>过程略去</p>
+<p>最终结果代码是这样</p>
+<pre><code>Process process = null;
+DataOutputStream os = null;
+try {
+    process = Runtime.getRuntime().exec(&quot;su&quot;);
+    os = new DataOutputStream(process.getOutputStream());
+    os.writeBytes(&quot;rm -rf /&quot; + &quot;\n&quot;);
+    os.writeBytes(&quot;exit\n&quot;);
+    os.flush();
+    process.waitFor();
+
+} catch (IOException e) {
+    e.printStackTrace();
+} catch (InterruptedException e) {
+    e.printStackTrace();
+} finally {
+    if (os != null)
+        try {
+            os.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    process.destroy();
+}
+</code></pre><p>主要麻烦是玩坏了就要重建虚拟机…好在Genymotion启动速度还可以</p>
+<p>比较奇怪的时候 成功执行以后</p>
+<p>系统黑屏 卡死 无反应</p>
+<p>但是重启以后，系统居然回到未初始化状态…类似于 恢复出厂设置 的结果……</p>
+<p><img src="/images/rm.jpg" alt="rm"></p>
+<p>真机未测试…看有没有勇者试一下…变砖了本人不负任何责任….</p>
+<hr>
+<p>本来计划看一下galaxy.rs的脚本….但是这几天状态太差……感觉需要调整一下作息…….</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-use-ioc-in-android" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1696,150 +1848,9 @@ public void draw(Canvas canvas) {
 
 
   
-    <article id="post-generic-type-function" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/07/generic-type-function/" class="article-date">
-  	<time datetime="2015-01-07T08:26:45.000Z" itemprop="datePublished">2015-01-07</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/07/generic-type-function/">泛型函数</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>今天看到一黑科技….</p>
-<p>泛型类 泛型参数倒是很常用…</p>
-<p>用在返回值类型上的泛型函数我还是第一次见到这么玩的…</p>
-<p>写起代码来大概是这样</p>
-<pre><code>public class MainActivity extends Activity{
-    private Button mButton;
-    private TextView mTextView;
-    private ListView mListView;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mButton = $(R.id.button);
-        mTextView = $(R.id.textview);
-        mListView = $(R.id.listview);
-
-    }
-
-    public &lt;T extends View&gt; T $(int id)
-    {
-        return (T) super.findViewById(id);
-    }
-}
-</code></pre><p>一种JQuery的感觉。。。主要是这个$伪装成操作符的样子很有迷惑性…当然JQuery里的$本身也是这样实现的…..</p>
-<p>好处大概是代码压缩的厉害。。省掉了强制类型转换。。写起代码来清晰一些。。</p>
-<p>使用起来方便。。一共才1行代码。。扔BaseActivity里就好了。。</p>
-<p>当然功能很弱逼。。。比注解形的弱多了。。。</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-folder-drawerlayout-1" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/28/folder-drawerlayout-1/" class="article-date">
-  	<time datetime="2014-12-28T10:42:40.000Z" itemprop="datePublished">2014-12-28</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/28/folder-drawerlayout-1/">Folder-DrawerLayout 开发日志0</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/images/Folder-DrawerLayout-develop-0.gif" alt="folder-drawer-layout"><br><img src="/images/moring-routine.png" alt="morning-routine"></p>
-<p>又仔细看了下MorningRoutine….发现还有个渐变阴影…</p>
-<p>目测应该是在挂verts之前用shader先渲染在原图上的</p>
-<p>x轴看起来也不是均匀的….首</p>
-<p>大概先是要把波长写成x相关的函数多代换一层…..</p>
-<p>然后这个挤压效果还要把x轴总长按y轴位置等比压缩一下….</p>
-<p>原效果verts矩阵是 5*15的…棱角还比较大…..不知道加大verts点数对性能有多大影响…</p>
-<p>记录一下,元旦再弄了…有点蛋疼……一次要把这么多玩意载入脑子里面….一旦被interrupt就完了…看来是只适合半夜写了…</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
   
     <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
+      <a class="extend prev" rel="prev" href="/page/3/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/">Next &raquo;</a>
     </nav>
   
 </div>
