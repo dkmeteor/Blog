@@ -164,6 +164,96 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-OJ-1510" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/09/26/OJ-1510/" class="article-date">
+  	<time datetime="2014-09-25T22:21:54.000Z" itemprop="datePublished">2014-09-26</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/09/26/OJ-1510/">九度OJ 题目1510：替换空格</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>题目1510：替换空格<br>时间限制：1 秒<br>内存限制：128 兆<br>特殊判题：否<br>提交：6687<br>解决：1722<br>题目描述：请实现一个函数，将一个字符串中的空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。</p>
+<p>输入：每个输入文件仅包含一组测试样例。<br>对于每组测试案例，输入一行代表要处理的字符串。</p>
+<p>输出：对应每个测试案例，出经过处理后的字符串。</p>
+<p>样例输入：<br>We Are Happy</p>
+<p>样例输出：<br>We%20Are%20Happy</p>
+<p>AC code:</p>
+<pre><code>include &amp;lt;iostream&amp;gt;
+#include &amp;lt;stdio.h&amp;gt;
+
+using namespace std;
+
+int main()
+{
+    string str;
+    getline (cin,str);
+    int i=0;
+
+    string result;
+    while(str.c_str()[i]!=-1)
+    {
+        if(str.c_str()[i]!=&apos; &apos;)
+            result+=(str.c_str()[i]);
+        else
+            result.append(&quot;%20&quot;);
+        i++;
+    }
+    printf(&quot;%s&quot;,result.c_str());
+    //printf(&quot;%d&quot;,i);
+    return 0;
+}
+</code></pre><hr>
+<pre><code>Problem: 1510
+User: dkmeteor
+Language: C++
+Result: Accepted
+Time:30 ms
+Memory:2536 kb
+</code></pre><p>题目本身很简单<br>主要时间花在搜索怎么读入带空格的字符串,用scanf调了半天..最后放弃了…还是用getLine直接读整行了</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-OJ-1384" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -767,66 +857,6 @@ WaterDrop drop = (WaterDrop) convertView.findViewById(R.id.drop);
     
     <div class="article-info article-info-index">
       
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-activityanimationlib" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/07/30/activityanimationlib/" class="article-date">
-  	<time datetime="2014-07-30T06:17:53.000Z" itemprop="datePublished">2014-07-30</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/07/30/activityanimationlib/">ActivityAnimationLib</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>[<img src="/images/activity-animation-lib-water.gif" alt="folder"></p>
-<p>Enhance Activity switch animation.</p>
-<p>source code :</p>
-<p><a href="https://github.com/dkmeteor/ActivityAnimationLib" target="_blank" rel="external">https://github.com/dkmeteor/ActivityAnimationLib</a></p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-	<div class="article-tag tagcloud">
-		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/android/">android</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/animation/">animation</a></li></ul>
-	</div>
-
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/android/">android</a>

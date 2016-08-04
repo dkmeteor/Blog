@@ -164,6 +164,66 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-patheffecttextview" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/04/02/patheffecttextview/" class="article-date">
+  	<time datetime="2015-04-02T07:41:09.000Z" itemprop="datePublished">2015-04-02</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/04/02/patheffecttextview/">PathEffectTextView</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/path_hello_world.gif" alt="path3"></p>
+<p><img src="/images/path_mulitpy.gif" alt="path2"></p>
+<p><img src="/images/path_single.gif" alt="path1"></p>
+<p><a href="https://github.com/dkmeteor/PathEffectTextView" target="_blank" rel="external">https://github.com/dkmeteor/PathEffectTextView</a></p>
+<p>90%完成吧…</p>
+<p>昨天因为一个比较傻逼的原因看了半天为何Path画出来没效果….甚至以为PathMeasure的作用机制和我预想的不同，结果是因为Paint没在STROKE模式，简直醉了…..</p>
+<p>与PathEffect结合使用可以做出更好的效果，不过目前并没有用到…..嘛…..反正标题就这样也懒得改了..以后无聊了再加吧..</p>
+<p>与SVG解析器一起使用的话，理论上是任意图形都可以用这种方式做动效…</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-checkbox-paddingleft" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -935,98 +995,6 @@ instrumentTest.setRoot(&apos;tests&apos;)
 <p>这个文件在<br><code>{project folder}\app\build\generated\source\rs\debug\{package name}\</code> 下</p>
 <hr>
 <p>官方不打算出一个正式的 Gradle 集成 RenderScript的Guide并保持更新么？<br>这集成方式一版本一变上下不兼容简直醉了</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-solve-scrollview-gridview-conflict-for-auto-scroll" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/02/27/solve-scrollview-gridview-conflict-for-auto-scroll/" class="article-date">
-  	<time datetime="2015-02-27T06:29:01.000Z" itemprop="datePublished">2015-02-27</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/27/solve-scrollview-gridview-conflict-for-auto-scroll/">ScrollView 中嵌套 GridView 导致 ScrollView 默认不停留在顶部的解决方案和分析</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><code>ScrollView</code>中嵌套 <code>GridView</code> 导致 <code>ScrollView</code> 默认不停留在顶部的解决方案和分析</p>
-<p>发生情况大概是我在ScrollView顶部放了一个ViewPager用来做广告Banner,底部放了个GridVie, 来实现一个类似9宫格效果的展示.</p>
-<p>然后出现的状况是,当我获取完数据并调用notifyDataSetChanged();后 ScrollView自动滚到了最底部,也就是GridView所在的位置.</p>
-<p>研究了一下,获取了一些解决方案</p>
-<p>– 让界面顶部的某一个View获取focus<br>– grid.setFocusable(false);<br>– 手动scrollto(0,0)<br>– 重写ScrollView中的computeScrollDeltaToGetChildRectOnScreen,让该方法返回0</p>
-<p>目前简单的用setFocusable(false)解决了该问题</p>
-<p>试着分析一下这个问题产生的原因. 从解决方案反推,可以发现这个问题和 <code>focus</code> 有关系</p>
-<p>一个猜测是 notifyDataSetChanged()之后,grid由于加载了数据的关系高度产生了变化</p>
-<p>这导致了ScrollView内部重新走了 onLayout / onMeaure 流程 在这个流程中 ScrollView会将自身滚动到 获得 focus 的 child 位置</p>
-<p>上面关于focus的解决方案即是从这个角度去解决问题</p>
-<p>跟踪一下调用链</p>
-<pre><code>protected void onLayout(boolean changed, int l, int t, int r, int b) {
- super.onLayout(changed, l, t, r, b);
- mIsLayoutDirty = false;
- // Give a child focus if it needs it
- if (mChildToScrollTo != null &amp;&amp; isViewDescendantOf(mChildToScrollTo, this)) {
- scrollToChild(mChildToScrollTo);
- }
- ...
-}
-</code></pre><p>可以看到 onLayout 的时候确实会将ScrollView滚动到focus child位置</p>
-<pre><code>private void scrollToChild(View child) {
- child.getDrawingRect(mTempRect);
-
- /* Offset from child&apos;s local coordinates to ScrollView coordinates */
- offsetDescendantRectToMyCoords(child, mTempRect);
-
- int scrollDelta = computeScrollDeltaToGetChildRectOnScreen(mTempRect);
-
- if (scrollDelta != 0) {
- scrollBy(0, scrollDelta);
- }
-}
-</code></pre><p>从代码逻辑上来看 避免 GridView获取focus可以解决该问题.</p>
-<p>而重写ScrollView中的computeScrollDeltaToGetChildRectOnScreen则是从另一个角度解决该问题</p>
-<p>而scrollToChild这个方法会根据computeScrollDeltaToGetChildRectOnScreen的返回值来计算滚动的位置</p>
-<p>重载computeScrollDeltaToGetChildRectOnScreen让其返回0 会导致ScrollView内布局产生变化时,不能正确滚动到focus child位置,当然,这也就是我们想要的效果,布局变化时ScrollView不需要自己去滚动.</p>
-<p>至于computeScrollDeltaToGetChildRectOnScreen代码太长就不贴了</p>
-<p>大致代码是 根据当前 scrollY和focus child 的 rect.bottom 去计算要滚到哪</p>
-<p>逻辑理顺以后觉得这个问题也没什么奇怪的.</p>
 
       
     </div>
