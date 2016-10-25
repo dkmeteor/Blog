@@ -164,6 +164,144 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-gradle-build-renderscript" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/02/27/gradle-build-renderscript/" class="article-date">
+  	<time datetime="2015-02-27T07:49:21.000Z" itemprop="datePublished">2015-02-27</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/02/27/gradle-build-renderscript/">Gradle编译RenderScript</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Gradle编译RenderScript</p>
+<p>有点操蛋，现在官方文档上还是eclipse上的集成方式</p>
+<p><a href="https://android.googlesource.com/platform/frameworks/rs/" target="_blank" rel="external">https://android.googlesource.com/platform/frameworks/rs/</a></p>
+<p>demo更不知道是哪年的版本</p>
+<p>早先还有各种指定renderscript.srcDirs = [‘src’] 的写法</p>
+<p>随着Gradle和plugin的更新…这破写法一天一变….网上能搜到一打的不一样的写法…没几个能用的…</p>
+<hr>
+<p>比较正确的请参考这个</p>
+<p><a href="http://stackoverflow.com/questions/19658145/how-to-use-the-renderscript-support-library-with-gradle/22976675#22976675" target="_blank" rel="external">http://stackoverflow.com/questions/19658145/how-to-use-the-renderscript-support-library-with-gradle/22976675#22976675</a></p>
+<p>以我的项目为例<br>目前是这样的</p>
+<pre><code>apply plugin: &apos;com.android.application&apos;
+
+android {
+compileSdkVersion 21
+buildToolsVersion &quot;21.1.2&quot;
+
+defaultConfig {
+applicationId &quot;com.dk.heartbeats&quot;
+minSdkVersion 17
+targetSdkVersion 21
+versionCode 1
+versionName &quot;1.0&quot;
+renderscriptTargetApi 19
+renderscriptSupportModeEnabled false
+}
+
+buildTypes {
+release {
+minifyEnabled false
+proguardFiles getDefaultProguardFile(&apos;proguard-android.txt&apos;), &apos;proguard-rules.pro&apos;
+}
+}
+
+}
+
+dependencies {
+compile fileTree(dir: &apos;libs&apos;, include: [&apos;*.jar&apos;])
+compile &apos;com.android.support:appcompat-v7:21.0.3&apos;
+compile &apos;com.jakewharton:butterknife:6.0.0&apos;
+compile files(&apos;libs/jtransforms-2.4.jar&apos;)
+compile files(&apos;libs/renderscript-v8.jar&apos;)
+}
+</code></pre><p>注意这个<br><code>renderscriptSupportModeEnabled true</code><br>和<br><code>compile files(&#39;libs/renderscript-v8.jar&#39;)</code></p>
+<p>原则上 当你设置了 <code>renderscriptSupportModeEnabled true</code><br>gradle应当自动将 v8挂载到项目中，不需要自己去把renderscript-v8.jar拷过来</p>
+<p>但是我设置了以后 sync gradle / clean / build 以后依然提示我v8 not found…无奈之下自己把v8 jar拷到lib目录下编译</p>
+<p>顺便 这个 renderscript-v8.jar在 <code>SDK\build-tools\21.1.2\renderscript\lib</code> 下</p>
+<p>没想到的是…这个时候这破玩意好了又告诉我multiply dex……</p>
+<p>没办法 我又把上面的关了…</p>
+<p>反正这2个使用任意一个应该就可以了….</p>
+<hr>
+<p>renderscriptTargetApi 19</p>
+<p>这个 必须要</p>
+<hr>
+<p>你们如果看过以前的工程的话…会发现.rs文件都是直接仍在包名下<br>比如官方Demo里的 yuv.rs就直接扔在 com.android.rs.livepreview 下面</p>
+<p>同时，早期Gradle版本可以通过</p>
+<pre><code>sourceSets {
+    main {
+        manifest.srcFile &apos;AndroidManifest.xml&apos;
+        java.srcDirs = [&apos;src&apos;]
+        resources.srcDirs = [&apos;src&apos;]
+        aidl.srcDirs = [&apos;src&apos;]
+        renderscript.srcDirs = [&apos;src&apos;]
+        res.srcDirs = [&apos;res&apos;]
+        assets.srcDirs = [&apos;assets&apos;]
+    }
+
+instrumentTest.setRoot(&apos;tests&apos;)
+}
+</code></pre><p>指定编译路径<br>恩<br>注意</p>
+<p>renderscript.srcDirs = [‘src’]</p>
+<p>遗憾的是我实验了一下自己指定renderscript路径毫无反应。<br>查找了一些资料以后发现需要直接扔在<br>rs文件夹下…</p>
+<p>项目结构像这样</p>
+<pre><code>--app
+--builds
+--libs
+--src
+    --android test
+    --main
+        --java
+        --res
+        --rs
+        AndroidManifest.xml
+</code></pre><p>意会一下…就是默认gradle项目格式…放在和java同层的rs文件夹里才会生成对应的<code>ScriptC_yuv.java</code>文件</p>
+<p>这个文件在<br><code>{project folder}\app\build\generated\source\rs\debug\{package name}\</code> 下</p>
+<hr>
+<p>官方不打算出一个正式的 Gradle 集成 RenderScript的Guide并保持更新么？<br>这集成方式一版本一变上下不兼容简直醉了</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-solve-scrollview-gridview-conflict-for-auto-scroll" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1776,86 +1914,6 @@ public void draw(Canvas canvas) {
 <p>所以简单来看 每一个笔画的 realProgress 是不同的<br>realProgress 受 笔画在数组中的位置 i 和 progress 影响</p>
 <hr>
 <p>剩下个高光效果直接用Shader渲染的..不分析了…..</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-folder-drawerlayout-3" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/12/folder-drawerlayout-3/" class="article-date">
-  	<time datetime="2015-01-12T08:59:42.000Z" itemprop="datePublished">2015-01-12</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/12/folder-drawerlayout-3/">Folder-DrawerLayout 开发日志2</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/images/folder-draw-layout.jpg" alt="folder-drawer-layout"></p>
-<p><img src="/images/Folder-DrawerLayout3.gif" alt="folder-drawer-layout"></p>
-<p>弧形褶皱添加完毕…..有些bug….</p>
-<p>数值上也需要调整一下….需要构造一个 x=f(y)</p>
-<p>当 y=0 或 y=height 时   f(y) = 0 的函数 。。</p>
-<p>本来是写了个二次函数。。但是二次函数是对称的。。只能保证中点在 height/2时满足条件….形状和斜率太对称很违和，不够自然…</p>
-<p>可能写2个2次函数拼起来也可以….反正y轴上其实只有6个采样点…..都是插值插出来的….曲线不光滑也看不出来……….</p>
-<hr>
-<p>另外一个隐患是函数太复杂了。。。本来是为了清晰起见把每个步骤都分开计算。。</p>
-<p>循环上有些冗余。。。但是对比图形计算的部分。。浪费的性能应该不在一个数量级上。。</p>
-<p>但是类似这样的代码</p>
-<pre class="lang:java decode:true"> private float[] applyScaleXEffect(float offset) {
-        for (int i = 0; i &lt; 6; i++)
-            for (int j = 0; j &lt; 51; j++) {
-                meshVerts[i * 102 + 2 * j] = meshVerts[i * 102 + 2 * j]
-                        * (1.0f + 0.0f * offset) ;
-
-                meshVerts[i * 102 + 2 * j]=(offset) * meshVerts[i * 102 + 2 * j] *  (1+ (meshVerts[i * 102 + 2 * j+1]-1000)*(meshVerts[i * 102 + 2 * j+1]-1000)/10000 /width);
-            }
-        return meshVerts;
-    }</pre>
-
-<p>可阅读性已经基本没有了。。。。考虑到性能问题。。。最后可能还要把冗余的循环计算都合并起来。。。最后可能变成一个超长的公式。。。。。。。估计要做到一次成型。。然后再也不维护了。。</p>
-<p>可阅读性要求很高。。。但是对性能又很敏感。。。。。我想想到底要怎么处理这个结构。。。</p>
-<p>如果证实冗余的循环对性能影响不大的话。。。还是尽量把每个步骤分开写吧。。。优化的问题扔最后了</p>
-<p>数值调整完以后要赶紧把 能拆出来的变量拆出来，能写成常量的写成常量。。不然过几天鬼还记得这个10000是怎么算出来的….</p>
-<p>顺便发现用Google看函数图挑形状真是方便..</p>
-<p><a href="http://dk-exp.com/wp-content/uploads/2015/01/google.jpg" target="_blank" rel="external"><img src="http://dk-exp.com/wp-content/uploads/2015/01/google-300x221.jpg" alt="google"></a></p>
 
       
     </div>

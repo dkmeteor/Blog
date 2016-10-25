@@ -164,6 +164,378 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-weak-handler" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/11/11/weak-handler/" class="article-date">
+  	<time datetime="2015-11-11T04:08:47.000Z" itemprop="datePublished">2015-11-11</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/11/11/weak-handler/">Weak Handler 与 内存泄露</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>#Weak Handler 与 内存泄露</p>
+<p>Handler使用不当比较容易造成内存泄露.</p>
+<p>比如这个例子:<a href="http://www.jianshu.com/p/c49f778e7acf" target="_blank" rel="external">http://www.jianshu.com/p/c49f778e7acf</a></p>
+<p>通常的原因就是 Handler的生命周期和Activity的生命周期不一致.</p>
+<hr>
+<p>一个通用的场景是 使用 匿名内部类 实例 作为某个 行为/动作的 回调,如果该行为/动作 是异步的,则其返回时间往往无法确定,有造成内存泄露风险.</p>
+<p>使用静态内部类,或者妥善处理生命周期,都不会造成内存泄露,反过来,当没有内存泄露风险时,一般直接匿名内部类即可.</p>
+<p>这其实是一个特别矛盾的说法.</p>
+<p>因为这要求程序员能 能了解到 回调行为是在何时发生的. </p>
+<p>而相反,我们设计接口回调的时候总是尽力屏蔽内部实现细节.</p>
+<p>而面对不确定的行为,当然也可以使用静态内部类,或者removeCallback去取消回调(特指Handler),然而这样代码变得繁琐,或者添加不必要的代码.</p>
+<p>对于Handler,一个简单的第三方解决方案是使用 android-weak-handler ,该库尝试使用WeakReference解决这个问题,然而却引入新的问题.</p>
+<p><a href="https://github.com/badoo/android-weak-handler" target="_blank" rel="external">https://github.com/badoo/android-weak-handler</a></p>
+<p>核心代码如下:</p>
+<pre><code>public class WeakHandler {
+    private final Handler.Callback mCallback; // hard reference to Callback. We need to keep callback in memory
+    private final ExecHandler mExec;
+    private Lock mLock = new ReentrantLock();
+    @SuppressWarnings(&quot;ConstantConditions&quot;)
+    @VisibleForTesting
+    final ChainedRef mRunnables = new ChainedRef(mLock, null);
+
+    public WeakHandler() {
+        mCallback = null;
+        mExec = new ExecHandler();
+    }
+
+    public WeakHandler(@Nullable Handler.Callback callback) {
+        mCallback = callback; // Hard referencing body
+        mExec = new ExecHandler(new WeakReference&lt;&gt;(callback)); // Weak referencing inside ExecHandler
+    }
+
+    public WeakHandler(@NonNull Looper looper) {
+        mCallback = null;
+        mExec = new ExecHandler(looper);
+    }
+
+    public WeakHandler(@NonNull Looper looper, @NonNull Handler.Callback callback) {
+        mCallback = callback;
+        mExec = new ExecHandler(looper, new WeakReference&lt;&gt;(callback));
+    }
+
+    public final boolean post(@NonNull Runnable r) {
+        return mExec.post(wrapRunnable(r));
+    }
+
+    public final boolean postAtTime(@NonNull Runnable r, long uptimeMillis) {
+        return mExec.postAtTime(wrapRunnable(r), uptimeMillis);
+    }
+
+    public final boolean postAtTime(Runnable r, Object token, long uptimeMillis) {
+        return mExec.postAtTime(wrapRunnable(r), token, uptimeMillis);
+    }
+
+    public final boolean postDelayed(Runnable r, long delayMillis) {
+        return mExec.postDelayed(wrapRunnable(r), delayMillis);
+    }
+
+    public final boolean postAtFrontOfQueue(Runnable r) {
+        return mExec.postAtFrontOfQueue(wrapRunnable(r));
+    }
+
+    public final void removeCallbacks(Runnable r) {
+        final WeakRunnable runnable = mRunnables.remove(r);
+        if (runnable != null) {
+            mExec.removeCallbacks(runnable);
+        }
+    }
+
+    public final void removeCallbacks(Runnable r, Object token) {
+        final WeakRunnable runnable = mRunnables.remove(r);
+        if (runnable != null) {
+            mExec.removeCallbacks(runnable, token);
+        }
+    }
+
+    public final boolean sendMessage(Message msg) {
+        return mExec.sendMessage(msg);
+    }
+
+    public final boolean sendEmptyMessage(int what) {
+        return mExec.sendEmptyMessage(what);
+    }
+
+    public final boolean sendEmptyMessageDelayed(int what, long delayMillis) {
+        return mExec.sendEmptyMessageDelayed(what, delayMillis);
+    }
+
+    public final boolean sendEmptyMessageAtTime(int what, long uptimeMillis) {
+        return mExec.sendEmptyMessageAtTime(what, uptimeMillis);
+    }
+
+    public final boolean sendMessageDelayed(Message msg, long delayMillis) {
+        return mExec.sendMessageDelayed(msg, delayMillis);
+    }
+
+    public boolean sendMessageAtTime(Message msg, long uptimeMillis) {
+        return mExec.sendMessageAtTime(msg, uptimeMillis);
+    }
+
+    public final boolean sendMessageAtFrontOfQueue(Message msg) {
+        return mExec.sendMessageAtFrontOfQueue(msg);
+    }
+
+    public final void removeMessages(int what) {
+        mExec.removeMessages(what);
+    }
+
+    public final void removeMessages(int what, Object object) {
+        mExec.removeMessages(what, object);
+    }
+
+    public final void removeCallbacksAndMessages(Object token) {
+        mExec.removeCallbacksAndMessages(token);
+    }
+
+    public final boolean hasMessages(int what) {
+        return mExec.hasMessages(what);
+    }
+
+    public final boolean hasMessages(int what, Object object) {
+        return mExec.hasMessages(what, object);
+    }
+
+    public final Looper getLooper() {
+        return mExec.getLooper();
+    }
+
+    private WeakRunnable wrapRunnable(@NonNull Runnable r) {
+        //noinspection ConstantConditions
+        if (r == null) {
+            throw new NullPointerException(&quot;Runnable can&apos;t be null&quot;);
+        }
+        final ChainedRef hardRef = new ChainedRef(mLock, r);
+        mRunnables.insertAfter(hardRef);
+        return hardRef.wrapper;
+    }
+
+    private static class ExecHandler extends Handler {
+        private final WeakReference&lt;Handler.Callback&gt; mCallback;
+
+        ExecHandler() {
+            mCallback = null;
+        }
+
+        ExecHandler(WeakReference&lt;Handler.Callback&gt; callback) {
+            mCallback = callback;
+        }
+
+        ExecHandler(Looper looper) {
+            super(looper);
+            mCallback = null;
+        }
+
+        ExecHandler(Looper looper, WeakReference&lt;Handler.Callback&gt; callback) {
+            super(looper);
+            mCallback = callback;
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            if (mCallback == null) {
+                return;
+            }
+            final Handler.Callback callback = mCallback.get();
+            if (callback == null) { // Already disposed
+                return;
+            }
+            callback.handleMessage(msg);
+        }
+    }
+
+    static class WeakRunnable implements Runnable {
+        private final WeakReference&lt;Runnable&gt; mDelegate;
+        private final WeakReference&lt;ChainedRef&gt; mReference;
+
+        WeakRunnable(WeakReference&lt;Runnable&gt; delegate, WeakReference&lt;ChainedRef&gt; reference) {
+            mDelegate = delegate;
+            mReference = reference;
+        }
+
+        @Override
+        public void run() {
+            final Runnable delegate = mDelegate.get();
+            final ChainedRef reference = mReference.get();
+            if (reference != null) {
+                reference.remove();
+            }
+            if (delegate != null) {
+                delegate.run();
+            }
+        }
+    }
+
+    static class ChainedRef {
+        @Nullable
+        ChainedRef next;
+        @Nullable
+        ChainedRef prev;
+        @NonNull
+        final Runnable runnable;
+        @NonNull
+        final WeakRunnable wrapper;
+
+        @NonNull
+        Lock lock;
+
+        public ChainedRef(@NonNull Lock lock, @NonNull Runnable r) {
+            this.runnable = r;
+            this.lock = lock;
+            this.wrapper = new WeakRunnable(new WeakReference&lt;&gt;(r), new WeakReference&lt;&gt;(this));
+        }
+
+        public WeakRunnable remove() {
+            lock.lock();
+            try {
+                if (prev != null) {
+                    prev.next = next;
+                }
+                if (next != null) {
+                    next.prev = prev;
+                }
+                prev = null;
+                next = null;
+            } finally {
+                lock.unlock();
+            }
+            return wrapper;
+        }
+
+        public void insertAfter(@NonNull ChainedRef candidate) {
+            lock.lock();
+            try {
+                if (this.next != null) {
+                    this.next.prev = candidate;
+                }
+
+                candidate.next = this.next;
+                this.next = candidate;
+                candidate.prev = this;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+        @Nullable
+        public WeakRunnable remove(Runnable obj) {
+            lock.lock();
+            try {
+                ChainedRef curr = this.next; // Skipping head
+                while (curr != null) {
+                    if (curr.runnable == obj) { // We do comparison exactly how Handler does inside
+                        return curr.remove();
+                    }
+                    curr = curr.next;
+                }
+            } finally {
+                lock.unlock();
+            }
+            return null;
+        }
+    }
+}
+</code></pre><p>这个类的实现有个问题,为了避免持有Runnable的引用,使用WeakRunnable作为Wrapper,为了能够在Activity销毁时释放Runnable,这里使用的WeakReference去持有Runnable引用.<br>从目的上看,它确实解决了由于Runnable隐式持有Activity强引用而导致Acticity实例无法销毁的问题</p>
+<p>##但是</p>
+<p>作为匿名内部类被传入的Runnable对象如果只存在一个WeakReference,那意味着,任何一次GC操作都将导致其被回收.<br>看看这个例子</p>
+<pre><code>import com.badoo.mobile.util.WeakHandler;
+
+public class ExampleActivity extends Activity {
+
+    private WeakHandler mHandler; // We still need at least one hard reference to WeakHandler
+
+    protected void onCreate(Bundle savedInstanceState) {
+        mHandler = new WeakHandler();
+        ...
+    }
+
+    private void onClick(View view) {
+        mHandler.postDelayed(new Runnable() {
+            view.setVisibility(View.INVISIBLE);
+        }, 5000);
+    }
+}
+</code></pre><p>如果在这5s内系统触发了一次GC操作会怎么样? Runnable会被回收?</p>
+<p>将Demo简单修改一下</p>
+<pre><code>protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+
+    WeakHandler  mHandler = new WeakHandler();
+    mHandler.postDelayed(new Runnable() {
+
+
+        @Override
+        public void run() {
+            System.out.println(&quot;####################### Do Something&quot;);
+            );
+        }
+    }, 10000);
+
+    mHandler.postDelayed(new Runnable() {
+
+
+        @Override
+        public void run() {
+            System.out.println(&quot;#######################GC&quot;);
+
+            System.gc();
+        }
+    }, 5000);
+
+}
+</code></pre><p>看看运行结果,GC操作发生了,而Do Something并没有执行,因为 GC动作发生时, WeakReference持有的Runnable已经被释放了.</p>
+<p>通常来讲,GC操作发生的时间不可预料的,你无法预期等待回调的这几秒种内用户做了什么操作,而一旦触发了GC,则回调会被立刻取消</p>
+<p>注意,Activity并未被关闭,Runnable回调也会被释放!</p>
+<p>如果在大型项目中遇到这样的问题,排查一定是灾难性的.因为GC的不确定性,出现了回调丢失情况一定是随机的,难以预测的,难以重现的.</p>
+<p>而处理这个问题的办法是,将mHandler从临时变量 换成 成Activity的一个实例变量.</p>
+<p>然而通常程序员不一定意识这2种写法的区别,而且使用系统提供的Handler时,这2种写法是没有区别的.</p>
+<p>最后我检查了下文档,作者还是写了一句话作为提示</p>
+<blockquote>
+<p>We still need at least one hard reference to WeakHandler</p>
+</blockquote>
+<p>至于使用者是否能意识到问题所在我持怀疑态度.</p>
+<p>第三方库就是容易出现这种问题,使用起来能很方便的解决很多问题,然而又很容易挖几个隐蔽的坑给你.</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-PreLoadHack" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -1547,271 +1919,6 @@ public void draw(Canvas canvas) {
     <div class="article-info article-info-index">
       
       
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-why-thead-can-not-modify-UI-elements" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/05/05/why-thead-can-not-modify-UI-elements/" class="article-date">
-  	<time datetime="2015-05-05T08:43:11.000Z" itemprop="datePublished">2015-05-05</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/05/05/why-thead-can-not-modify-UI-elements/">从源码分析 对 非UI线程不允许访问UI元素的 理解</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>在eoe回答了一个问题：<br><a href="http://www.eoeandroid.com/forum.php?mod=viewthread&amp;tid=579938&amp;page=1" target="_blank" rel="external">http://www.eoeandroid.com/forum.php?mod=viewthread&amp;tid=579938&amp;page=1</a></p>
-<p>索性把内容整理一下…</p>
-<hr>
-<p>做Android开发初期大部分开发者都会遇到下面这个问题.</p>
-<pre><code>android.view.viewroot$calledfromwrongthreadexception: only the original thread that created a view hierarchy can touch its views.
-</code></pre><p>原因大半都是 由于在异步线程中视图 更新界面中的元素</p>
-<p>百度一搜,可以搜到大量解决办法.</p>
-<p>结果提炼一下: 大致就是讲 UI元素/视图元素 必须在 UI线程(主线程)中更新修改.</p>
-<p>新手这样理解就够了.</p>
-<hr>
-<p>但是仔细看这个Exception说明</p>
-<p><code>only the original thread that created a view hierarchy can touch its views.</code></p>
-<p>里面并没有提到 主线程/UI 线程,只是提到,必须是创建<code>View hierarchy</code>的线程</p>
-<p>!注意区分</p>
-<p>创建View的线程和创建View hierarchy的不一定是同一个线程,不要理解错了,下面在源码中具体分析</p>
-<p>观察ViewRoot源码中抛出calledfromwrongthreadexception的位置</p>
-<pre><code>void checkThread() {
-
-    if (mThread != Thread.currentThread()) {
-
-        throw new CalledFromWrongThreadException(
-                &quot;Only the original thread that created a view hierarchy can touch its views.&quot;);
-    }
-}
-</code></pre><p>可以注意到 这里只检查了 当前执行线程和 mThread是否为同一个线程</p>
-<pre><code>public ViewRoot(Context context) {
-
-     super();
-     if (MEASURE_LATENCY &amp;amp;&amp;amp; lt == null) {
-         lt = new LatencyTimer(100, 1000);
-     }
-
-     // For debug only
-     //++sInstanceCount;
-     // Initialize the statics when this class is first instantiated. This is
-     // done here instead of in the static block because Zygote does not
-     // allow the spawning of threads.
-
-     getWindowSession(context.getMainLooper());
-
-     mThread = Thread.currentThread();
-</code></pre><p>由ViewRoot的构造函数可以看到,mThread被绑定在了 创建<code>viewRoot</code>的线程上.</p>
-<p>当然大部分情况下,<code>ViewRoot</code>都是在主线程中创建的,所以在异步线程中修改view会造成checkThread失败.</p>
-<p>mTextView.setText(“123”);为例子.</p>
-<p>跟踪一下调用栈</p>
-<pre><code>-- android.widget.TextView.setText
-
-  -- android.widget.TextView.checkForRelayout
-
-    -- android.view.View.invalidate
-
-        -- android.view.ViewGroup.invalidateChild
-
-          -- android.view.ViewRoot.invalidateChildInParent
-
-            -- android.view.ViewRoot.invalidateChild
-
-              -- android.view.ViewRoot.checkThread
-</code></pre><p>可以看到 view会不断遍历去获取 ViewParent<br>一个视图上的View遍历到最后 就是 获取到了 ViewRoot</p>
-<p>(ViewRoot本身就是ViewParent的一个子类)</p>
-<p>然后就会调用到上面提到的 checkThread()</p>
-<p>到这里有一个结论:</p>
-<p>UI修改操作确实会验证操作的线程</p>
-<pre><code>* * *
-</code></pre><p>回到标题上来说, 因为 ViewRoot是由UI线程创建的,所以所有被添加到ViewRoot下的子View都必须在UI线程中修改,看起来也很合理.<br>那么,有可能在非UI线程中创建ViewRoot吗?</p>
-<p>其实是可以的.</p>
-<p>这里就涉及到ViewRoot和WindowManager之间的关系</p>
-<p>demo代码如下:</p>
-<pre><code>package com.dk.asyncui;
-
-import android.app.Activity;
-import android.graphics.PixelFormat;
-import android.os.Bundle;
-import android.os.Looper;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-
-public class MainActivity extends Activity {
-    private Button mButton ;
-    private WindowManager mWindowManager ;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-           super.onCreate(savedInstanceState);
-          setContentView(R.layout. activity_main);
-
-           mWindowManager = (WindowManager) getSystemService(&quot;window&quot; );
-
-           mButton = new Button(this );
-           mButton.setText( &quot;HelloWorld&quot;);
-
-          Thread mthread = new Thread(new Runnable() {
-
-                  @Override
-                  public void run() {
-                       Looper. prepare();
-                       WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
-                       wmParams. type = WindowManager.LayoutParams.TYPE_APPLICATION ;
-                       wmParams. format = PixelFormat. RGBA_8888;
-                       wmParams. flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL ;
-                       wmParams. width = 320;
-                       wmParams. height = 140;
-                        mWindowManager.addView(mButton , wmParams);
-                       Looper. loop();
-
-                 }
-          });
-          mthread.start();
-           mButton.setOnClickListener( new View.OnClickListener() {
-
-                  @Override
-                  public void onClick(View v) {
-
-                       runOnUiThread( new Runnable() {
-                               public void run() {
-                                      mButton.setText( &quot;22222222&quot;);
-                              }
-                       });
-                 }
-          });
-   }
-
-}
-</code></pre><p>可以看到,我在异步线程中将 mButton添加到 WindowManager中</p>
-<p>查看 WindowManangerImpl中addView的代码：</p>
-<pre><code>public void addView(View view, ViewGroup.LayoutParams params,
-        Display display, Window parentWindow) {
-    if (view == null) {
-        throw new IllegalArgumentException(&quot;view must not be null&quot;);
-    }
-
-    if (display == null) {
-        throw new IllegalArgumentException(&quot;display must not be null&quot;);
-    }
-
-    if (!(params instanceof WindowManager.LayoutParams)) {
-        throw new IllegalArgumentException(&quot;Params must be WindowManager.LayoutParams&quot;);
-    }
-    final WindowManager.LayoutParams wparams = (WindowManager.LayoutParams)params;
-    if (parentWindow != null) {
-        parentWindow.adjustLayoutParamsForSubWindow(wparams);
-    }
-    ViewRootImpl root;
-    View panelParentView = null;
-
-    synchronized (mLock) {
-        // Start watching for system property changes.
-
-        if (mSystemPropertyUpdater == null) {
-            mSystemPropertyUpdater = new Runnable() {
-                @Override public void run() {
-                    synchronized (mLock) {
-                        for (int i = mRoots.size() - 1; i &amp;gt;= 0; --i) {
-                            mRoots.get(i).loadSystemProperties();
-                        }
-                    }
-                }
-            };
-            SystemProperties.addChangeCallback(mSystemPropertyUpdater);
-        }
-        int index = findViewLocked(view, false);
-        if (index &amp;gt;= 0) {
-            if (mDyingViews.contains(view)) {
-                // Don&apos;t wait for MSG_DIE to make it&apos;s way through root&apos;s queue.
-                mRoots.get(index).doDie();
-            } else {
-                throw new IllegalStateException(&quot;View &quot; + view
-                        + &quot; has already been added to the window manager.&quot;);
-            }
-            // The previous removeView() had not completed executing. Now it has.
-        }
-        // If this is a panel window, then find the window it is being
-        // attached to for future reference.
-        if (wparams.type &amp;gt;= WindowManager.LayoutParams.FIRST_SUB_WINDOW &amp;amp;&amp;amp;
-                wparams.type &amp;lt;= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
-            final int count = mViews.size();
-            for (int i = 0; i &amp;lt; count; i++) {
-                if (mRoots.get(i).mWindow.asBinder() == wparams.token) {
-                    panelParentView = mViews.get(i);
-                }
-            }
-        }
-        root = new ViewRootImpl(view.getContext(), display);
-        view.setLayoutParams(wparams);
-        mViews.add(view);
-        mRoots.add(root);
-        mParams.add(wparams);
-    }
-
-    // do this last because it fires off messages to start doing things
-    try {
-        root.setView(view, wparams, panelParentView);
-    } catch (RuntimeException e) {
-        // BadTokenException or InvalidDisplayException, clean up.
-        synchronized (mLock) {
-            final int index = findViewLocked(view, false);
-            if (index &amp;gt;= 0) {
-                removeViewLocked(index, true);
-            }
-        }
-        throw e;
-    }
-}
-</code></pre><p>可以发现在addView的过程中 WindowMananger创建了 ViewRoot</p>
-<p>这就是上面提到的在 异步线程中创建 ViewRoot</p>
-<p>上面Demo代码中的 runOnUiThread是为了保证下面的<br>  mButton.setText( “22222222” );</p>
-<p>是在主线程中执行<br>可以看到,这段代码即使是在主线程中执行,依然抛出了CalledFromWrongThreadException</p>
-<p>在特意构造的这个特殊场景下,主线程/UI线程中 不能更新在异步线程中”创建/添加”的UI元素!!</p>
-<hr>
-<p>从源码和设计的角度上分析,我倾向于认为这其实是设计上的一个漏洞,我通过这个漏洞创建了一个非主线程绑定的ViewRoot对象,才会导致上面的结果.</p>
-
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/android/">android</a><a class="article-category-link" href="/categories/android/Blog/">Blog</a>
-	</div>
-
 
       
       <div class="clearfix"></div>

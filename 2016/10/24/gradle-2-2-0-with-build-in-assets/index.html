@@ -3,39 +3,27 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer | DK&#39;s Lab</title>
+  <title>gradle 2.2.0 with build in assets(baidu ad sdk) | DK&#39;s Lab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Android 7.0 中新增了 APK Signature Scheme v2 签名方式
-如果Android Studio升级到 v2.2+,构建APK时默认使用的签名方式就是APK Signature Scheme v2
-目前比较流行的2套 多渠道打包脚本
-
-在APK内注入${channel}.txt 文件
-在APK的zip info中写入 channel 信息
-
-实质上都会在签名后修改APK">
+  <meta name="description" content="前几天给一个老项目发版时,升级gradle到2.2.2,发现baidu广告SDK一直无法正确加载.提示 load xadsdkremotefinal.jar failed
+切换回 com.android.tools.build:gradle:2.2.0-alpha4 后恢复正常.
+但是使用老版本gradle编译会一直失败并提示
+12Error:(1, 0) Plugin is too old, p">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer">
-<meta property="og:url" content="http://blog.dk-exp.com/2016/08/04/Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer/index.html">
+<meta property="og:title" content="gradle 2.2.0 with build in assets(baidu ad sdk)">
+<meta property="og:url" content="http://blog.dk-exp.com/2016/10/24/gradle-2-2-0-with-build-in-assets/index.html">
 <meta property="og:site_name" content="DK's Lab">
-<meta property="og:description" content="Android 7.0 中新增了 APK Signature Scheme v2 签名方式
-如果Android Studio升级到 v2.2+,构建APK时默认使用的签名方式就是APK Signature Scheme v2
-目前比较流行的2套 多渠道打包脚本
-
-在APK内注入${channel}.txt 文件
-在APK的zip info中写入 channel 信息
-
-实质上都会在签名后修改APK">
-<meta property="og:updated_time" content="2016-08-04T07:10:53.000Z">
+<meta property="og:description" content="前几天给一个老项目发版时,升级gradle到2.2.2,发现baidu广告SDK一直无法正确加载.提示 load xadsdkremotefinal.jar failed
+切换回 com.android.tools.build:gradle:2.2.0-alpha4 后恢复正常.
+但是使用老版本gradle编译会一直失败并提示
+12Error:(1, 0) Plugin is too old, p">
+<meta property="og:updated_time" content="2016-10-25T08:34:44.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer">
-<meta name="twitter:description" content="Android 7.0 中新增了 APK Signature Scheme v2 签名方式
-如果Android Studio升级到 v2.2+,构建APK时默认使用的签名方式就是APK Signature Scheme v2
-目前比较流行的2套 多渠道打包脚本
-
-在APK内注入${channel}.txt 文件
-在APK的zip info中写入 channel 信息
-
-实质上都会在签名后修改APK">
+<meta name="twitter:title" content="gradle 2.2.0 with build in assets(baidu ad sdk)">
+<meta name="twitter:description" content="前几天给一个老项目发版时,升级gradle到2.2.2,发现baidu广告SDK一直无法正确加载.提示 load xadsdkremotefinal.jar failed
+切换回 com.android.tools.build:gradle:2.2.0-alpha4 后恢复正常.
+但是使用老版本gradle编译会一直失败并提示
+12Error:(1, 0) Plugin is too old, p">
   
     <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
   
@@ -184,11 +172,11 @@ var _hmt = _hmt || [];
 		</header>				
 	</div>
 </nav>
-      <div class="body-wrap"><article id="post-Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer" class="article article-type-post" itemscope itemprop="blogPost">
+      <div class="body-wrap"><article id="post-gradle-2-2-0-with-build-in-assets" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2016/08/04/Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer/" class="article-date">
-  	<time datetime="2016-08-04T06:49:22.000Z" itemprop="datePublished">2016-08-04</time>
+      <a href="/2016/10/24/gradle-2-2-0-with-build-in-assets/" class="article-date">
+  	<time datetime="2016-10-24T09:45:23.000Z" itemprop="datePublished">2016-10-24</time>
 </a>
     </div>
   
@@ -201,7 +189,7 @@ var _hmt = _hmt || [];
         
   
     <h1 class="article-title" itemprop="name">
-      Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer
+      gradle 2.2.0 with build in assets(baidu ad sdk)
     </h1>
   
 
@@ -221,18 +209,22 @@ var _hmt = _hmt || [];
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>Android 7.0 中新增了 <code>APK Signature Scheme v2</code> 签名方式</p>
-<p>如果Android Studio升级到 v2.2+,构建APK时默认使用的签名方式就是<code>APK Signature Scheme v2</code></p>
-<p>目前比较流行的2套 多渠道打包脚本</p>
-<ul>
-<li>在APK内注入${channel}.txt 文件</li>
-<li>在APK的zip info中写入 channel 信息</li>
-</ul>
-<p>实质上都会在签名后修改APK文件,目前都会造成 签名认证失败<br>失败信息如下:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Yuki-Android git:(feature/small-fix) adb install /Users/dk/Documents/yuki-release/v3.1.8/Yuki-base-Direct.apk</span><br><span class="line">Failed to install /Users/dk/Documents/yuki-release/v3.1.8/Yuki-base-Direct.apk: Failure [INSTALL_PARSE_FAILED_NO_CERTIFICATES: Failed to collect certificates from /data/app/vmdl453897674.tmp/base.apk: META-INF/CERT.SF indicates /data/app/vmdl453897674.tmp/base.apk is signed using APK Signature Scheme v2, but no such signature was found. Signature stripped?]</span><br></pre></td></tr></table></figure>
-<p>在非7.0设备上可以正常安装,在7.0设备上则无法通过签名认证.<br>现在可以通过在build.gradle中手动关闭APK Signature Scheme v2来避免此问题</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">signingConfigs &#123;</span><br><span class="line">       release &#123;</span><br><span class="line">           <span class="function">storeFile <span class="title">file</span><span class="params">(<span class="string">"xxxx"</span>)</span></span><br><span class="line">           storePassword "xxxx"</span><br><span class="line">           keyAlias "xxxx"</span><br><span class="line">           keyPassword "xxxx"</span><br><span class="line">           v2SigningEnabled <span class="keyword">false</span></span><br><span class="line">       &#125;</span><br><span class="line">       debug </span>&#123;</span><br><span class="line">           <span class="function">storeFile <span class="title">file</span><span class="params">(<span class="string">"xxxx"</span>)</span></span><br><span class="line">           storePassword "xxxx"</span><br><span class="line">           keyAlias "xxxx"</span><br><span class="line">           keyPassword "xxxx"</span><br><span class="line">           v2SigningEnabled <span class="keyword">false</span></span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span></span><br></pre></td></tr></table></figure>
-<p>目前暂时这样,考虑到以后v2签名可能会变成一个强制配置,可能需要等<code>APK Signature Scheme v2</code>具体文档和认证方式公布后,更新一下现在的多渠道打包脚本</p>
+        <p>前几天给一个老项目发版时,升级gradle到2.2.2,发现baidu广告SDK一直无法正确加载.<br>提示 load <strong>xadsdk</strong>remote<strong>final</strong>.jar failed</p>
+<p>切换回 <code>com.android.tools.build:gradle:2.2.0-alpha4</code> 后恢复正常.</p>
+<p>但是使用老版本gradle编译会一直失败并提示</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Error:(1, 0) Plugin is too old, please update to a more recent version, or set ANDROID_DAILY_OVERRIDE environment variable to "245e4d403bf33d23690fe32bf814235bf6949f57"</span><br><span class="line">&lt;a href="fixGradleElements"&gt;Fix plugin version and sync project&lt;/a&gt;&lt;br&gt;&lt;a href="openFile:/Users/dk/Documents/git/***(****/******/build.gradle"&gt;Open File&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+<p>虽然设置ANDROID_DAILY_OVERRIDE后暂时可用,但是下次编译时又要重新处理.</p>
+<p>稍微看了一下,发现原因是这样<br>百度广告SDK中有一个build in jar<br>目录结构大概是这样</p>
+<pre><code>Baidu_MobAds_SDK.jar
+    - assets
+        - `__xadsdk__remote__final__.jar`
+    - com.baidu........
+        - 若干class
+    - META-INF
+</code></pre><p>在使用gradle2.2.0-alpha4时,jar包中的assets会自动merge到apk的assets中,但是升级到2.2.0~2.2.2时,编译出的apk中不再包含<code>__xadsdk__remote__final__.jar</code></p>
+<p>暂时没有看到任何文档或者log中表述 gradle 2.2.0-alpha4 -&gt; gradle 2.2.0 修改了assets的处理方式</p>
+<p>目前我的处理方式是,解包Baidu_MobAds_SDK.jar后将 <code>__xadsdk__remote__final__.jar</code> 直接拷贝到工程assets目录下,即可使用最新的gradle正常编译.<br>当然你也可以回退到alpha4/rc1</p>
+<p>顺便,这事有1个月了,也不见百度的集成文档更新一下.</p>
 
       
     </div>
@@ -242,18 +234,9 @@ var _hmt = _hmt || [];
     
 <nav id="article-nav">
   
-    <a href="/2016/10/24/gradle-2-2-0-with-build-in-assets/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption"><</strong>
-      <div class="article-nav-title">
-        
-          gradle 2.2.0 with build in assets(baidu ad sdk)
-        
-      </div>
-    </a>
   
-  
-    <a href="/2016/05/31/Receiver-not-registered-android-widget-ZoomButtonsController-crash/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">Receiver not registered: android.widget.ZoomButtonsController crash</div>
+    <a href="/2016/08/04/Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer</div>
       <strong class="article-nav-caption">></strong>
     </a>
   
@@ -282,7 +265,7 @@ var _hmt = _hmt || [];
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer" data-title="Android 7.0 new APK Signature Scheme v2 problem with multiply channel packer" data-url="http://blog.dk-exp.com/2016/08/04/Android-7-0-new-APK-Signature-Scheme-v2-problem-with-multiply-channel-packer/"></div>
+	<div class="ds-thread" data-thread-key="gradle-2-2-0-with-build-in-assets" data-title="gradle 2.2.0 with build in assets(baidu ad sdk)" data-url="http://blog.dk-exp.com/2016/10/24/gradle-2-2-0-with-build-in-assets/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">

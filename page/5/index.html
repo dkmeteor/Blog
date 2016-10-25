@@ -164,6 +164,86 @@ var _hmt = _hmt || [];
 </nav>
       <div class="body-wrap">
   
+    <article id="post-folder-drawerlayout-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/12/folder-drawerlayout-3/" class="article-date">
+  	<time datetime="2015-01-12T08:59:42.000Z" itemprop="datePublished">2015-01-12</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2015/01/12/folder-drawerlayout-3/">Folder-DrawerLayout 开发日志2</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/images/folder-draw-layout.jpg" alt="folder-drawer-layout"></p>
+<p><img src="/images/Folder-DrawerLayout3.gif" alt="folder-drawer-layout"></p>
+<p>弧形褶皱添加完毕…..有些bug….</p>
+<p>数值上也需要调整一下….需要构造一个 x=f(y)</p>
+<p>当 y=0 或 y=height 时   f(y) = 0 的函数 。。</p>
+<p>本来是写了个二次函数。。但是二次函数是对称的。。只能保证中点在 height/2时满足条件….形状和斜率太对称很违和，不够自然…</p>
+<p>可能写2个2次函数拼起来也可以….反正y轴上其实只有6个采样点…..都是插值插出来的….曲线不光滑也看不出来……….</p>
+<hr>
+<p>另外一个隐患是函数太复杂了。。。本来是为了清晰起见把每个步骤都分开计算。。</p>
+<p>循环上有些冗余。。。但是对比图形计算的部分。。浪费的性能应该不在一个数量级上。。</p>
+<p>但是类似这样的代码</p>
+<pre class="lang:java decode:true"> private float[] applyScaleXEffect(float offset) {
+        for (int i = 0; i &lt; 6; i++)
+            for (int j = 0; j &lt; 51; j++) {
+                meshVerts[i * 102 + 2 * j] = meshVerts[i * 102 + 2 * j]
+                        * (1.0f + 0.0f * offset) ;
+
+                meshVerts[i * 102 + 2 * j]=(offset) * meshVerts[i * 102 + 2 * j] *  (1+ (meshVerts[i * 102 + 2 * j+1]-1000)*(meshVerts[i * 102 + 2 * j+1]-1000)/10000 /width);
+            }
+        return meshVerts;
+    }</pre>
+
+<p>可阅读性已经基本没有了。。。。考虑到性能问题。。。最后可能还要把冗余的循环计算都合并起来。。。最后可能变成一个超长的公式。。。。。。。估计要做到一次成型。。然后再也不维护了。。</p>
+<p>可阅读性要求很高。。。但是对性能又很敏感。。。。。我想想到底要怎么处理这个结构。。。</p>
+<p>如果证实冗余的循环对性能影响不大的话。。。还是尽量把每个步骤分开写吧。。。优化的问题扔最后了</p>
+<p>数值调整完以后要赶紧把 能拆出来的变量拆出来，能写成常量的写成常量。。不然过几天鬼还记得这个10000是怎么算出来的….</p>
+<p>顺便发现用Google看函数图挑形状真是方便..</p>
+<p><a href="http://dk-exp.com/wp-content/uploads/2015/01/google.jpg" target="_blank" rel="external"><img src="http://dk-exp.com/wp-content/uploads/2015/01/google-300x221.jpg" alt="google"></a></p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+  
     <article id="post-folder-drawerlayout-2" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
@@ -897,141 +977,6 @@ Android KeyStore security provider
       
 	<div class="article-category tagcloud">
 	<a class="article-category-link" href="/categories/Blog/">Blog</a>
-	</div>
-
-
-      
-      <div class="clearfix"></div>
-    </div>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-OJ-1511" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/09/26/OJ-1511/" class="article-date">
-  	<time datetime="2014-09-26T00:00:09.000Z" itemprop="datePublished">2014-09-26</time>
-</a>
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/09/26/OJ-1511/">九度OJ 题目1511：从尾到头打印链表</a>
-    </h1>
-  
-
-      </header>
-      
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>#题目1511：从尾到头打印链表`</p>
-<p><code>**时间限制：**1 秒</code></p>
-<p><code>**内存限制：**128 兆</code></p>
-<p><code>**特殊判题：**否</code></p>
-<p><code>**提交：**4073</code></p>
-<p><code>**解决：**1255</code></p>
-<p>题目描述输入一个链表，从尾到头打印链表每个节点的值。</p>
-<p><strong>输入：</strong></p>
-<p>每个输入文件仅包含一组测试样例。<br>每一组测试案例包含多行，每行一个大于0的整数，代表一个链表的节点。第一行是链表第一个节点的值，依次类推。当输入到-1时代表链表输入完毕。-1本身不属于链表。<code>&lt;/dd&gt;&lt;/dl&gt;&lt;dl&gt;&lt;dt&gt;</code><strong>输出：</strong><code>&lt;/dt&gt;&lt;dd&gt;</code>对应每个测试案例，以从尾到头的顺序输出链表每个节点的值，每个值占一行。<code>&lt;/dd&gt;&lt;/dl&gt;&lt;dl&gt;&lt;dt&gt;</code><strong>样例输入：</strong>`<dd></dd></p>
-<pre><code>1
-2
-3
-4
-5
--1
-
-
-**样例输出：**
-5
-4
-3
-2
-1
-</code></pre><p><code>AC Code:</code></p>
-<pre><code>#include &amp;lt;iostream&amp;gt;
-#include &amp;lt;stdio.h&amp;gt;
-
-using namespace std;
-
-struct Node
-{
-    int value;
-    Node* prev;
-    Node* next;
-};
-
-int main()
-{
-    int i;
-    Node *head;
-    Node *prev=NULL;
-    Node *p;
-    while(scanf(&quot;%d&quot;,&amp;amp;i)!=EOF)
-    {
-        if(i==-1)
-        {
-            break;
-        }
-        p =new Node();
-        p-&amp;gt;value=i;
-        p-&amp;gt;prev=prev;
-        if(prev!=NULL)
-            prev-&amp;gt;next=p;
-
-        prev=p;
-    }
-
-    while(1)
-    {
-        printf(&quot;%d\n&quot;,p-&amp;gt;value);
-        if(p-&amp;gt;prev==NULL)
-            break;
-        p=p-&amp;gt;prev;
-    }
-    return 0;
-}
-</code></pre><hr>
-<pre><code>/**************************************************************
-    Problem: 1511
-    User: dkmeteor
-    Language: C++
-    Result: Accepted
-    Time:90 ms
-    Memory:4556 kb
-****************************************************************/
-</code></pre><p>&nbsp;</p>
-<p></p>
-<div style="color: #333333;"><code> </code></div>
-
-<div style="color: #333333;"><code>构建了一个双向链表来完成逆序功能</code></div>
-
-<div style="color: #333333;"></div>
-
-<div style="color: #333333;">顺便这鸟题目  OJ原标题是 从头到尾……题干里却是从尾到头</div>
-      
-    </div>
-    
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-category tagcloud">
-	<a class="article-category-link" href="/categories/Algorithm/">Algorithm</a>
 	</div>
 
 
