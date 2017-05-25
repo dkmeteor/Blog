@@ -108,7 +108,7 @@ var _hmt = _hmt || [];
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud" id="js-tagcloud">
-						<a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+						<a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
 					</div>
 				</section>
 				
@@ -163,6 +163,84 @@ var _hmt = _hmt || [];
 	</div>
 </nav>
       <div class="body-wrap">
+  
+    <article id="post-aapt-error" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2014/08/07/aapt-error/" class="article-date">
+  	<time datetime="2014-08-07T07:30:26.000Z" itemprop="datePublished">2014-08-07</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2014/08/07/aapt-error/">AAPT Error</a>
+    </h1>
+  
+
+      </header>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个 Error executing aapt: Return code -1073741819的bug折腾了一晚上</p>
+<p>…aapt大大的有问题啊…明明是个很普通的res丢失问题..</p>
+<p>错误信息是这样的…….</p>
+<p><img src="/images/aapt_error_1.jpg" alt="log"></p>
+<p>原因是<code>action_settings</code>不存在 </p>
+<pre><code>&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; &gt;;
+    &lt;item
+    android:id=&quot;@+id/action_settings&quot;
+    android:orderInCategory=&quot;100&quot;
+    android:showAsAction=&quot;never&quot;
+    android:title=&quot;@string/action_settings&quot;/&gt;
+&lt;menu&gt;
+</code></pre><p>换了一个别的工程测试了一下，很正常，错误信息报的也很正常 Resource not found…</p>
+<p><img src="/images/aapt_error_2.jpg" alt="log"></p>
+<p>不知道这个com.example.android.supportv7里什么东西在影响aapt生成res文件….</p>
+<p>在windos-&gt;preferences–android-build里把build输出打开看了一下：</p>
+<p>2000多行log…</p>
+<p>结尾是这样</p>
+<blockquote>
+<p>D:\WORK\adt-bundle-windows-x86_64-20140702\adt-bundle-windows-x86_64-20140702\sdk\extras\android\support\v7\mediarouter\res\layout\mr_media_route_list_item.xml)</p>
+<p>[2014-08-07 23:22:03 - AndroidTest] (new resource id mr_media_route_list_item from D:\WORK\adt-bundle-windows-x86_64-20140702\adt-bundle-windows-x86_64-20140702\sdk\extras\android\support\v7\mediarouter\res\layout-v17\mr_media_route_list_item.xml)</p>
+<p>[2014-08-07 23:22:03 - AndroidTest] (new resource id overlay_display_window from D:\WORK\workspace4.x\AndroidTest\res\layout\overlay_display_window.xml)</p>
+<p>[2014-08-07 23:22:12 - AndroidTest] (new resource id sample_</p>
+<p>[2014-08-07 23:22:12 - AndroidTest] ‘aapt’ error. Pre Compiler Build aborted.</p>
+</blockquote>
+<p>猜测就是解析到menu xml的时候aapt挂了吧…<br>只能这样定位错误了</p>
+
+      
+    </div>
+    
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-category tagcloud">
+	<a class="article-category-link" href="/categories/Blog/">Blog</a>
+	</div>
+
+
+      
+      <div class="clearfix"></div>
+    </div>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
   
     <article id="post-sinking-view" class="article article-type-post" itemscope itemprop="blogPost">
   
@@ -348,7 +426,7 @@ var _hmt = _hmt || [];
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2016 DK
+    		&copy; 2017 DK
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten

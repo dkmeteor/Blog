@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>ArrayMap-synchronization-problem | DK&#39;s Lab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="一个比较难搞的Bug,有遇到的可以参考一下难搞的原因和以前一样, 如果一个bug出现在google issue里 又没有 给出 workaround,那基本就没救了
+错误输出为 java.lang.String cannot be cast to java.lang.Object[]
+java.lang.ClassCastException: java.lang.String cannot be">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayMap-synchronization-problem">
+<meta property="og:url" content="http://blog.dk-exp.com/2017/05/18/ArrayMap-synchronization-problem/index.html">
+<meta property="og:site_name" content="DK's Lab">
+<meta property="og:description" content="一个比较难搞的Bug,有遇到的可以参考一下难搞的原因和以前一样, 如果一个bug出现在google issue里 又没有 给出 workaround,那基本就没救了
+错误输出为 java.lang.String cannot be cast to java.lang.Object[]
+java.lang.ClassCastException: java.lang.String cannot be">
+<meta property="og:image" content="http://blog.dk-exp.com/images/arraymap-thread.png">
+<meta property="og:updated_time" content="2017-05-25T07:02:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ArrayMap-synchronization-problem">
+<meta name="twitter:description" content="一个比较难搞的Bug,有遇到的可以参考一下难搞的原因和以前一样, 如果一个bug出现在google issue里 又没有 给出 workaround,那基本就没救了
+错误输出为 java.lang.String cannot be cast to java.lang.Object[]
+java.lang.ClassCastException: java.lang.String cannot be">
+<meta name="twitter:image" content="http://blog.dk-exp.com/images/arraymap-thread.png">
+  
+    <link rel="alternative" href="/atom.xml" title="DK&#39;s Lab" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+  
+  <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?47d977b9cd46d5988a3e06ada67a7fa9";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+	<header id="header" class="inner">
+		<a href="/" class="profilepic">
+			<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+		</a>
+
+		<hgroup>
+		  <h1 class="header-author"><a href="/">DK</a></h1>
+		</hgroup>
+
+		
+
+		
+			<div class="switch-btn">
+				<div class="icon">
+					<div class="icon-ctn">
+						<div class="icon-wrap icon-house" data-idx="0">
+							<div class="birdhouse"></div>
+							<div class="birdhouse_holes"></div>
+						</div>
+						<div class="icon-wrap icon-ribbon hide" data-idx="1">
+							<div class="ribbon"></div>
+						</div>
+						
+						
+					</div>
+					
+				</div>
+				<div class="tips-box hide">
+					<div class="tips-arrow"></div>
+					<ul class="tips-inner">
+						<li>菜单</li>
+						<li>标签</li>
+						
+						
+					</ul>
+				</div>
+			</div>
+		
+
+		<div class="switch-area">
+			<div class="switch-wrap">
+				<section class="switch-part switch-part1">
+					<nav class="header-menu">
+						<ul>
+						
+							<li><a href="/">主页</a></li>
+				        
+							<li><a href="/archives">所有文章</a></li>
+				        
+						</ul>
+					</nav>
+					<nav class="header-nav">
+						<div class="social">
+							
+								<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+					        
+								<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+					        
+								<a class="rss" target="_blank" href="#" title="rss">rss</a>
+					        
+								<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+					        
+						</div>
+					</nav>
+				</section>
+				
+				
+				<section class="switch-part switch-part2">
+					<div class="widget tagcloud" id="js-tagcloud">
+						<a href="/tags/Android/" style="font-size: 10px;">Android</a> <a href="/tags/android/" style="font-size: 20px;">android</a> <a href="/tags/animation/" style="font-size: 10px;">animation</a> <a href="/tags/circle/" style="font-size: 10px;">circle</a> <a href="/tags/list/" style="font-size: 10px;">list</a>
+					</div>
+				</section>
+				
+				
+				
+
+				
+			</div>
+		</div>
+	</header>				
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+  	<div class="overlay">
+  		<div class="slider-trigger"></div>
+  		<h1 class="header-author js-mobile-header hide">DK</h1>
+  	</div>
+	<div class="intrude-less">
+		<header id="header" class="inner">
+			<div class="profilepic">
+				<img lazy-src="http://dk-exp.qiniudn.com/logo.jpg" class="js-avatar">
+			</div>
+			<hgroup>
+			  <h1 class="header-author">DK</h1>
+			</hgroup>
+			
+			<nav class="header-menu">
+				<ul>
+				
+					<li><a href="/">主页</a></li>
+		        
+					<li><a href="/archives">所有文章</a></li>
+		        
+		        <div class="clearfix"></div>
+				</ul>
+			</nav>
+			<nav class="header-nav">
+				<div class="social">
+					
+						<a class="github" target="_blank" href="https://github.com/dkmeteor" title="github">github</a>
+			        
+						<a class="weibo" target="_blank" href="http://weibo.com/2699012760" title="weibo">weibo</a>
+			        
+						<a class="rss" target="_blank" href="#" title="rss">rss</a>
+			        
+						<a class="zhihu" target="_blank" href="http://www.zhihu.com/people/ding-ke-53-78" title="zhihu">zhihu</a>
+			        
+				</div>
+			</nav>
+		</header>				
+	</div>
+</nav>
+      <div class="body-wrap"><article id="post-ArrayMap-synchronization-problem" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2017/05/18/ArrayMap-synchronization-problem/" class="article-date">
+  	<time datetime="2017-05-18T09:15:02.000Z" itemprop="datePublished">2017-05-18</time>
+</a>
+    </div>
+  
+  <div class="article-inner">
+    
+      <input type="hidden" class="isFancy" />
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      ArrayMap-synchronization-problem
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+	<div class="article-tag tagcloud">
+		<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Android/">Android</a></li></ul>
+	</div>
+
+        
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>一个比较难搞的Bug,有遇到的可以参考一下<br>难搞的原因和以前一样, 如果一个bug出现在google issue里 又没有 给出 workaround,那基本就没救了</p>
+<p>错误输出为 java.lang.String cannot be cast to java.lang.Object[]</p>
+<pre><code>java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Object[]
+at android.util.ArrayMap.allocArrays(ArrayMap.java:187)
+at android.util.ArrayMap.put(ArrayMap.java:459)
+at android.app.ActivityThread.handleCreateService(ActivityThread.java:2913)
+at android.app.ActivityThread.access$1900(ActivityThread.java:165)
+at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1459)
+at android.os.Handler.dispatchMessage(Handler.java:102)
+at android.os.Looper.loop(Looper.java:150)
+at android.app.ActivityThread.main(ActivityThread.java:5621)
+at java.lang.reflect.Method.invoke(Native Method)
+at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:794)
+at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:684)
+</code></pre><p>错误可能发生在任何使用ArrayMap的任何地方,比如Fragment,Intent,Bundle<br>Android Framework中大量使用ArrayMap存储,所以你自己不使用也仍有可能遇到此问题</p>
+<p>目前已经确认是Android系统本身的一个Bug,相关issue可以参考<br><a href="https://issuetracker.google.com/issues/37114373" target="_blank" rel="external">https://issuetracker.google.com/issues/37114373</a></p>
+<p>还有一篇详细分析给出了具体错误原因 和 重现路径<br><a href="https://gist.github.com/LanderlYoung/579872afffc62a5f837e654a6f1eab89" target="_blank" rel="external">https://gist.github.com/LanderlYoung/579872afffc62a5f837e654a6f1eab89</a></p>
+<p>不想看详细内容的话也可以简单理解为 ArrayMap 存在线程安全问题</p>
+<p>那么理所当然的,不要主动在backgroud thread中使用ArrayMap,确保都在主线程中使用就不会有问题</p>
+<p>但是,管得了自己的代码,管不了第三方SDK的代码,在我根本没有使用过ArrayMap的情况下,错误以极低概率发生<br>每天umeng都能抓到若干crash记录</p>
+<p>首先第一步是定位问题<br>现在我已经知道了,很可能是线程同步问题,但是由于我自身没有使用ArrayMap,所以很可能是某个第三方库在使用造成的问题</p>
+<p>准备一个原生系统(自己手机刷一个原生系统 或者 模拟器),然后在Android Studio中使用对应的版本的系统源码,就可以进行源码断点了<br>第三方ROM由于代码行数 和 源码不一致,一般是很难断点的</p>
+<p>我这里主要是定位问题,所以在 android.util.ArrayMap.put 上进行了条件断点(在断点上点右键 输入 condition)</p>
+<p>condition : Log.e(“######”,Thread.currentThread().toString())==0</p>
+<p>中断不会发生,但是会输出所有 调用android.util.ArrayMap.put的线程</p>
+<p>结果如下<br><img src="/images/arraymap-thread.png" alt="img"></p>
+<p>可以看到除了主线程外  还有另外2个线程在使用ArrayMap</p>
+<p>移除condition看了一下调用栈<br>可以看到其中一个是<br>run:124, l$1 (com.tencent.beacontsa.core.eve (广点通SDK里带的东西)</p>
+<p>另外一个是 thead-pool 是 umeng 在使用</p>
+<p>目前初步的解决方案是 把umeng event统计都停了(本来也没在用,实质上数据都记在GA)<br>广点通BannerAD 延迟 5秒加载</p>
+
+      
+    </div>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/10/24/gradle-2-2-0-with-build-in-assets/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">gradle 2.2.0 with build in assets(baidu ad sdk)</div>
+      <strong class="article-nav-caption">></strong>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
+
+
+
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="ArrayMap-synchronization-problem" data-title="ArrayMap-synchronization-problem" data-url="http://blog.dk-exp.com/2017/05/18/ArrayMap-synchronization-problem/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"true"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
+
+
+
+</div>
+      <footer id="footer">
+  <div class="outer">
+    <div id="footer-info">
+    	<div class="footer-left">
+    		&copy; 2017 DK
+    	</div>
+      	<div class="footer-right">
+      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      	</div>
+    </div>
+  </div>
+</footer>
+    </div>
+    
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/mobile.js"></script>
+<script src="/js/main.js"></script>
+
+
+
+
+
+<! -- mathjax config similar to math.stackexchange -->
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+    tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    }
+});
+
+MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';                 
+    }       
+});
+</script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+  </div>
+</body>
+</html>
